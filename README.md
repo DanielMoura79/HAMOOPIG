@@ -21,8 +21,8 @@
       - [3.1.2 Valores das variáveis de joypad](#312-valores-das-variáveis-de-joypad)
     - [3.2 FUNCAO_FSM](#32-funcao_fsm)
     - [3.3 FUNCAO_ANIMACAO()](#33-funcao_animacao)
-    - [3.3 PLAYER_STATE()](#33-player_state)
-    - [3.4 FUNCAO_PLAY_SND()](#34-funcao_play_snd)
+    - [3.3 PLAYER_STATE(u8 Player, u16 State)](#33-player_stateu8-player-u16-state)
+    - [3.4 FUNCAO_PLAY_SND(u8 Player, u16 State)](#34-funcao_play_sndu8-player-u16-state)
     - [3.5 FUNCAO_RELOGIO()](#35-funcao_relogio)
     - [3.6 FUNCAO_BARRAS_DE_ENERGIA()](#36-funcao_barras_de_energia)
     - [3.7 FUNCAO_SPR_POSITION()](#37-funcao_spr_position)
@@ -55,15 +55,15 @@ apenas 6 meses de desenvolvimento.
 
 ## 2. Como funciona?
 
-A criação de um jogo de luta é uma tarefa bastante complexa.Mesmo em PCs, a solução mais fácil seria utilizar o MUGEN, para não ter que criar um ogo a partir do Zero. Com a HAMOOPI / HAMOOPIG você terá um ponto de partida, muitas coisas já foram feitas para você ter mais facilidade ao produzir o seu game, e se concentrar no que realmente importa, que é o conteúdo do seu jogo.
+A criação de um jogo de luta é uma tarefa bastante complexa.Mesmo em PCs, a solução mais fácil seria utilizar o [MUGEN](http://www.elecbyte.com/mugendocs-11b1/mugen.html), para não ter que criar um ogo a partir do Zero. Com a **HAMOOPI / HAMOOPIG** você terá um ponto de partida, muitas coisas já foram feitas para você ter mais facilidade ao produzir o seu game, e se concentrar no que realmente importa, que é o conteúdo do seu jogo.
 
-A HAMOOPIG foi criada para permitir que você crie jogos tão bons quanto aqueles melhores jogos de luta dos arcades dos anos 80 / 90 no auge da era 2D no Genesis! [Vamos começar falando da máquina de estados.](https://www.youtube.com/watch?v=Y8YTk2ibPew)
+A **HAMOOPIG** foi criada para permitir que você crie jogos tão bons quanto aqueles melhores jogos de luta dos arcades dos anos 80 / 90 no auge da era 2D no Genesis! [Vamos começar falando da máquina de estados.](https://www.youtube.com/watch?v=Y8YTk2ibPew)
 
-De maneira simplificada e resumida, a Máquina de estados (FSM) controla
+De maneira simplificada e resumida, a Máquina de estados (*FSM*) controla
 os estados, ou ações que o seu personagem pode fazer. Assim, o
 movimento parado é um estado, o movimento andando é outro, e socos e
-chutes também! A FSM controla a transição entre estes estados, que são
-finitos. A HAMOOPIG possui uma tabela numérica que determina cada um
+chutes também! A *FSM* controla a transição entre estes estados, que são
+finitos. A **HAMOOPIG** possui uma tabela numérica que determina cada um
 deles, e é importante você ter esta tabela por perto para criar personagens
 nesta engine. Vamos a ela.
 
@@ -157,13 +157,13 @@ nesta engine. Vamos a ela.
 - 608 ­ Virando Abaixado
 
 #### 2.1.8 Comemorações e derrotas
-610 ­ Intro
-611 ­ Win1
-612 ­ Win2
-613 ­ Win3
-614 ­ Win4
-615 ­ Perdendo por Time Over
-618 ­ Rage Explosion (Samurai Shodow 2)
+- 610 ­ Intro
+- 611 ­ Win1
+- 612 ­ Win2
+- 613 ­ Win3
+- 614 ­ Win4
+- 615 ­ Perdendo por Time Over
+- 618 ­ Rage Explosion (Samurai Shodow 2)
 
 #### 2.1.9 Comemorações e derrotas
 
@@ -190,9 +190,7 @@ Isso é o mais importante para começar. Agora vamos a uma breve descrição das
 
 A FUNCAO_INPUT_SYSTEM() é importantíssima, pois ela vai retornar o estado de cada botão dos controles, permitindo criar lógica de troca de estados com a FSM. 
 
-Assim, um comando do tipo if(P[1].key_JOY_START_status==1)
-está verificando se o Player 1 acabou de apertar o START, permitindo que
-você faça alguma coisa na sequência.
+Assim, um comando do tipo *if(P[1].key_JOY_START_status==1)* está verificando se o Player 1 acabou de apertar o START, permitindo que você faça alguma coisa na sequência.
 
 #### 3.1.1 Variáveis de joypad
 
@@ -211,10 +209,10 @@ você faça alguma coisa na sequência.
 
 #### 3.1.2 Valores das variáveis de joypad
 
-0 => Nao apertado
-1 => Acabou de apertar
-2 => Mantem apertado
-3 => Acabou de soltar
+- 0 => Nao apertado
+- 1 => Acabou de apertar
+- 2 => Mantem apertado
+- 3 => Acabou de soltar
 
 ### 3.2 FUNCAO_FSM
 
@@ -223,11 +221,11 @@ A FUNCAO_FSM faz a troca de estados de acordo com as condições estabelecidas. 
 ```
 if(gDistancia>64)
 {
-//soco fraco de pe de longe
-if( (P[i].key_JOY_X_status==1) && (P[i].state==100) )
-{
-PLAYER_STATE(i,101);
-}
+    //soco fraco de pe de longe
+    if( (P[i].key_JOY_X_status==1) && (P[i].state==100) )
+    {
+    PLAYER_STATE(i,101);
+    }
 }
 ```
 
@@ -241,23 +239,23 @@ A PLAYER_STATE é provavelmente uma das funcoes mais importantes, ao lado da FSM
 ```
 if(P[Player].id==1)
 {
-if(State==100)
-{
-P[Player].y = gAlturaPiso;
-P[Player].w = 10*8;
-P[Player].h = 15*8;
-P[Player].axisX = P[Player].w/2;
-P[Player].axisY = P[Player].h;
-P[Player].dataAnim[1] = 8;
-P[Player].dataAnim[2] = 7;
-P[Player].dataAnim[3] = 7;
-P[Player].dataAnim[4] = 7;
-P[Player].dataAnim[5] = 7;
-P[Player].dataAnim[6] = 7;
-P[Player].animFrameTotal = 6;
-P[Player].sprite = SPR_addSpriteExSafe(...);
-}
-...
+    if(State==100)
+    {
+        P[Player].y = gAlturaPiso;
+        P[Player].w = 10*8;
+        P[Player].h = 15*8;
+        P[Player].axisX = P[Player].w/2;
+        P[Player].axisY = P[Player].h;
+        P[Player].dataAnim[1] = 8;
+        P[Player].dataAnim[2] = 7;
+        P[Player].dataAnim[3] = 7;
+        P[Player].dataAnim[4] = 7;
+        P[Player].dataAnim[5] = 7;
+        P[Player].dataAnim[6] = 7;
+        P[Player].animFrameTotal = 6;
+        P[Player].sprite = SPR_addSpriteExSafe(...);
+    }
+    ...
 }
 ```
 
@@ -272,12 +270,10 @@ P[Player].sprite = SPR_addSpriteExSafe(...);
 
 As imagens usadas na **SGDK** devem seguir o padrão do Genesis. A partir deste momento chamaremos elas de *sprites*. Esses sprites devem ter o tamanho multiplo de 8 pixels. Cada conjunto de 8x8 pixels é chamado de *TILE*. Além disso eles devem ter apenas 16 cores, sendo que a primeira cor da paleta é reservada para a cor transparente. Cada conjunto de sprites, formando uma sequência de animação é chamada de Sprite Sheet, Folha de Sprites, ou simplesmente *ESTADO*, na **HAMOOPIG**. Este é o estado PARADO (100) do personagem Haohmaru. Cada sprite desta sequência é chamado de *FRAME*.
 
-### 3.3 PLAYER_STATE()
-void PLAYER_STATE(u8 Player, u16 State)
+### 3.3 PLAYER_STATE(u8 Player, u16 State)
 Recebe o Player(1;2) e o State(nnn). É a função que carrega os parâmetros de animacao do personagem, carrega a imagem do sprite, entre outras coisas importantes
 
-### 3.4 FUNCAO_PLAY_SND()
-void FUNCAO_PLAY_SND(u8 Player, u16 State)
+### 3.4 FUNCAO_PLAY_SND(u8 Player, u16 State)
 Recebe o Player(1;2) e o State(nnn). Toca os sons do jogo, barulhos de
 golpes por exemplo
 
@@ -332,5 +328,3 @@ Reinicializa o round.
 
 ### 3.21 CLEAR_VDP()
 Limpa a VDP; Video Display Processor.
-
-You need [SGDK](https://github.com/Stephane-D/SGDK) to properly compile it.
