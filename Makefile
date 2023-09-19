@@ -2,7 +2,7 @@
 compile:
 	docker run -it --rm -v "${PWD}":/src sgdk:${SGDK_VERSION}
 
-SGDK_VERSION=1.90
+SGDK_VERSION=1.70
 download:
 	if ! test -d SGDK; then git clone https://github.com/Stephane-D/SGDK && cd SGDK && git checkout tags/v${SGDK_VERSION} ; fi
 
