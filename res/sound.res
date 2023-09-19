@@ -2,6 +2,8 @@ WAV snd_round_init  "sfx/round_init.wav"  XGM
 XGM music_stage1 "sfx/music_stage1.vgm" 0
 XGM music_char_select "sfx/music_char_select.vgm" 0
 XGM music_title "sfx/music_title.vgm" 0
+XGM music_battle "sfx/Battle.vgm" XGM
+XGM music_conclusion "sfx/Conclusion.vgm" XGM
 
 WAV snd_cursor  "sfx/snd_cursor.wav"  XGM
 WAV snd_confirm  "sfx/snd_confirm.wav"  XGM

@@ -167,6 +167,30 @@ bool key_JOY2_Z_pressed, key_JOY2_Z_hold, key_JOY2_Z_released;
 bool key_JOY2_START_pressed, key_JOY2_START_hold, key_JOY2_START_released;
 bool key_JOY2_MODE_pressed, key_JOY2_MODE_hold, key_JOY2_MODE_released;
 
+// Inteligencia Artificial PLAYER 2 by Nemezes ( nemezes.itch.io /
+// mangangateam.com )
+bool IAP2;
+u16 acaoIA;
+u16 varIA;
+u16 tempoIA;
+u16 tempoIAacao;
+u16 tempoIAataque;
+u16 tempoIAmagia;
+u16 esmurra;
+u16 pulandoFrenteTras;
+u16 defendeTempo;
+
+u8 pausarJogo;
+
+// modo campanha
+u8 P2fase[9];
+const Image *BGfase[9];
+u8 tempoMaxIAataque[9];
+u8 tempoMinIAataque[9];
+u8 defesaIA[9];
+u8 fase;
+u8 faseMAX;
+
 struct PlayerDEF {
   Sprite *sprite;   // Sprite do Player
   Sprite *sombra;   // Sprite (sombra) do Player
@@ -248,16 +272,79 @@ int main(u16 hard) /************** MAIN **************/
 {
   // Inicializacao da VDP (Video Display Processor)
   SYS_disableInts();
-  VDP_init();                     // Inicializa a VDP (Video Display Processor)
-  VDP_setScreenWidth320();        // Resolucao padrao de 320x224 (Largura)
-  VDP_setScreenHeight224();       // Resolucao padrao de 320x224 (Altura)
-  VDP_setPlaneSize(64, 32, TRUE); // Recomendado para BGs grandes
-  VDP_setTextPlane(BG_A);         // Textos serao desenhados no BG_A
+  VDP_init();               // Inicializa a VDP (Video Display Processor)
+  VDP_setScreenWidth320();  // Resolucao padrao de 320x224 (Largura)
+  VDP_setScreenHeight224(); // Resolucao padrao de 320x224 (Altura)
+  // VDP_setPlaneSize(64,32,TRUE);  //Recomendado para BGs grandes
+  VDP_setTextPlane(BG_A);   // Textos serao desenhados no BG_A
   VDP_setTextPalette(PAL1); // Textos serao desenhados com a ultima cor da PAL0
-  SPR_init(127, 384,
-           256); // SPR_init(u16 maxSprite, u16 vramSize, u16 unpackBufferSize)
+  SPR_initEx(848); // 720       //SPR_init(u16 maxSprite, u16 vramSize, u16
+                   // unpackBufferSize)
   VDP_setBackgroundColor(0); // Range 0-63 //4 Paletas de 16 cores = 64 cores
   SYS_enableInts();
+
+  gFrames = 0;
+  gRoom = 1;
+
+  gPodeMover = 1;
+
+  fase = 1;    // manter o valor igual a 1
+  faseMAX = 4; // configurado para 8 fases no maximo (escolher valor de 1 a 8)
+
+  // DIFICULDADE DA IA
+
+  // SE O TEMPO DE ATAQUE ESTIVER ENTRE tempoMinIAataque E tempoMaxIAataque
+  // SIGNIFICA QUE O PLAYER 2 ATACA
+  tempoMinIAataque[1] = 60; // escolher valor de 2 a 255
+  tempoMinIAataque[2] = 60;
+  tempoMinIAataque[3] = 5;
+  tempoMinIAataque[4] = 5;
+  tempoMinIAataque[5] = 40;
+  tempoMinIAataque[6] = 30;
+  tempoMinIAataque[7] = 20;
+  tempoMinIAataque[8] = 10;
+
+  tempoMaxIAataque[1] = 100; // escolher valor de 2 a 255 (valor deve ser maior
+                             // que o respectivo no tempoMinIAataque)
+  tempoMaxIAataque[2] = 100;
+  tempoMaxIAataque[3] = 100;
+  tempoMaxIAataque[4] = 100;
+  tempoMaxIAataque[5] = 55;
+  tempoMaxIAataque[6] = 60;
+  tempoMaxIAataque[7] = 50;
+  tempoMaxIAataque[8] = 80;
+
+  // QUANTO MENOR O VALOR, MAIS A IA DO PLAYER 2 DEFENDE
+  defesaIA[1] = 50; // escolher valor de 10 a 255, valor menor ou igual a 10 =
+                    // sempre defende
+  defesaIA[2] = 50;
+  defesaIA[3] = 10;
+  defesaIA[4] = 10;
+  defesaIA[5] = 90;
+  defesaIA[6] = 60;
+  defesaIA[7] = 30;
+  defesaIA[8] = 15;
+
+  P2fase[1] = 2; // escolha do Player 2 em cada fase: 1=haohmaru, 2=gillius
+  P2fase[2] = 1;
+  P2fase[3] = 2;
+  P2fase[4] = 1;
+  P2fase[5] = 2;
+  P2fase[6] = 1;
+  P2fase[7] = 2;
+  P2fase[8] = 1;
+
+  // CENARIO DE FUNDO EM CADA FASE
+  BGfase[1] = &gfx_bgb4; // escolha o cenario de fundo em cada fase
+  BGfase[2] = &gfx_bgb5;
+  BGfase[3] = &gfx_bgb6;
+  BGfase[4] = &gfx_bgb1A;
+  BGfase[5] = &gfx_bgb2;
+  BGfase[6] = &gfx_bgb3;
+  BGfase[7] = &gfx_bgb4;
+  BGfase[8] = &gfx_bgb2;
+
+  CLEAR_VDP();
 
   while (TRUE) /// LOOP PRINCIPAL ///
   {
@@ -282,6 +369,8 @@ int main(u16 hard) /************** MAIN **************/
     {
       FUNCAO_INPUT_SYSTEM(); // Verifica os joysticks
 
+      // IAP2 = TRUE; //INTELIGENCIA ARTIFICIAL P2 LIGADA
+
       // inicializacao
       if (gFrames == 1) {
         // bg_A
@@ -295,8 +384,8 @@ int main(u16 hard) /************** MAIN **************/
                         0, 0, FALSE, TRUE);
         gInd_tileset += room_0_bgb.tileset->numTile;
 
-        VDP_setPalette(PAL0, room_0_bga.palette->data);
-        VDP_setPalette(PAL1, room_0_bgb.palette->data);
+        PAL_setPalette(PAL0, room_0_bga.palette->data, CPU);
+        PAL_setPalette(PAL1, room_0_bgb.palette->data, CPU);
 
         VDP_setBackgroundColor(0);
       }
@@ -323,32 +412,39 @@ int main(u16 hard) /************** MAIN **************/
       FUNCAO_INPUT_SYSTEM(); // Verifica os joysticks
 
       if (gFrames == 1) {
+        VDP_setTextPalette(PAL1);
+        VDP_setTextPlane(BG_A);
+
         gInd_tileset = 1;
 
         VDP_loadTileSet(bg_title_bgb.tileset, gInd_tileset, DMA);
         VDP_setTileMapEx(BG_B, bg_title_bgb.tilemap,
                          TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset), 0,
                          0, 0, 0, 40, 28, DMA_QUEUE);
-        VDP_setPalette(PAL0, bg_title_bgb.palette->data);
+        PAL_setPalette(PAL0, bg_title_bgb.palette->data, CPU);
         gInd_tileset += bg_title_bgb.tileset->numTile;
 
         VDP_loadTileSet(bg_title_bga.tileset, gInd_tileset, DMA);
         VDP_setTileMapEx(BG_A, bg_title_bga.tilemap,
                          TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset), 0,
                          0, 0, 0, 40, 28, DMA_QUEUE);
-        VDP_setPalette(PAL1, bg_title_bga.palette->data);
+        PAL_setPalette(PAL1, bg_title_bga.palette->data, CPU);
         gInd_tileset += bg_title_bga.tileset->numTile;
 
         GE[1].sprite = SPR_addSpriteExSafe(
             &spr_roman_two, 184, 32, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        VDP_setPalette(PAL2, spr_roman_two.palette->data);
+        PAL_setPalette(PAL2, spr_roman_two.palette->data, CPU);
+        SPR_setVRAMTileIndex(GE[1].sprite, gInd_tileset);
+
+        gInd_tileset += 148;
+
         SPR_setDepth(GE[1].sprite, 255);
 
         // Petalas
 
-        VDP_setPalette(PAL3, spr_petala_big.palette->data);
+        PAL_setPalette(PAL3, spr_petala_big.palette->data, CPU);
 
         GE[2].sprite = SPR_addSpriteExSafe(
             &spr_petala_big, 40, 40, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
@@ -356,7 +452,8 @@ int main(u16 hard) /************** MAIN **************/
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         SPR_setVRAMTileIndex(
             GE[2].sprite,
-            1451); // define uma posicao especifica para o GFX na VRAM
+            gInd_tileset); // define uma posicao especifica para o GFX na VRAM
+        gInd_tileset += 9;
 
         GE[3].sprite = SPR_addSpriteExSafe(
             &spr_petala_big, 160, 120, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
@@ -364,8 +461,9 @@ int main(u16 hard) /************** MAIN **************/
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         SPR_setVRAMTileIndex(
             GE[3].sprite,
-            1461); // define uma posicao especifica para o GFX na VRAM
+            gInd_tileset); // define uma posicao especifica para o GFX na VRAM
         SPR_setAnimAndFrame(GE[3].sprite, 0, 2);
+        gInd_tileset += 9;
 
         GE[4].sprite = SPR_addSpriteExSafe(
             &spr_petala_big, 80, 70, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
@@ -373,8 +471,9 @@ int main(u16 hard) /************** MAIN **************/
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         SPR_setVRAMTileIndex(
             GE[4].sprite,
-            1471); // define uma posicao especifica para o GFX na VRAM
+            gInd_tileset); // define uma posicao especifica para o GFX na VRAM
         SPR_setAnimAndFrame(GE[4].sprite, 0, 3);
+        gInd_tileset += 9;
 
         GE[5].sprite = SPR_addSpriteExSafe(
             &spr_petala_big, 50, 110, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
@@ -382,8 +481,9 @@ int main(u16 hard) /************** MAIN **************/
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         SPR_setVRAMTileIndex(
             GE[5].sprite,
-            1481); // define uma posicao especifica para o GFX na VRAM
+            gInd_tileset); // define uma posicao especifica para o GFX na VRAM
         SPR_setAnimAndFrame(GE[5].sprite, 0, 8);
+        gInd_tileset += 9;
 
         GE[6].sprite = SPR_addSpriteExSafe(
             &spr_petala_big, 110, 150, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
@@ -391,8 +491,9 @@ int main(u16 hard) /************** MAIN **************/
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         SPR_setVRAMTileIndex(
             GE[6].sprite,
-            1491); // define uma posicao especifica para o GFX na VRAM
+            gInd_tileset); // define uma posicao especifica para o GFX na VRAM
         SPR_setAnimAndFrame(GE[6].sprite, 0, 12);
+        gInd_tileset += 9;
 
         GE[7].sprite = SPR_addSpriteExSafe(
             &spr_petala_big, 50, 160, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
@@ -400,8 +501,9 @@ int main(u16 hard) /************** MAIN **************/
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         SPR_setVRAMTileIndex(
             GE[7].sprite,
-            1501); // define uma posicao especifica para o GFX na VRAM
+            gInd_tileset); // define uma posicao especifica para o GFX na VRAM
         SPR_setAnimAndFrame(GE[7].sprite, 0, 1);
+        gInd_tileset += 9;
 
         GE[8].sprite = SPR_addSpriteExSafe(
             &spr_petala_big, 30, 140, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
@@ -409,8 +511,9 @@ int main(u16 hard) /************** MAIN **************/
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         SPR_setVRAMTileIndex(
             GE[8].sprite,
-            1511); // define uma posicao especifica para o GFX na VRAM
+            gInd_tileset); // define uma posicao especifica para o GFX na VRAM
         SPR_setAnimAndFrame(GE[8].sprite, 0, 14);
+        gInd_tileset += 9;
 
         GE[9].sprite = SPR_addSpriteExSafe(
             &spr_petala_big, 30, 160, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
@@ -418,75 +521,15 @@ int main(u16 hard) /************** MAIN **************/
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         SPR_setVRAMTileIndex(
             GE[9].sprite,
-            1521); // define uma posicao especifica para o GFX na VRAM
+            gInd_tileset); // define uma posicao especifica para o GFX na VRAM
+        // gInd_tileset += 9;
 
-        GE[10].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 70, 180, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        // SPR_setVRAMTileIndex(GE[10].sprite, 1521); //define uma posicao
-        // especifica para o GFX na VRAM
-
-        GE[11].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 170, 10, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setAnimAndFrame(GE[11].sprite, 0, 1);
-        GE[12].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 150, 30, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setAnimAndFrame(GE[12].sprite, 0, 3);
-        GE[13].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 180, 50, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setAnimAndFrame(GE[13].sprite, 0, 5);
-        GE[14].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 200, 70, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setAnimAndFrame(GE[14].sprite, 0, 7);
-        GE[15].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 230, 90, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setAnimAndFrame(GE[15].sprite, 0, 9);
-
-        GE[16].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 20, 20, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setVRAMTileIndex(
-            GE[16].sprite,
-            1441); // define uma posicao especifica para o GFX na VRAM
-        SPR_setAnimAndFrame(GE[16].sprite, 0, 6);
-
-        GE[17].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 270, 110, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setAnimAndFrame(GE[17].sprite, 0, 1);
-        GE[18].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 250, 130, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setAnimAndFrame(GE[18].sprite, 0, 3);
-        GE[19].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 280, 200, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setAnimAndFrame(GE[19].sprite, 0, 5);
-        GE[20].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 240, 15, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setAnimAndFrame(GE[20].sprite, 0, 7);
-        GE[21].sprite = SPR_addSpriteExSafe(
-            &spr_petala_big, 300, 180, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setAnimAndFrame(GE[21].sprite, 0, 7);
+        if (IAP2)
+          GE[10].sprite = SPR_addSprite(&spr_petala_big, 8 << 3, 22 << 3,
+                                        TILE_ATTR(PAL3, TRUE, FALSE, FALSE));
+        else
+          GE[10].sprite = SPR_addSprite(&spr_petala_big, 8 << 3, 19 << 3,
+                                        TILE_ATTR(PAL3, TRUE, FALSE, FALSE));
 
         // Posicao Inicial Aleatoria das Petalas
         for (int i = 0; i <= 21; i++) {
@@ -522,74 +565,44 @@ int main(u16 hard) /************** MAIN **************/
             PetalaPX[i] = 142;
             PetalaPY[i] = 42;
           }
-          if (i == 10) {
-            PetalaPX[i] = 242;
-            PetalaPY[i] = 37;
-          }
-          if (i == 11) {
-            PetalaPX[i] = 86;
-            PetalaPY[i] = 78;
-          }
-          if (i == 12) {
-            PetalaPX[i] = 188;
-            PetalaPY[i] = 130;
-          }
-          if (i == 13) {
-            PetalaPX[i] = 174;
-            PetalaPY[i] = 185;
-          }
-          if (i == 14) {
-            PetalaPX[i] = 319;
-            PetalaPY[i] = 222;
-          }
-          if (i == 15) {
-            PetalaPX[i] = 45;
-            PetalaPY[i] = 213;
-          }
-          if (i == 16) {
-            PetalaPX[i] = 175;
-            PetalaPY[i] = 50;
-          }
-          if (i == 17) {
-            PetalaPX[i] = 265;
-            PetalaPY[i] = 136;
-          }
-          if (i == 18) {
-            PetalaPX[i] = 128;
-            PetalaPY[i] = 133;
-          }
-          if (i == 19) {
-            PetalaPX[i] = 145;
-            PetalaPY[i] = 126;
-          }
-          if (i == 20) {
-            PetalaPX[i] = 60;
-            PetalaPY[i] = 93;
-          }
-          if (i == 21) {
-            PetalaPX[i] = 70;
-            PetalaPY[i] = 20;
-          }
+          /*if(i==10){ PetalaPX[i]=242; PetalaPY[i]= 37; }
+          if(i==11){ PetalaPX[i]= 86; PetalaPY[i]= 78; }
+          if(i==12){ PetalaPX[i]=188; PetalaPY[i]=130; }
+          if(i==13){ PetalaPX[i]=174; PetalaPY[i]=185; }
+          if(i==14){ PetalaPX[i]=319; PetalaPY[i]=222; }
+          if(i==15){ PetalaPX[i]= 45; PetalaPY[i]=213; }
+          if(i==16){ PetalaPX[i]=175; PetalaPY[i]= 50; }
+          if(i==17){ PetalaPX[i]=265; PetalaPY[i]=136; }
+          if(i==18){ PetalaPX[i]=128; PetalaPY[i]=133; }
+          if(i==19){ PetalaPX[i]=145; PetalaPY[i]=126; }
+          if(i==20){ PetalaPX[i]= 60; PetalaPY[i]= 93; }
+          if(i==21){ PetalaPX[i]= 70; PetalaPY[i]= 20; }*/
         }
 
         // Todas as Petalas acima do algarismo romano 'II' /*samsho2*/
-        for (int i = 2; i <= 21; i++) {
+        for (int i = 2; i <= 9; i++) {
           SPR_setDepth(GE[i].sprite, 1);
         }
       }
 
+      if (gFrames == 2) {
+        VDP_drawText("NEMEZES EDITION", 2, 2);
+        VDP_drawText("PLAYER 1 VS PLAYER 2", 11, 20);
+        VDP_drawText("PLAYER 1 VS CPU", 11, 23);
+      }
+
       // Movimenta as Petalas
-      for (int i = 2; i <= 21; i++) {
+      for (int i = 2; i <= 9; i++) {
         PetalaPX[i]--;
         PetalaPY[i]++;
         if (i == 1 || i == 2) {
           PetalaPX[i]--;
           PetalaPY[i]++;
         }
-        if (i == 5 || i == 10 || i == 15 || i == 20) {
+        if (i == 5 /*|| i==10 || i==15 || i==20*/) {
           PetalaPY[i]++;
         }
-        if (i == 6 || i == 11 || i == 16 || i == 21) {
+        if (i == 6 /*|| i==11 || i==16 || i==21*/) {
           if (gPing2 == 1) {
             PetalaPX[i]++;
           }
@@ -606,13 +619,29 @@ int main(u16 hard) /************** MAIN **************/
         SPR_setPosition(GE[i].sprite, PetalaPX[i], PetalaPY[i]);
       }
 
+      if (P[1].key_JOY_DOWN_status == 1 && gFrames > 5) {
+        IAP2 = TRUE;
+        SPR_setPosition(GE[10].sprite, 8 << 3, 22 << 3);
+        XGM_setPCM(P1_SFX, snd_cursor, sizeof(snd_cursor));
+        XGM_startPlayPCM(P1_SFX, 1, SOUND_PCM_CH2);
+      } else if (P[1].key_JOY_UP_status == 1 && gFrames > 5) {
+        IAP2 = FALSE;
+        SPR_setPosition(GE[10].sprite, 8 << 3, 19 << 3);
+        XGM_setPCM(P1_SFX, snd_cursor, sizeof(snd_cursor));
+        XGM_startPlayPCM(P1_SFX, 1, SOUND_PCM_CH2);
+      }
+
       if (P[1].key_JOY_START_status == 1 && gFrames > 5) {
+        XGM_setPCM(P1_SFX, snd_future_now, sizeof(snd_future_now));
+        XGM_startPlayPCM(P1_SFX, 1, SOUND_PCM_CH3);
+
         if (GE[1].sprite) {
           SPR_releaseSprite(GE[1].sprite);
           GE[1].sprite = NULL;
         }
         CLEAR_VDP();
         gFrames = 0;
+
         gRoom = 3;
       };
     }
@@ -633,6 +662,8 @@ int main(u16 hard) /************** MAIN **************/
         XGM_startPlay(music_char_select);
         XGM_isPlaying(); // FIX
 
+        fase = 1; // RESET DAS FASES
+
         cursorP1ConfirmFX = cursorConfirmTimer;
         cursorP2ConfirmFX = cursorConfirmTimer;
 
@@ -647,6 +678,12 @@ int main(u16 hard) /************** MAIN **************/
         P[2].id = 2;
         cursorP2_ID = 2; // gillius selecao inicial
 
+        cursorP1linha = 1;
+        cursorP1coluna = 1;
+
+        cursorP2linha = 1;
+        cursorP2coluna = 4;
+
         cursorP1ColorChoice = 1;
         cursorP2ColorChoice = 1;
 
@@ -659,25 +696,28 @@ int main(u16 hard) /************** MAIN **************/
         VDP_setTileMapEx(BG_B, bg_char_select_bgb.tilemap,
                          TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset), 0,
                          0, 0, 0, 40, 28, DMA_QUEUE);
-        VDP_setPalette(PAL0, bg_char_select_bgb.palette->data);
+        PAL_setPalette(PAL0, bg_char_select_bgb.palette->data, CPU);
         gInd_tileset += bg_char_select_bgb.tileset->numTile;
 
         VDP_loadTileSet(bg_char_select_bga.tileset, gInd_tileset, DMA);
         VDP_setTileMapEx(BG_A, bg_char_select_bga.tilemap,
                          TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
                          12, 19, 0, 0, 16, 8, DMA_QUEUE);
-        VDP_setPalette(PAL1, bg_char_select_bga.palette->data);
+        PAL_setPalette(PAL1, bg_char_select_bga.palette->data, CPU);
         gInd_tileset += bg_char_select_bga.tileset->numTile;
 
         // Cursores
-        GE[2].sprite = SPR_addSpriteExSafe(
-            &spr_char_sel_cursor_p2, 192, 148,
-            TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setVRAMTileIndex(
-            GE[2].sprite,
-            1461); // define uma posicao especifica para o GFX na VRAM
+        if (IAP2 == FALSE) {
+          GE[2].sprite = SPR_addSpriteExSafe(
+              &spr_char_sel_cursor_p2, 192, 148,
+              TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
+              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          SPR_setVRAMTileIndex(
+              GE[2].sprite,
+              1461); // define uma posicao especifica para o GFX na VRAM
+        }
+
         GE[1].sprite = SPR_addSpriteExSafe(
             &spr_char_sel_cursor_p1, 96, 148,
             TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
@@ -692,13 +732,17 @@ int main(u16 hard) /************** MAIN **************/
             &spr_haohmaru_001, 16, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        VDP_setPalette(PAL2, spr_haohmaru_001.palette->data);
-        GE[4].sprite = SPR_addSpriteExSafe(
-            &spr_gillius_001, 232, 16, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        VDP_setPalette(PAL3, spr_gillius_001.palette->data);
-        SPR_setHFlip(GE[4].sprite, TRUE);
+        PAL_setPalette(PAL2, spr_haohmaru_001.palette->data, CPU);
+
+        if (IAP2 == FALSE) {
+          GE[4].sprite = SPR_addSpriteExSafe(
+              &spr_gillius_001, 232, 16, TILE_ATTR(PAL3, FALSE, FALSE, FALSE),
+              1,
+              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          PAL_setPalette(PAL3, spr_gillius_001.palette->data, CPU);
+          SPR_setHFlip(GE[4].sprite, TRUE);
+        }
 
         // Lutadores
         GE[5].sprite = SPR_addSpriteExSafe(
@@ -706,12 +750,15 @@ int main(u16 hard) /************** MAIN **************/
             TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        GE[6].sprite = SPR_addSpriteExSafe(
-            &spr_gillius_100CS, 228, 124 - 8,
-            TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setHFlip(GE[6].sprite, TRUE);
+
+        if (IAP2 == FALSE) {
+          GE[6].sprite = SPR_addSpriteExSafe(
+              &spr_gillius_100CS, 228, 124 - 8,
+              TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          SPR_setHFlip(GE[6].sprite, TRUE);
+        }
       }
 
       // Tamanho do seletor, quantidade total de personagens (Colunas * Linhas)
@@ -758,37 +805,51 @@ int main(u16 hard) /************** MAIN **************/
         }
       }
 
-      if (cursorP2ConfirmFX == cursorConfirmTimer) {
-        if (P[2].key_JOY_RIGHT_status == 1) {
-          moverCursorP2 = 1;
-          if (cursorP2coluna < QtdeColunas) {
-            cursorP2coluna++;
-          } else {
-            cursorP2coluna = 1;
+      if (IAP2) {
+        /*if(cursorP2ConfirmFX==cursorConfirmTimer)
+        {
+            if(P[1].key_JOY_RIGHT_status==1){ moverCursorP2=1;
+        if(cursorP2coluna<QtdeColunas){cursorP2coluna++;}else{cursorP2coluna=1;}
+        } if(P[1].key_JOY_LEFT_status ==1){ moverCursorP2=1;
+        if(cursorP2coluna>1){cursorP2coluna--;}else{cursorP2coluna=QtdeColunas;}
+        } if(P[1].key_JOY_UP_status   ==1){ moverCursorP2=1;
+        if(cursorP2linha<QtdeLinhas){cursorP2linha++;}else{cursorP2linha=1;} }
+            if(P[1].key_JOY_DOWN_status ==1){ moverCursorP2=1;
+        if(cursorP2linha>1){cursorP2linha--;}else{cursorP2linha=QtdeLinhas;} }
+        }*/
+      } else {
+        if (cursorP2ConfirmFX == cursorConfirmTimer) {
+          if (P[2].key_JOY_RIGHT_status == 1) {
+            moverCursorP2 = 1;
+            if (cursorP2coluna < QtdeColunas) {
+              cursorP2coluna++;
+            } else {
+              cursorP2coluna = 1;
+            }
           }
-        }
-        if (P[2].key_JOY_LEFT_status == 1) {
-          moverCursorP2 = 1;
-          if (cursorP2coluna > 1) {
-            cursorP2coluna--;
-          } else {
-            cursorP2coluna = QtdeColunas;
+          if (P[2].key_JOY_LEFT_status == 1) {
+            moverCursorP2 = 1;
+            if (cursorP2coluna > 1) {
+              cursorP2coluna--;
+            } else {
+              cursorP2coluna = QtdeColunas;
+            }
           }
-        }
-        if (P[2].key_JOY_UP_status == 1) {
-          moverCursorP2 = 1;
-          if (cursorP2linha < QtdeLinhas) {
-            cursorP2linha++;
-          } else {
-            cursorP2linha = 1;
+          if (P[2].key_JOY_UP_status == 1) {
+            moverCursorP2 = 1;
+            if (cursorP2linha < QtdeLinhas) {
+              cursorP2linha++;
+            } else {
+              cursorP2linha = 1;
+            }
           }
-        }
-        if (P[2].key_JOY_DOWN_status == 1) {
-          moverCursorP2 = 1;
-          if (cursorP2linha > 1) {
-            cursorP2linha--;
-          } else {
-            cursorP2linha = QtdeLinhas;
+          if (P[2].key_JOY_DOWN_status == 1) {
+            moverCursorP2 = 1;
+            if (cursorP2linha > 1) {
+              cursorP2linha--;
+            } else {
+              cursorP2linha = QtdeLinhas;
+            }
           }
         }
       }
@@ -857,7 +918,7 @@ int main(u16 hard) /************** MAIN **************/
               1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_haohmaru_001.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_001.palette->data, CPU);
           GE[5].sprite = SPR_addSpriteExSafe(
               &spr_haohmaru_100CS, 8, 98 - 8,
               TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
@@ -869,7 +930,7 @@ int main(u16 hard) /************** MAIN **************/
               &spr_gillius_001, 16, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_gillius_001.palette->data);
+          PAL_setPalette(PAL2, spr_gillius_001.palette->data, CPU);
           GE[5].sprite = SPR_addSpriteExSafe(
               &spr_gillius_100CS, -14, 124 - 8,
               TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
@@ -931,7 +992,7 @@ int main(u16 hard) /************** MAIN **************/
               1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_haohmaru_001.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_001.palette->data, CPU);
           GE[6].sprite = SPR_addSpriteExSafe(
               &spr_haohmaru_100CS, 230, 98 - 8,
               TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
@@ -945,7 +1006,7 @@ int main(u16 hard) /************** MAIN **************/
               1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_gillius_001.palette->data);
+          PAL_setPalette(PAL3, spr_gillius_001.palette->data, CPU);
           GE[6].sprite = SPR_addSpriteExSafe(
               &spr_gillius_100CS, 228, 124 - 8,
               TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
@@ -976,6 +1037,13 @@ int main(u16 hard) /************** MAIN **************/
         SPR_setVRAMTileIndex(
             GE[1].sprite,
             1441); // define uma posicao especifica para o GFX na VRAM
+
+        // cursor da IA do Player 2
+        // GE[7].sprite = SPR_addSpriteExSafe(&spr_color_cursor, 69, 105,
+        // TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY |
+        // SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+        // SPR_FLAG_AUTO_SPRITE_ALLOC); SPR_setVRAMTileIndex(GE[7].sprite, 672);
+        // //define uma posicao especifica para o GFX na VRAM
       }
       if (cursorP1ConfirmFX < cursorConfirmTimer) {
         if (cursorP1ConfirmFX > 0) {
@@ -988,99 +1056,125 @@ int main(u16 hard) /************** MAIN **************/
               SPR_releaseSprite(GE[1].sprite);
               GE[1].sprite = NULL;
             }
-            GE[1].sprite = SPR_addSpriteExSafe(
-                &spr_color_cursor, 20, 89, TILE_ATTR(PAL0, FALSE, FALSE, FALSE),
-                1,
-                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+
+            if (IAP2 == FALSE) {
+              GE[1].sprite = SPR_addSpriteExSafe(
+                  &spr_color_cursor, 20, 89,
+                  TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
+                  SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                      SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+            }
           }
         } else {
-          // SELECAO DE COR!
-          u8 mudarcor = 0;
-          if (P[1].key_JOY_RIGHT_status == 1 && endP1Selection == 0) {
-            mudarcor = 1;
-            if (cursorP1ColorChoice < 8) {
-              cursorP1ColorChoice++;
-            } else {
-              cursorP1ColorChoice = 1;
-            }
-          }
-          if (P[1].key_JOY_LEFT_status == 1 && endP1Selection == 0) {
-            mudarcor = 1;
-            if (cursorP1ColorChoice > 1) {
-              cursorP1ColorChoice--;
-            } else {
-              cursorP1ColorChoice = 8;
-            }
-          }
-          if (mudarcor == 1) {
-            XGM_setPCM(P1_SFX, snd_cursor, sizeof(snd_cursor));
-            XGM_startPlayPCM(P1_SFX, 1, SOUND_PCM_CH3);
 
-            if (cursorP1_ID == 1) // haohmaru
-            {
-              if (cursorP1ColorChoice == 1) {
-                VDP_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data);
-              }
-              if (cursorP1ColorChoice == 2) {
-                VDP_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data);
-              }
-              if (cursorP1ColorChoice == 3) {
-                VDP_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data);
-              }
-              if (cursorP1ColorChoice == 4) {
-                VDP_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data);
-              }
-              if (cursorP1ColorChoice == 5) {
-                VDP_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data);
-              }
-              if (cursorP1ColorChoice == 6) {
-                VDP_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data);
-              }
-              if (cursorP1ColorChoice == 7) {
-                VDP_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data);
-              }
-              if (cursorP1ColorChoice == 8) {
-                VDP_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data);
+          // SELECAO ON OFF IA DO PLAYER 2
+          // if (P[1].key_JOY_UP_status == 1 && endP1Selection == 0) IAP2 = 1;
+          // if (P[1].key_JOY_DOWN_status == 1 && endP1Selection == 0) IAP2 = 0;
+
+          // if (IAP2) SPR_setPosition(GE[7].sprite,69,105);
+          // else SPR_setPosition(GE[7].sprite,69+8,105);
+
+          if (IAP2) {
+            endP1Selection = 1;
+          } else {
+            // SELECAO DE COR!
+            u8 mudarcor = 0;
+            if (P[1].key_JOY_RIGHT_status == 1 && endP1Selection == 0) {
+              mudarcor = 1;
+              if (cursorP1ColorChoice < 8) {
+                cursorP1ColorChoice++;
+              } else {
+                cursorP1ColorChoice = 1;
               }
             }
-            if (cursorP1_ID == 2) // gillius
-            {
-              if (cursorP1ColorChoice == 1) {
-                VDP_setPalette(PAL2, spr_gillius_pal1.palette->data);
-              }
-              if (cursorP1ColorChoice == 2) {
-                VDP_setPalette(PAL2, spr_gillius_pal2.palette->data);
-              }
-              if (cursorP1ColorChoice == 3) {
-                VDP_setPalette(PAL2, spr_gillius_pal3.palette->data);
-              }
-              if (cursorP1ColorChoice == 4) {
-                VDP_setPalette(PAL2, spr_gillius_pal4.palette->data);
-              }
-              if (cursorP1ColorChoice == 5) {
-                VDP_setPalette(PAL2, spr_gillius_pal5.palette->data);
-              }
-              if (cursorP1ColorChoice == 6) {
-                VDP_setPalette(PAL2, spr_gillius_pal6.palette->data);
-              }
-              if (cursorP1ColorChoice == 7) {
-                VDP_setPalette(PAL2, spr_gillius_pal7.palette->data);
-              }
-              if (cursorP1ColorChoice == 8) {
-                VDP_setPalette(PAL2, spr_gillius_pal8.palette->data);
+            if (P[1].key_JOY_LEFT_status == 1 && endP1Selection == 0) {
+              mudarcor = 1;
+              if (cursorP1ColorChoice > 1) {
+                cursorP1ColorChoice--;
+              } else {
+                cursorP1ColorChoice = 8;
               }
             }
-            // Movimentacao de Sprite do cursor de cor
-            SPR_setPosition(GE[1].sprite, 20 + ((cursorP1ColorChoice - 1) * 8),
-                            89);
+            if (mudarcor == 1) {
+              XGM_setPCM(P1_SFX, snd_cursor, sizeof(snd_cursor));
+              XGM_startPlayPCM(P1_SFX, 1, SOUND_PCM_CH3);
+
+              if (cursorP1_ID == 1) // haohmaru
+              {
+                if (cursorP1ColorChoice == 1) {
+                  PAL_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 2) {
+                  PAL_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 3) {
+                  PAL_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 4) {
+                  PAL_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 5) {
+                  PAL_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 6) {
+                  PAL_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 7) {
+                  PAL_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 8) {
+                  PAL_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data, CPU);
+                }
+              }
+              if (cursorP1_ID == 2) // gillius
+              {
+                if (cursorP1ColorChoice == 1) {
+                  PAL_setPalette(PAL2, spr_gillius_pal1.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 2) {
+                  PAL_setPalette(PAL2, spr_gillius_pal2.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 3) {
+                  PAL_setPalette(PAL2, spr_gillius_pal3.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 4) {
+                  PAL_setPalette(PAL2, spr_gillius_pal4.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 5) {
+                  PAL_setPalette(PAL2, spr_gillius_pal5.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 6) {
+                  PAL_setPalette(PAL2, spr_gillius_pal6.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 7) {
+                  PAL_setPalette(PAL2, spr_gillius_pal7.palette->data, CPU);
+                }
+                if (cursorP1ColorChoice == 8) {
+                  PAL_setPalette(PAL2, spr_gillius_pal8.palette->data, CPU);
+                }
+              }
+              // Movimentacao de Sprite do cursor de cor
+              SPR_setPosition(GE[1].sprite,
+                              20 + ((cursorP1ColorChoice - 1) * 8), 89);
+            }
           }
+
           if (endP1Selection == 0 &&
               (P[1].key_JOY_A_status == 1 || P[1].key_JOY_B_status == 1 ||
                P[1].key_JOY_C_status == 1 || P[1].key_JOY_X_status == 1 ||
                P[1].key_JOY_Y_status == 1 || P[1].key_JOY_Z_status == 1 ||
                P[1].key_JOY_START_status == 1 ||
                P[1].key_JOY_MODE_status == 1)) {
+
+            P[1].key_JOY_A_status = 0;
+            P[1].key_JOY_B_status = 0;
+            P[1].key_JOY_C_status = 0;
+            P[1].key_JOY_X_status = 0;
+            P[1].key_JOY_Y_status = 0;
+            P[1].key_JOY_Z_status = 0;
+            P[1].key_JOY_START_status = 0;
+            P[1].key_JOY_MODE_status = 0;
+
             endP1Selection = 1;
 
             XGM_setPCM(P1_SFX, snd_confirm, sizeof(snd_confirm));
@@ -1095,149 +1189,178 @@ int main(u16 hard) /************** MAIN **************/
                 89, TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
                 SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                     SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+
+            // if (GE[7].sprite){ SPR_releaseSprite(GE[7].sprite); GE[7].sprite
+            // = NULL; }
+
+            // if (IAP2) GE[7].sprite =
+            // SPR_addSpriteExSafe(&spr_color_cursor_static,  69, 105,
+            // TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY
+            // | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+            // SPR_FLAG_AUTO_SPRITE_ALLOC);
+            // else GE[7].sprite = SPR_addSpriteExSafe(&spr_color_cursor_static,
+            // 69+8, 105, TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
+            // SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+            // SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
           }
         }
       }
 
       // Seleciona o Char, P2
-      if (cursorP2ConfirmFX == cursorConfirmTimer &&
-          (P[2].key_JOY_A_status == 1 || P[2].key_JOY_B_status == 1 ||
-           P[2].key_JOY_C_status == 1 || P[2].key_JOY_X_status == 1 ||
-           P[2].key_JOY_Y_status == 1 || P[2].key_JOY_Z_status == 1 ||
-           P[2].key_JOY_START_status == 1 || P[2].key_JOY_MODE_status == 1)) {
-        cursorP2ConfirmFX--;
-        if (GE[2].sprite) {
-          SPR_releaseSprite(GE[2].sprite);
-          GE[2].sprite = NULL;
+      if (IAP2) {
+        if (endP1Selection) {
+          cursorP2ColorChoice = cursorP1ColorChoice++;
+          if (cursorP2ColorChoice > 8)
+            cursorP2ColorChoice = 1;
+
+          P[2].id = P2fase[fase];
+          P[1].palID = cursorP1ColorChoice;
+          P[2].palID = cursorP2ColorChoice;
+
+          endP2Selection = 1;
         }
-        GE[2].sprite = SPR_addSpriteExSafe(
-            &spr_cursor_confirm, 96 + ((cursorP2coluna - 1) * tamanhoDoIcone),
-            148 + ((cursorP2linha - 1) * tamanhoDoIcone) + 4,
-            TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
-            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        SPR_setVRAMTileIndex(
-            GE[2].sprite,
-            1461); // define uma posicao especifica para o GFX na VRAM
-      }
-      if (cursorP2ConfirmFX < cursorConfirmTimer) {
-        if (cursorP2ConfirmFX > 0) {
+      } else {
+        if (cursorP2ConfirmFX == cursorConfirmTimer &&
+            (P[2].key_JOY_A_status == 1 || P[2].key_JOY_B_status == 1 ||
+             P[2].key_JOY_C_status == 1 || P[2].key_JOY_X_status == 1 ||
+             P[2].key_JOY_Y_status == 1 || P[2].key_JOY_Z_status == 1 ||
+             P[2].key_JOY_START_status == 1 || P[2].key_JOY_MODE_status == 1)) {
           cursorP2ConfirmFX--;
-          if (cursorP2ConfirmFX == 1) {
-            XGM_setPCM(P2_SFX, snd_confirm, sizeof(snd_confirm));
-            XGM_startPlayPCM(P2_SFX, 1, SOUND_PCM_CH4);
-
-            if (GE[2].sprite) {
-              SPR_releaseSprite(GE[2].sprite);
-              GE[2].sprite = NULL;
-            }
-            GE[2].sprite = SPR_addSpriteExSafe(
-                &spr_color_cursor, 237, 89,
-                TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
-                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          if (GE[2].sprite) {
+            SPR_releaseSprite(GE[2].sprite);
+            GE[2].sprite = NULL;
           }
-        } else {
-          // SELECAO DE COR!
-          u8 mudarcor = 0;
-          if (P[2].key_JOY_RIGHT_status == 1 && endP2Selection == 0) {
-            mudarcor = 1;
-            if (cursorP2ColorChoice < 8) {
-              cursorP2ColorChoice++;
-            } else {
-              cursorP2ColorChoice = 1;
-            }
-          }
-          if (P[2].key_JOY_LEFT_status == 1 && endP2Selection == 0) {
-            mudarcor = 1;
-            if (cursorP2ColorChoice > 1) {
-              cursorP2ColorChoice--;
-            } else {
-              cursorP2ColorChoice = 8;
-            }
-          }
-          if (mudarcor == 1) {
-            XGM_setPCM(P2_SFX, snd_cursor, sizeof(snd_cursor));
-            XGM_startPlayPCM(P2_SFX, 1, SOUND_PCM_CH4);
+          GE[2].sprite = SPR_addSpriteExSafe(
+              &spr_cursor_confirm, 96 + ((cursorP2coluna - 1) * tamanhoDoIcone),
+              148 + ((cursorP2linha - 1) * tamanhoDoIcone) + 4,
+              TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
+              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          SPR_setVRAMTileIndex(
+              GE[2].sprite,
+              1461); // define uma posicao especifica para o GFX na VRAM
+        }
+        if (cursorP2ConfirmFX < cursorConfirmTimer) {
+          if (cursorP2ConfirmFX > 0) {
+            cursorP2ConfirmFX--;
+            if (cursorP2ConfirmFX == 1) {
+              XGM_setPCM(P2_SFX, snd_confirm, sizeof(snd_confirm));
+              XGM_startPlayPCM(P2_SFX, 1, SOUND_PCM_CH4);
 
-            if (cursorP2_ID == 1) // haohmaru
-            {
-              if (cursorP2ColorChoice == 1) {
-                VDP_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data);
+              if (GE[2].sprite) {
+                SPR_releaseSprite(GE[2].sprite);
+                GE[2].sprite = NULL;
               }
-              if (cursorP2ColorChoice == 2) {
-                VDP_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data);
-              }
-              if (cursorP2ColorChoice == 3) {
-                VDP_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data);
-              }
-              if (cursorP2ColorChoice == 4) {
-                VDP_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data);
-              }
-              if (cursorP2ColorChoice == 5) {
-                VDP_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data);
-              }
-              if (cursorP2ColorChoice == 6) {
-                VDP_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data);
-              }
-              if (cursorP2ColorChoice == 7) {
-                VDP_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data);
-              }
-              if (cursorP2ColorChoice == 8) {
-                VDP_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data);
+              GE[2].sprite = SPR_addSpriteExSafe(
+                  &spr_color_cursor, 237, 89,
+                  TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
+                  SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                      SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+            }
+          } else {
+            // SELECAO DE COR!
+            u8 mudarcor = 0;
+            if (P[2].key_JOY_RIGHT_status == 1 && endP2Selection == 0) {
+              mudarcor = 1;
+              if (cursorP2ColorChoice < 8) {
+                cursorP2ColorChoice++;
+              } else {
+                cursorP2ColorChoice = 1;
               }
             }
-            if (cursorP2_ID == 2) // gillius
-            {
-              if (cursorP2ColorChoice == 1) {
-                VDP_setPalette(PAL3, spr_gillius_pal1.palette->data);
-              }
-              if (cursorP2ColorChoice == 2) {
-                VDP_setPalette(PAL3, spr_gillius_pal2.palette->data);
-              }
-              if (cursorP2ColorChoice == 3) {
-                VDP_setPalette(PAL3, spr_gillius_pal3.palette->data);
-              }
-              if (cursorP2ColorChoice == 4) {
-                VDP_setPalette(PAL3, spr_gillius_pal4.palette->data);
-              }
-              if (cursorP2ColorChoice == 5) {
-                VDP_setPalette(PAL3, spr_gillius_pal5.palette->data);
-              }
-              if (cursorP2ColorChoice == 6) {
-                VDP_setPalette(PAL3, spr_gillius_pal6.palette->data);
-              }
-              if (cursorP2ColorChoice == 7) {
-                VDP_setPalette(PAL3, spr_gillius_pal7.palette->data);
-              }
-              if (cursorP2ColorChoice == 8) {
-                VDP_setPalette(PAL3, spr_gillius_pal8.palette->data);
+            if (P[2].key_JOY_LEFT_status == 1 && endP2Selection == 0) {
+              mudarcor = 1;
+              if (cursorP2ColorChoice > 1) {
+                cursorP2ColorChoice--;
+              } else {
+                cursorP2ColorChoice = 8;
               }
             }
-            // Movimentacao de Sprite do cursor de cor
-            SPR_setPosition(GE[2].sprite, 237 + ((cursorP2ColorChoice - 1) * 8),
-                            89);
-          }
-          if (endP2Selection == 0 &&
-              (P[2].key_JOY_A_status == 1 || P[2].key_JOY_B_status == 1 ||
-               P[2].key_JOY_C_status == 1 || P[2].key_JOY_X_status == 1 ||
-               P[2].key_JOY_Y_status == 1 || P[2].key_JOY_Z_status == 1 ||
-               P[2].key_JOY_START_status == 1 ||
-               P[2].key_JOY_MODE_status == 1)) {
-            endP2Selection = 1;
 
-            XGM_setPCM(P2_SFX, snd_confirm, sizeof(snd_confirm));
-            XGM_startPlayPCM(P2_SFX, 1, SOUND_PCM_CH4);
+            if (mudarcor == 1) {
+              XGM_setPCM(P2_SFX, snd_cursor, sizeof(snd_cursor));
+              XGM_startPlayPCM(P2_SFX, 1, SOUND_PCM_CH4);
 
-            if (GE[2].sprite) {
-              SPR_releaseSprite(GE[2].sprite);
-              GE[2].sprite = NULL;
+              if (cursorP2_ID == 1) // haohmaru
+              {
+                if (cursorP2ColorChoice == 1) {
+                  PAL_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 2) {
+                  PAL_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 3) {
+                  PAL_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 4) {
+                  PAL_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 5) {
+                  PAL_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 6) {
+                  PAL_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 7) {
+                  PAL_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 8) {
+                  PAL_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data, CPU);
+                }
+              }
+              if (cursorP2_ID == 2) // gillius
+              {
+                if (cursorP2ColorChoice == 1) {
+                  PAL_setPalette(PAL3, spr_gillius_pal1.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 2) {
+                  PAL_setPalette(PAL3, spr_gillius_pal2.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 3) {
+                  PAL_setPalette(PAL3, spr_gillius_pal3.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 4) {
+                  PAL_setPalette(PAL3, spr_gillius_pal4.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 5) {
+                  PAL_setPalette(PAL3, spr_gillius_pal5.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 6) {
+                  PAL_setPalette(PAL3, spr_gillius_pal6.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 7) {
+                  PAL_setPalette(PAL3, spr_gillius_pal7.palette->data, CPU);
+                }
+                if (cursorP2ColorChoice == 8) {
+                  PAL_setPalette(PAL3, spr_gillius_pal8.palette->data, CPU);
+                }
+              }
+              // Movimentacao de Sprite do cursor de cor
+              SPR_setPosition(GE[2].sprite,
+                              237 + ((cursorP2ColorChoice - 1) * 8), 89);
             }
-            GE[2].sprite = SPR_addSpriteExSafe(
-                &spr_color_cursor_static, 237 + ((cursorP2ColorChoice - 1) * 8),
-                89, TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
-                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+            if (endP2Selection == 0 &&
+                (P[2].key_JOY_A_status == 1 || P[2].key_JOY_B_status == 1 ||
+                 P[2].key_JOY_C_status == 1 || P[2].key_JOY_X_status == 1 ||
+                 P[2].key_JOY_Y_status == 1 || P[2].key_JOY_Z_status == 1 ||
+                 P[2].key_JOY_START_status == 1 ||
+                 P[2].key_JOY_MODE_status == 1)) {
+              endP2Selection = 1;
+
+              XGM_setPCM(P2_SFX, snd_confirm, sizeof(snd_confirm));
+              XGM_startPlayPCM(P2_SFX, 1, SOUND_PCM_CH4);
+
+              if (GE[2].sprite) {
+                SPR_releaseSprite(GE[2].sprite);
+                GE[2].sprite = NULL;
+              }
+              GE[2].sprite = SPR_addSpriteExSafe(
+                  &spr_color_cursor_static,
+                  237 + ((cursorP2ColorChoice - 1) * 8), 89,
+                  TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
+                  SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                      SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+            }
           }
         }
       }
@@ -1273,7 +1396,11 @@ int main(u16 hard) /************** MAIN **************/
         }
         CLEAR_VDP();
         gFrames = 0;
-        gRoom = 4;
+
+        if (IAP2)
+          gRoom = 101;
+        else
+          gRoom = 4;
       }
     }
 
@@ -1290,27 +1417,27 @@ int main(u16 hard) /************** MAIN **************/
         VDP_setTileMapEx(BG_B, bg_stage_select_bgb.tilemap,
                          TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset), 0,
                          0, 0, 0, 40, 28, DMA_QUEUE);
-        VDP_setPalette(PAL0, bg_stage_select_bgb.palette->data);
+        PAL_setPalette(PAL0, bg_stage_select_bgb.palette->data, CPU);
         gInd_tileset += bg_stage_select_bgb.tileset->numTile;
 
         VDP_loadTileSet(bg_stage1_select_bga.tileset, gInd_tileset, DMA);
         VDP_setTileMapEx(BG_A, bg_stage1_select_bga.tilemap,
                          TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
                          13, 11, 0, 0, 16, 8, DMA_QUEUE);
-        VDP_setPalette(PAL1, bg_stage1_select_bga.palette->data);
-        // gInd_tileset += bg_stage1_select_bga.tileset->numTile;
+        PAL_setPalette(PAL1, bg_stage1_select_bga.palette->data, CPU);
+        gInd_tileset += bg_stage1_select_bga.tileset->numTile;
 
         // Elementos Graficos
         GE[1].sprite = SPR_addSpriteExSafe(
             &spr_BG_desc1, 16, 16, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        VDP_setPalette(PAL3, spr_BG_desc1.palette->data);
+        PAL_setPalette(PAL3, spr_BG_desc1.palette->data, CPU);
         GE[2].sprite = SPR_addSpriteExSafe(
             &kuroko_shoulder, 104, 128, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        VDP_setPalette(PAL2, kuroko_shoulder.palette->data);
+        PAL_setPalette(PAL2, kuroko_shoulder.palette->data, CPU);
         GE[3].sprite = SPR_addSpriteExSafe(
             &spr_stage_sel_icon, 282, 168, TILE_ATTR(PAL0, FALSE, FALSE, FALSE),
             1,
@@ -1359,39 +1486,39 @@ int main(u16 hard) /************** MAIN **************/
               &spr_BG_desc1, 16, 16, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_BG_desc1.palette->data);
+          PAL_setPalette(PAL3, spr_BG_desc1.palette->data, CPU);
 
           VDP_loadTileSet(bg_stage1_select_bga.tileset, gInd_tileset, DMA);
           VDP_setTileMapEx(BG_A, bg_stage1_select_bga.tilemap,
                            TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
                            13, 11, 0, 0, 16, 8, DMA_QUEUE);
-          VDP_setPalette(PAL1, bg_stage1_select_bga.palette->data);
+          PAL_setPalette(PAL1, bg_stage1_select_bga.palette->data, CPU);
         }
         if (gBG_Choice == 2) {
           GE[1].sprite = SPR_addSpriteExSafe(
               &spr_BG_desc2, 16, 16, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_BG_desc1.palette->data);
+          PAL_setPalette(PAL3, spr_BG_desc1.palette->data, CPU);
 
           VDP_loadTileSet(bg_stage2_select_bga.tileset, gInd_tileset, DMA);
           VDP_setTileMapEx(BG_A, bg_stage2_select_bga.tilemap,
                            TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
                            13, 11, 0, 0, 16, 8, DMA_QUEUE);
-          VDP_setPalette(PAL1, bg_stage2_select_bga.palette->data);
+          PAL_setPalette(PAL1, bg_stage2_select_bga.palette->data, CPU);
         }
         if (gBG_Choice == 3) {
           GE[1].sprite = SPR_addSpriteExSafe(
               &spr_BG_desc3, 16, 16, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_BG_desc1.palette->data);
+          PAL_setPalette(PAL3, spr_BG_desc1.palette->data, CPU);
 
           VDP_loadTileSet(bg_stage3_select_bga.tileset, gInd_tileset, DMA);
           VDP_setTileMapEx(BG_A, bg_stage3_select_bga.tilemap,
                            TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
                            13, 11, 0, 0, 16, 8, DMA_QUEUE);
-          VDP_setPalette(PAL1, bg_stage3_select_bga.palette->data);
+          PAL_setPalette(PAL1, bg_stage3_select_bga.palette->data, CPU);
         }
       }
 
@@ -1419,19 +1546,16 @@ int main(u16 hard) /************** MAIN **************/
         9) // DESCOMPRESSION
            // -------------------------------------------------------------
     {
-      GE[1].sprite = SPR_addSpriteExSafe(
-          &spr_point, 0, 225, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-              SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-      GE[2].sprite = SPR_addSpriteExSafe(
-          &spr_point, 0, 225, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-              SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-      GE[3].sprite = SPR_addSpriteExSafe(
-          &spr_point, 0, 225, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-              SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+      GE[1].sprite = SPR_addSprite(&spr_point, 0, 225,
+                                   TILE_ATTR(PAL3, FALSE, FALSE, FALSE));
+      GE[2].sprite = SPR_addSprite(&spr_point, 0, 225,
+                                   TILE_ATTR(PAL3, FALSE, FALSE, FALSE));
+      GE[3].sprite = SPR_addSprite(&spr_point, 0, 225,
+                                   TILE_ATTR(PAL3, FALSE, FALSE, FALSE));
 
+      // KLog_S1("gframes = ", gFrames);
+
+      // if (gFrames == 2) SPR_end();
       if (gFrames == 20) {
         if (GE[1].sprite) {
           SPR_releaseSprite(GE[1].sprite);
@@ -1461,41 +1585,45 @@ int main(u16 hard) /************** MAIN **************/
       if (gFrames <= 355) {
         FUNCAO_ROUND_INIT(); // Rotina de Letreiramento de inicio dos rounds
       } else {
-        FUNCAO_RELOGIO();           // HUD relogio
-        FUNCAO_BARRAS_DE_ENERGIA(); // HUD barras
-      }
-
-      // libera os graficos dos sparks
-      if (Spark1_countDown > 0) {
-        Spark1_countDown--;
-        if (Spark1_countDown == 1) {
-          SPR_releaseSprite(Spark[1]);
-          Spark[1] = NULL;
-        }
-      }
-      if (Spark2_countDown > 0) {
-        Spark2_countDown--;
-        if (Spark2_countDown == 1) {
-          SPR_releaseSprite(Spark[2]);
-          Spark[2] = NULL;
+        if (pausarJogo == 0) {
+          FUNCAO_RELOGIO();           // HUD relogio
+          FUNCAO_BARRAS_DE_ENERGIA(); // HUD barras
         }
       }
 
       FUNCAO_INPUT_SYSTEM(); // Verifica os joysticks
 
-      FUNCAO_ANIMACAO(); // Atualiza animacao
+      if (pausarJogo == 0) {
+        // libera os graficos dos sparks
+        if (Spark1_countDown > 0) {
+          Spark1_countDown--;
+          if (Spark1_countDown == 1) {
+            SPR_releaseSprite(Spark[1]);
+            Spark[1] = NULL;
+          }
+        }
+        if (Spark2_countDown > 0) {
+          Spark2_countDown--;
+          if (Spark2_countDown == 1) {
+            SPR_releaseSprite(Spark[2]);
+            Spark[2] = NULL;
+          }
+        }
 
-      FUNCAO_FSM(); // FSM = Finite State Machine (Maquina de Estados)
+        FUNCAO_ANIMACAO(); // Atualiza animacao
 
-      FUNCAO_PHYSICS(); // Funcoes de Fisica
+        FUNCAO_FSM(); // FSM = Finite State Machine (Maquina de Estados)
 
-      FUNCAO_CAMERA_BGANIM();
+        FUNCAO_PHYSICS(); // Funcoes de Fisica
 
-      FUNCAO_SAMSHOFX(); // Efeitos do jogo SS2
+        FUNCAO_CAMERA_BGANIM();
 
-      if (gDebug == 1) {
-        FUNCAO_DEBUG();
-      } // Debug
+        FUNCAO_SAMSHOFX(); // Efeitos do jogo SS2
+
+        if (gDebug == 1) {
+          FUNCAO_DEBUG();
+        } // Debug
+      }
     }
 
     if (gRoom ==
@@ -1511,22 +1639,20 @@ int main(u16 hard) /************** MAIN **************/
         VDP_setHorizontalScroll(BG_B, gScrollValue);
 
         // BACKGROUND
-        if (gBG_Choice == 1) {
-          VDP_loadTileSet(gfx_bgb1_win_screen.tileset, gInd_tileset, DMA);
-          VDP_setTileMapEx(BG_B, gfx_bgb1_win_screen.tilemap,
-                           TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset),
-                           0, 3, 0, 0, 40, 22, DMA_QUEUE);
-          VDP_setPalette(PAL0, gfx_bgb1_win_screen.palette->data);
-          gInd_tileset += gfx_bgb1_win_screen.tileset->numTile;
+        /*if(gBG_Choice==1)
+        {
+                VDP_loadTileSet(gfx_bgb1_win_screen.tileset,gInd_tileset,DMA);
+                VDP_setTileMapEx(BG_B,gfx_bgb1_win_screen.tilemap,TILE_ATTR_FULL(PAL0,0,FALSE,FALSE,gInd_tileset),0,3,0,0,40,22,DMA_QUEUE);
+                PAL_setPalette(PAL0, gfx_bgb1_win_screen.palette->data,CPU);
+                gInd_tileset += gfx_bgb1_win_screen.tileset->numTile;
         }
-        if (gBG_Choice == 2) {
-          VDP_loadTileSet(gfx_bgb2_win_screen.tileset, gInd_tileset, DMA);
-          VDP_setTileMapEx(BG_B, gfx_bgb2_win_screen.tilemap,
-                           TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset),
-                           0, 3, 0, 0, 40, 22, DMA_QUEUE);
-          VDP_setPalette(PAL0, gfx_bgb2_win_screen.palette->data);
-          gInd_tileset += gfx_bgb2_win_screen.tileset->numTile;
-        }
+        if(gBG_Choice==2)
+        {
+                VDP_loadTileSet(gfx_bgb2_win_screen.tileset,gInd_tileset,DMA);
+                VDP_setTileMapEx(BG_B,gfx_bgb2_win_screen.tilemap,TILE_ATTR_FULL(PAL0,0,FALSE,FALSE,gInd_tileset),0,3,0,0,40,22,DMA_QUEUE);
+                PAL_setPalette(PAL0, gfx_bgb2_win_screen.palette->data,CPU);
+                gInd_tileset += gfx_bgb2_win_screen.tileset->numTile;
+        }*/
 
         // WINNER
         if (gWinnerID == 1) // haohmaru
@@ -1535,16 +1661,15 @@ int main(u16 hard) /************** MAIN **************/
           VDP_setTileMapEx(BG_A, bg_win_haohmaru_bga.tilemap,
                            TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
                            0, 0, 0, 0, 40, 28, DMA_QUEUE);
-          VDP_setPalette(PAL1, bg_win_haohmaru_bga.palette->data);
+          PAL_setPalette(PAL1, bg_win_haohmaru_bga.palette->data, CPU);
           gInd_tileset += bg_win_haohmaru_bga.tileset->numTile;
-        }
-        if (gWinnerID == 2) // gillius
+        } else if (gWinnerID == 2) // gillius
         {
           VDP_loadTileSet(bg_win_gillius_bga.tileset, gInd_tileset, DMA);
           VDP_setTileMapEx(BG_A, bg_win_gillius_bga.tilemap,
                            TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
                            0, 0, 0, 0, 40, 28, DMA_QUEUE);
-          VDP_setPalette(PAL1, bg_win_gillius_bga.palette->data);
+          PAL_setPalette(PAL1, bg_win_gillius_bga.palette->data, CPU);
           gInd_tileset += bg_win_gillius_bga.tileset->numTile;
         }
 
@@ -1575,9 +1700,8 @@ int main(u16 hard) /************** MAIN **************/
                 SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                     SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
           }
-          VDP_setPalette(PAL3, spr_haohmaru_win_phrase1A.palette->data);
-        }
-        if (gWinnerID == 2) // gillius
+          PAL_setPalette(PAL3, spr_haohmaru_win_phrase1A.palette->data, CPU);
+        } else if (gWinnerID == 2) // gillius
         {
           if (gPing2 == 0) {
             GE[1].sprite = SPR_addSpriteExSafe(
@@ -1603,7 +1727,7 @@ int main(u16 hard) /************** MAIN **************/
                 SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                     SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
           }
-          VDP_setPalette(PAL3, spr_gillius_win_phrase1A.palette->data);
+          PAL_setPalette(PAL3, spr_gillius_win_phrase1A.palette->data, CPU);
         }
 
         // Continue; Rematch
@@ -1670,6 +1794,306 @@ int main(u16 hard) /************** MAIN **************/
           gDescompressionExit = 10;
         }
       };
+    }
+
+    if (gRoom ==
+        100) // AFTER MATCH CONTRA A CPU
+             // -----------------------------------------------------------
+    {
+      FUNCAO_INPUT_SYSTEM(); // Verifica os joysticks
+
+      if (gFrames == 1) {
+        XGM_stopPlay();
+
+        gContinueOption = 1;
+        gInd_tileset = 1;
+        gScrollValue = 0;
+        VDP_setHorizontalScroll(BG_B, gScrollValue);
+
+        fase++;
+
+        // WINNER
+        if (gWinnerID == 1) // haohmaru
+        {
+          VDP_loadTileSet(bg_win_haohmaru_bga.tileset, gInd_tileset, DMA);
+          VDP_setTileMapEx(BG_A, bg_win_haohmaru_bga.tilemap,
+                           TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
+                           0, 0, 0, 0, 40, 28, DMA_QUEUE);
+          PAL_setPalette(PAL1, bg_win_haohmaru_bga.palette->data, CPU);
+          gInd_tileset += bg_win_haohmaru_bga.tileset->numTile;
+        } else if (gWinnerID == 2) // gillius
+        {
+          VDP_loadTileSet(bg_win_gillius_bga.tileset, gInd_tileset, DMA);
+          VDP_setTileMapEx(BG_A, bg_win_gillius_bga.tilemap,
+                           TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
+                           0, 0, 0, 0, 40, 28, DMA_QUEUE);
+          PAL_setPalette(PAL1, bg_win_gillius_bga.palette->data, CPU);
+          gInd_tileset += bg_win_gillius_bga.tileset->numTile;
+        }
+
+        // Elementos Graficos
+        if (gWinnerID == 1) // haohmaru
+        {
+          if (gPing2 == 0) {
+            GE[1].sprite = SPR_addSpriteExSafe(
+                &spr_haohmaru_win_phrase1A, 168, 40,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+            GE[2].sprite = SPR_addSpriteExSafe(
+                &spr_haohmaru_win_phrase1B, 168, 112,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          }
+          if (gPing2 == 1) {
+            GE[1].sprite = SPR_addSpriteExSafe(
+                &spr_haohmaru_win_phrase2A, 168, 40,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+            GE[2].sprite = SPR_addSpriteExSafe(
+                &spr_haohmaru_win_phrase2B, 168, 112,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          }
+          PAL_setPalette(PAL3, spr_haohmaru_win_phrase1A.palette->data, CPU);
+        } else if (gWinnerID == 2) // gillius
+        {
+          if (gPing2 == 0) {
+            GE[1].sprite = SPR_addSpriteExSafe(
+                &spr_gillius_win_phrase1A, 168, 40,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+            GE[2].sprite = SPR_addSpriteExSafe(
+                &spr_gillius_win_phrase1B, 168, 112,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          }
+          if (gPing2 == 1) {
+            GE[1].sprite = SPR_addSpriteExSafe(
+                &spr_gillius_win_phrase2A, 168, 40,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+            GE[2].sprite = SPR_addSpriteExSafe(
+                &spr_gillius_win_phrase2B, 168, 112,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          }
+          PAL_setPalette(PAL3, spr_gillius_win_phrase1A.palette->data, CPU);
+        }
+
+        // Continue; Rematch
+        GE[3].sprite = SPR_addSpriteExSafe(
+            &spr_continue, 54, 192, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        GE[4].sprite = SPR_addSpriteExSafe(
+            &spr_continue_yes, 190, 192, TILE_ATTR(PAL3, FALSE, FALSE, FALSE),
+            1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+
+        SPR_setDepth(GE[3].sprite, 255);
+        SPR_setDepth(GE[4].sprite, 1);
+      }
+
+      // Continue?
+      //"gContinueOption==0" NO
+      //"gContinueOption==1" YES
+      bool SoundContinueChoice = 0;
+
+      if (SoundContinueChoice == 1) {
+        XGM_setPCM(P1_SFX, snd_cursor, sizeof(snd_cursor));
+        XGM_startPlayPCM(P1_SFX, 1, SOUND_PCM_CH3);
+      }
+      if (gContinueOption == 1) {
+        if (gPing10 >= 1 && gPing10 <= 6) {
+          SPR_setVisibility(GE[4].sprite, VISIBLE);
+        }
+      }
+
+      if (P[1].key_JOY_START_status == 1 && gFrames > 5) {
+        CLEAR_VDP();
+        gFrames = 0;
+        if (gContinueOption == 1) {
+          if (fase <= faseMAX) {
+            gRoom = 9;
+            gDescompressionExit = 101;
+          } else {
+            gRoom = 9;
+            gDescompressionExit = 102;
+          }
+        }
+      };
+    }
+
+    // PRE LUTA NO MODO VERSUS CPU
+    if (gRoom == 101) {
+      FUNCAO_INPUT_SYSTEM();
+
+      if (gFrames == 1) {
+        XGM_stopPlay();
+
+        VDP_setTextPlane(BG_A);
+        VDP_setTextPalette(PAL3);
+
+        P[2].id = P2fase[fase];
+
+        gScrollValue = 0;
+        VDP_setHorizontalScroll(BG_B, 0);
+
+        gInd_tileset = 1;
+
+        VDP_loadTileSet(bg_title_bgb.tileset, gInd_tileset, DMA);
+        VDP_setTileMapEx(BG_B, bg_title_bgb.tilemap,
+                         TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset), 0,
+                         0, 0, 0, 40, 28, DMA_QUEUE);
+        PAL_setPalette(PAL0, bg_title_bgb.palette->data, CPU);
+        gInd_tileset += bg_title_bgb.tileset->numTile;
+
+        if (fase < 6) {
+          if (fase == 1) {
+            PAL_setPalette(PAL3, spr_duel1.palette->data, CPU);
+            VDP_loadTileSet(spr_duel1.animations[0]->frames[7]->tileset,
+                            gInd_tileset, TRUE);
+            GE[3].sprite = SPR_addSprite(&spr_duel1, 112, 104,
+                                         TILE_ATTR(PAL3, FALSE, FALSE, FALSE));
+          } else if (fase == 2) {
+            PAL_setPalette(PAL3, spr_duel2.palette->data, CPU);
+            VDP_loadTileSet(spr_duel2.animations[0]->frames[7]->tileset,
+                            gInd_tileset, TRUE);
+            GE[3].sprite = SPR_addSprite(&spr_duel2, 112, 104,
+                                         TILE_ATTR(PAL3, FALSE, FALSE, FALSE));
+          } else if (fase == 3) {
+            PAL_setPalette(PAL3, spr_duel3.palette->data, CPU);
+            VDP_loadTileSet(spr_duel3.animations[0]->frames[7]->tileset,
+                            gInd_tileset, TRUE);
+            GE[3].sprite = SPR_addSprite(&spr_duel3, 112, 104,
+                                         TILE_ATTR(PAL3, FALSE, FALSE, FALSE));
+          } else if (fase == 4) {
+            PAL_setPalette(PAL3, spr_duel4.palette->data, CPU);
+            VDP_loadTileSet(spr_duel4.animations[0]->frames[7]->tileset,
+                            gInd_tileset, TRUE);
+            GE[3].sprite = SPR_addSprite(&spr_duel4, 128, 104,
+                                         TILE_ATTR(PAL3, FALSE, FALSE, FALSE));
+          } else if (fase == 5) {
+            PAL_setPalette(PAL3, spr_duel5.palette->data, CPU);
+            VDP_loadTileSet(spr_duel5.animations[0]->frames[7]->tileset,
+                            gInd_tileset, TRUE);
+            GE[3].sprite = SPR_addSprite(&spr_duel5, 112, 104,
+                                         TILE_ATTR(PAL3, FALSE, FALSE, FALSE));
+          }
+
+          SPR_setAutoTileUpload(GE[3].sprite, FALSE);
+          SPR_setFrame(GE[3].sprite, 7);
+          SPR_setVRAMTileIndex(GE[3].sprite, gInd_tileset);
+        }
+
+        if (P[1].id == 1) {
+          PAL_setPalette(PAL1, spr_haohmaru_001.palette->data, CPU);
+          GE[1].sprite = SPR_addSprite(&spr_haohmaru_001, 32, 16,
+                                       TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+        } else if (P[1].id == 2) {
+          PAL_setPalette(PAL1, spr_gillius_001.palette->data, CPU);
+          GE[1].sprite = SPR_addSprite(&spr_gillius_001, 32, 16,
+                                       TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+        }
+
+        if (P[2].id == 1) {
+          PAL_setPalette(PAL2, spr_haohmaru_001.palette->data, CPU);
+          GE[2].sprite = SPR_addSprite(&spr_haohmaru_001, 216, 16,
+                                       TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
+          SPR_setHFlip(GE[2].sprite, TRUE);
+        } else if (P[2].id == 2) {
+          PAL_setPalette(PAL2, spr_gillius_001.palette->data, CPU);
+          GE[2].sprite = SPR_addSprite(&spr_gillius_001, 216, 16,
+                                       TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
+          SPR_setHFlip(GE[2].sprite, TRUE);
+        }
+
+        VDP_drawText("FIGHT NUMBER", 11, 18);
+
+        char str[8];
+        uintToStr(fase, str, 1);
+        VDP_drawText(str, 24, 18);
+
+        VDP_drawText("OF", 26, 18);
+
+        char str2[8];
+        uintToStr(faseMAX, str2, 1);
+        VDP_drawText(str2, 29, 18);
+
+        VDP_drawText("PRESS START", 14, 20);
+      }
+
+      if (P[1].key_JOY_START_status == 1 && gFrames > 5) {
+        CLEAR_VDP();
+        gFrames = 0;
+
+        gRoom = 9;
+        gDescompressionExit = 10;
+      }
+    }
+
+    // TELA FINAL
+    if (gRoom == 102) {
+      FUNCAO_INPUT_SYSTEM();
+
+      if (gFrames == 1) {
+        XGM_stopPlay();
+
+        VDP_setTextPlane(BG_A);
+        VDP_setTextPalette(PAL1);
+
+        PAL_setPalette(PAL1, palette_blue, CPU);
+        PAL_setPalette(PAL2, palette_grey, CPU);
+        PAL_setPalette(PAL3, palette_grey, CPU);
+
+        P[2].id = P2fase[fase];
+
+        gScrollValue = 0;
+        VDP_setHorizontalScroll(BG_B, 0);
+
+        gInd_tileset = 1;
+
+        XGM_startPlay(music_conclusion);
+
+        if (P[1].id == 1) {
+          VDP_loadTileSet(bg_haohmaru_final.tileset, gInd_tileset, DMA);
+          VDP_setTileMapEx(BG_B, bg_haohmaru_final.tilemap,
+                           TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset),
+                           0, 0, 0, 0, 40, 28, DMA_QUEUE);
+          PAL_setPalette(PAL0, bg_haohmaru_final.palette->data, CPU);
+          gInd_tileset += bg_haohmaru_final.tileset->numTile;
+        } else if (P[1].id == 2) {
+          VDP_loadTileSet(bg_gillius_final.tileset, gInd_tileset, DMA);
+          VDP_setTileMapEx(BG_B, bg_gillius_final.tilemap,
+                           TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset),
+                           0, 0, 0, 0, 40, 28, DMA_QUEUE);
+          PAL_setPalette(PAL0, bg_gillius_final.palette->data, CPU);
+          gInd_tileset += bg_gillius_final.tileset->numTile;
+        }
+
+        VDP_drawText("THE END", 2, 4);
+
+        VDP_drawText("PRESS START", 4, 8);
+      }
+
+      if (P[1].key_JOY_START_status == 1 && gFrames > 5) {
+        XGM_stopPlay();
+
+        CLEAR_VDP();
+        gFrames = 0;
+
+        gRoom = 1;
+        // gDescompressionExit = 2;
+      }
     }
 
     //--- FINALIZACOES ---//
@@ -1760,13 +2184,19 @@ void PLAYER_STATE(u8 Player, u16 State) {
       P[Player].axisY = P[Player].h;
       P[Player].dataAnim[1] = 250;
       P[Player].animFrameTotal = 1;
-      P[Player].sprite = SPR_addSpriteExSafe(
-          &spr_point, P[Player].x - P[Player].axisX,
-          P[Player].y - P[Player].axisY,
-          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-              SPR_FLAG_AUTO_SPRITE_ALLOC);
+      // P[Player].sprite = SPR_addSprite(&spr_point,
+      // P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
+      // TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE));
+
+      VDP_loadTileSet(spr_point.animations[0]->frames[0]->tileset, 1521, TRUE);
+
+      P[Player].sprite =
+          SPR_addSprite(&spr_point, P[Player].x - P[Player].axisX,
+                        P[Player].y - P[Player].axisY,
+                        TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE));
+      SPR_setAutoTileUpload(P[Player].sprite, FALSE);
+      SPR_setFrame(P[Player].sprite, 0);
+      SPR_setVRAMTileIndex(P[Player].sprite, 1521);
     }
   }
 
@@ -4758,8 +5188,7 @@ void FUNCAO_PLAY_SND(u8 Player, u16 State) {
         XGM_setPCM(P1_SFX, snd_haohmaru_102b, sizeof(snd_haohmaru_102b));
         XGM_startPlayPCM(P1_SFX, 1, SOUND_PCM_CH3);
       }
-    }
-    if (P[1].id == 2) // Gillius
+    } else if (P[1].id == 2) // Gillius
     {
       if (State == 101 || State == 104 || State == 151 || State == 154 ||
           State == 201 || State == 202 || State == 204 || State == 301 ||
@@ -4939,8 +5368,7 @@ void FUNCAO_PLAY_SND(u8 Player, u16 State) {
         XGM_setPCM(P2_SFX, snd_haohmaru_102b, sizeof(snd_haohmaru_102b));
         XGM_startPlayPCM(P2_SFX, 1, SOUND_PCM_CH4);
       }
-    }
-    if (P[2].id == 2) // Gillius
+    } else if (P[2].id == 2) // Gillius
     {
       if (State == 101 || State == 104 || State == 151 || State == 154 ||
           State == 201 || State == 202 || State == 204 || State == 301 ||
@@ -5281,9 +5709,11 @@ void FUNCAO_BARRAS_DE_ENERGIA() {
       SPR_setAnimAndFrame(GE[2 + i].sprite, 0, 16);
       subEnergyPos = 16;
     }
+
     if (i == 1) {
       SPR_setPosition(GE[4 + i].sprite, 8 + (subEnergyPos * 8), 12);
     }
+
     if (i == 2) {
       SPR_setPosition(GE[4 + i].sprite, 304 - (subEnergyPos * 8), 12);
     }
@@ -5340,6 +5770,7 @@ void FUNCAO_BARRAS_DE_ENERGIA() {
     if (subEnergyPos == 16) {
       a = 0;
     }
+
     SPR_setAnimAndFrame(GE[4 + i].sprite, 0, (P[i].energia - a));
 
     // Exibe a barra de especial, e fica piscando, caso seja == 32
@@ -5355,14 +5786,19 @@ void FUNCAO_BARRAS_DE_ENERGIA() {
   }
 
   if (P[1].energiaSP >= 32) {
-    SPR_setVisibility(GE[9].sprite, VISIBLE);
+    // SPR_setVisibility(GE[ 9].sprite, VISIBLE);
+    SPR_setPosition(GE[9].sprite, 22, 192);
   } else {
-    SPR_setVisibility(GE[9].sprite, HIDDEN);
+    // SPR_setVisibility(GE[ 9].sprite, HIDDEN);
+    SPR_setPosition(GE[9].sprite, 320, 224);
   }
+
   if (P[2].energiaSP >= 32) {
-    SPR_setVisibility(GE[10].sprite, VISIBLE);
+    // SPR_setVisibility(GE[10].sprite, VISIBLE);
+    SPR_setPosition(GE[10].sprite, 266, 192);
   } else {
-    SPR_setVisibility(GE[10].sprite, HIDDEN);
+    // SPR_setVisibility(GE[10].sprite, HIDDEN);
+    SPR_setPosition(GE[10].sprite, 320, 224);
   }
 }
 
@@ -5642,66 +6078,284 @@ void FUNCAO_INPUT_SYSTEM() {
   }
 
   // joystick P2
-  u16 JOY2 = JOY_readJoypad(JOY_2);
-  if (JOY2 & BUTTON_UP) {
-    JOY2_UP = TRUE;
-  } else {
-    JOY2_UP = FALSE;
-  }
-  if (JOY2 & BUTTON_DOWN) {
-    JOY2_DOWN = TRUE;
-  } else {
-    JOY2_DOWN = FALSE;
-  }
-  if (JOY2 & BUTTON_LEFT) {
-    JOY2_LEFT = TRUE;
-  } else {
-    JOY2_LEFT = FALSE;
-  }
-  if (JOY2 & BUTTON_RIGHT) {
-    JOY2_RIGHT = TRUE;
-  } else {
-    JOY2_RIGHT = FALSE;
-  }
-  if (JOY2 & BUTTON_A) {
-    JOY2_A = TRUE;
-  } else {
-    JOY2_A = FALSE;
-  }
-  if (JOY2 & BUTTON_B) {
-    JOY2_B = TRUE;
-  } else {
-    JOY2_B = FALSE;
-  }
-  if (JOY2 & BUTTON_C) {
-    JOY2_C = TRUE;
-  } else {
-    JOY2_C = FALSE;
-  }
-  if (JOY2 & BUTTON_X) {
-    JOY2_X = TRUE;
-  } else {
-    JOY2_X = FALSE;
-  }
-  if (JOY2 & BUTTON_Y) {
-    JOY2_Y = TRUE;
-  } else {
-    JOY2_Y = FALSE;
-  }
-  if (JOY2 & BUTTON_Z) {
-    JOY2_Z = TRUE;
-  } else {
-    JOY2_Z = FALSE;
-  }
-  if (JOY2 & BUTTON_START) {
-    JOY2_START = TRUE;
-  } else {
-    JOY2_START = FALSE;
-  }
-  if (JOY2 & BUTTON_MODE) {
-    JOY2_MODE = TRUE;
-  } else {
-    JOY2_MODE = FALSE;
+  // IAP2 = TRUE; //FALSE = IA do P2 desligada,  TRUE = IA do P2 ligada
+
+  if (gRoom != 10 || (IAP2 == FALSE && gRoom == 10)) {
+    u16 JOY2 = JOY_readJoypad(JOY_2);
+    if (JOY2 & BUTTON_UP) {
+      JOY2_UP = TRUE;
+    } else {
+      JOY2_UP = FALSE;
+    }
+    if (JOY2 & BUTTON_DOWN) {
+      JOY2_DOWN = TRUE;
+    } else {
+      JOY2_DOWN = FALSE;
+    }
+    if (JOY2 & BUTTON_LEFT) {
+      JOY2_LEFT = TRUE;
+    } else {
+      JOY2_LEFT = FALSE;
+    }
+    if (JOY2 & BUTTON_RIGHT) {
+      JOY2_RIGHT = TRUE;
+    } else {
+      JOY2_RIGHT = FALSE;
+    }
+    if (JOY2 & BUTTON_A) {
+      JOY2_A = TRUE;
+    } else {
+      JOY2_A = FALSE;
+    }
+    if (JOY2 & BUTTON_B) {
+      JOY2_B = TRUE;
+    } else {
+      JOY2_B = FALSE;
+    }
+    if (JOY2 & BUTTON_C) {
+      JOY2_C = TRUE;
+    } else {
+      JOY2_C = FALSE;
+    }
+    if (JOY2 & BUTTON_X) {
+      JOY2_X = TRUE;
+    } else {
+      JOY2_X = FALSE;
+    }
+    if (JOY2 & BUTTON_Y) {
+      JOY2_Y = TRUE;
+    } else {
+      JOY2_Y = FALSE;
+    }
+    if (JOY2 & BUTTON_Z) {
+      JOY2_Z = TRUE;
+    } else {
+      JOY2_Z = FALSE;
+    }
+    if (JOY2 & BUTTON_START) {
+      JOY2_START = TRUE;
+    } else {
+      JOY2_START = FALSE;
+    }
+    if (JOY2 & BUTTON_MODE) {
+      JOY2_MODE = TRUE;
+    } else {
+      JOY2_MODE = FALSE;
+    }
+  } else if (IAP2 == TRUE && gRoom == 10) {
+    if (gPodeMover && P[1].energiaBase > 0 && P[2].energiaBase > 0) {
+      // INTERLIGENCIA ARTIFICIAL DO P2
+
+      // TEMPO PARA ATACAR O PLAYER 1
+      if (tempoIAataque < tempoMaxIAataque[fase])
+        tempoIAataque++;
+      else if (tempoIAataque == tempoMaxIAataque[fase])
+        tempoIAataque = 0;
+
+      if (tempoIAmagia >= 1 && tempoIAmagia < 600)
+        tempoIAmagia++;
+      else if (tempoIAmagia >= 600)
+        tempoIAmagia = 0;
+
+      // ATIVA OU NAO O ATAQUE QUANDO A DISTANCIA ENTRE P1 E P2 ESTIVER MENOR
+      // QUE 130 PIXELS
+      if (abs(P[1].x - P[2].x) <
+              150 /*P[1].x >= P[2].x-130 && P[1].x <= P[2].x+130*/
+          && tempoIAataque >= tempoMinIAataque[fase]) {
+        esmurra = random();
+        esmurra = esmurra % 4;
+
+        if (esmurra == 1) {
+          u16 chuteMurro;
+          chuteMurro = random();
+          chuteMurro = chuteMurro % 10;
+
+          JOY2_A = FALSE;
+          JOY2_B = FALSE;
+          JOY2_C = FALSE;
+          JOY2_X = FALSE;
+          JOY2_Y = FALSE;
+          JOY2_Z = FALSE;
+
+          u16 intensidadeGolpe;
+          intensidadeGolpe = random();
+          intensidadeGolpe = intensidadeGolpe % 12;
+
+          if (intensidadeGolpe <= 2) {
+            if (chuteMurro <= 4)
+              JOY2_A = TRUE;
+            else
+              JOY2_X = TRUE;
+          } else if (intensidadeGolpe >= 3 && intensidadeGolpe <= 6) {
+            if (chuteMurro <= 4)
+              JOY2_B = TRUE;
+            else
+              JOY2_Y = TRUE;
+          } else if (intensidadeGolpe >= 7 && intensidadeGolpe <= 9) {
+            if (chuteMurro <= 4)
+              JOY2_C = TRUE;
+            else
+              JOY2_Z = TRUE;
+          }
+
+          tempoIAataque = 0;
+          tempoIA = 0;
+        }
+      } else if (abs(P[1].x - P[2].x) > 200 &&
+                 tempoIAataque >= tempoMinIAataque[fase] && tempoIAmagia == 0) {
+        if (P[2].y == gAlturaPiso) {
+          JOY2_A = FALSE;
+          JOY2_B = FALSE;
+          JOY2_C = FALSE;
+          JOY2_X = FALSE;
+          JOY2_Y = FALSE;
+          JOY2_Z = FALSE;
+
+          JOY2_X = TRUE;
+
+          if (P[2].id == 1)
+            PLAYER_STATE(2, 710);
+          else if (P[2].id == 2)
+            PLAYER_STATE(2, 700);
+        }
+
+        tempoIAataque = 0;
+        tempoIA = 0;
+        tempoIAmagia = 1;
+      }
+
+      if (tempoIA >= 1 && defendeTempo == 0) {
+        tempoIA++;
+
+        JOY2_RIGHT = FALSE;
+        JOY2_LEFT = FALSE;
+        JOY2_UP = FALSE;
+
+        if (tempoIA > 10) {
+          tempoIA = 0;
+          acaoIA = 1;
+        }
+      }
+
+      if (P[1].x >= P[2].x - 160 && P[1].x <= P[2].x + 160 &&
+          defendeTempo == 0) {
+        if (JOY1_A || JOY1_B || JOY1_C || JOY1_X || JOY1_Y || JOY1_Z) {
+          u16 defendeGolpe;
+          defendeGolpe = random();
+          defendeGolpe = defendeGolpe % defesaIA[fase];
+
+          if (defendeGolpe < 10)
+            defendeTempo = 1;
+        }
+      }
+
+      if (P[1].fBallActive && P[1].fBallX >= P[2].x - 80 &&
+          P[1].fBallX <= P[2].x + 80 && defendeTempo == 0) {
+        u16 defendeGolpe;
+        defendeGolpe = random();
+        defendeGolpe = defendeGolpe % defesaIA[fase];
+
+        if (defendeGolpe < 10)
+          defendeTempo = 1;
+      }
+
+      if (defendeTempo) {
+        tempoIA = 1;
+        varIA = 5;
+        acaoIA = 0;
+
+        JOY2_UP = FALSE;
+
+        defendeTempo++;
+
+        if (P[1].x >= P[2].x) {
+          JOY2_LEFT = TRUE;
+          JOY2_RIGHT = FALSE;
+        } else if (P[1].x < P[2].x) {
+          JOY2_LEFT = FALSE;
+          JOY2_RIGHT = TRUE;
+        }
+
+        if (defendeTempo >= 20) {
+          JOY2_LEFT = FALSE;
+          JOY2_RIGHT = FALSE;
+          defendeTempo = 0;
+        }
+      }
+
+      if (tempoIA == 0) {
+        if (acaoIA == 1) {
+          varIA = random();
+          varIA = varIA % 3;
+
+          tempoIAacao = 70;
+
+          acaoIA = 0;
+        }
+
+        if (tempoIAacao > 0) {
+          tempoIAacao--;
+
+          if (abs(P[1].x - P[2].x) > 200) {
+            if (P[1].x < P[2].x && (varIA == 0 || varIA == 2)) {
+              tempoIAacao = 0;
+            } else if (P[1].x > P[2].x && (varIA == 1 || varIA == 2)) {
+              tempoIAacao = 0;
+            }
+          }
+        } else if (tempoIAacao == 0) {
+          tempoIA = 1;
+        }
+
+        u16 distanciaP1P2;
+        distanciaP1P2 = abs(P[1].x - P[2].x);
+
+        if (varIA == 0 && tempoIAacao > 0) {
+          JOY2_RIGHT = TRUE;
+          JOY2_LEFT = FALSE;
+        } else if (varIA == 1 && tempoIAacao > 0) {
+          JOY2_RIGHT = FALSE;
+          JOY2_LEFT = TRUE;
+        } else if (varIA == 2 && tempoIAacao > 0) {
+          JOY2_UP = TRUE;
+
+          pulandoFrenteTras = random();
+          pulandoFrenteTras = pulandoFrenteTras % 3;
+
+          if (pulandoFrenteTras == 0) {
+            JOY2_RIGHT = TRUE;
+            JOY2_LEFT = FALSE;
+          } else if (pulandoFrenteTras == 1) {
+            JOY2_RIGHT = FALSE;
+            JOY2_LEFT = FALSE;
+          } else if (pulandoFrenteTras == 2) {
+            JOY2_RIGHT = FALSE;
+            JOY2_LEFT = TRUE;
+          }
+
+          if (distanciaP1P2 > 130 && P[1].x > P[2].x) {
+            JOY2_RIGHT = TRUE;
+            JOY2_LEFT = FALSE;
+          } else if (distanciaP1P2 > 130 && P[1].x < P[2].x) {
+            JOY2_RIGHT = FALSE;
+            JOY2_LEFT = TRUE;
+          }
+        }
+      }
+    } else if (gPodeMover && (P[1].energiaBase == 0 || P[2].energiaBase == 0)) {
+      JOY2_UP = FALSE;
+      JOY2_DOWN = FALSE;
+      JOY2_LEFT = FALSE;
+      JOY2_RIGHT = FALSE;
+      JOY2_A = FALSE;
+      JOY2_B = FALSE;
+      JOY2_C = FALSE;
+      JOY2_X = FALSE;
+      JOY2_Y = FALSE;
+      JOY2_Z = FALSE;
+      JOY2_START = FALSE;
+      JOY2_MODE = FALSE;
+    }
   }
 
   if (gPodeMover == 0) {
@@ -5732,6 +6386,12 @@ void FUNCAO_INPUT_SYSTEM() {
   }
 
   //---P1
+
+  // sistema de pause simples
+  if (JOY1_START && key_JOY1_START_pressed == 1 && pausarJogo == 0)
+    pausarJogo = 1;
+  else if (JOY1_START && key_JOY1_START_pressed == 1 && pausarJogo == 1)
+    pausarJogo = 0;
 
   if (JOY1_UP) {
     if (key_JOY1_UP_pressed == 1 && key_JOY1_UP_hold == 0) {
@@ -6711,56 +7371,55 @@ void FUNCAO_INPUT_SYSTEM() {
     if (P[1].id == 1) // haohmaru
     {
       if (P[1].palID == 1) {
-        VDP_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data);
+        PAL_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data, CPU);
         P[1].palID = 2;
       } else if (P[1].palID == 2) {
-        VDP_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data);
+        PAL_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data, CPU);
         P[1].palID = 3;
       } else if (P[1].palID == 3) {
-        VDP_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data);
+        PAL_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data, CPU);
         P[1].palID = 4;
       } else if (P[1].palID == 4) {
-        VDP_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data);
+        PAL_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data, CPU);
         P[1].palID = 5;
       } else if (P[1].palID == 5) {
-        VDP_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data);
+        PAL_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data, CPU);
         P[1].palID = 6;
       } else if (P[1].palID == 6) {
-        VDP_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data);
+        PAL_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data, CPU);
         P[1].palID = 7;
       } else if (P[1].palID == 7) {
-        VDP_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data);
+        PAL_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data, CPU);
         P[1].palID = 8;
       } else if (P[1].palID == 8) {
-        VDP_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data);
+        PAL_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data, CPU);
         P[1].palID = 1;
       }
-    }
-    if (P[1].id == 2) // gillius
+    } else if (P[1].id == 2) // gillius
     {
       if (P[1].palID == 1) {
-        VDP_setPalette(PAL2, spr_gillius_pal2.palette->data);
+        PAL_setPalette(PAL2, spr_gillius_pal2.palette->data, CPU);
         P[1].palID = 2;
       } else if (P[1].palID == 2) {
-        VDP_setPalette(PAL2, spr_gillius_pal3.palette->data);
+        PAL_setPalette(PAL2, spr_gillius_pal3.palette->data, CPU);
         P[1].palID = 3;
       } else if (P[1].palID == 3) {
-        VDP_setPalette(PAL2, spr_gillius_pal4.palette->data);
+        PAL_setPalette(PAL2, spr_gillius_pal4.palette->data, CPU);
         P[1].palID = 4;
       } else if (P[1].palID == 4) {
-        VDP_setPalette(PAL2, spr_gillius_pal5.palette->data);
+        PAL_setPalette(PAL2, spr_gillius_pal5.palette->data, CPU);
         P[1].palID = 5;
       } else if (P[1].palID == 5) {
-        VDP_setPalette(PAL2, spr_gillius_pal6.palette->data);
+        PAL_setPalette(PAL2, spr_gillius_pal6.palette->data, CPU);
         P[1].palID = 6;
       } else if (P[1].palID == 6) {
-        VDP_setPalette(PAL2, spr_gillius_pal7.palette->data);
+        PAL_setPalette(PAL2, spr_gillius_pal7.palette->data, CPU);
         P[1].palID = 7;
       } else if (P[1].palID == 7) {
-        VDP_setPalette(PAL2, spr_gillius_pal8.palette->data);
+        PAL_setPalette(PAL2, spr_gillius_pal8.palette->data, CPU);
         P[1].palID = 8;
       } else if (P[1].palID == 8) {
-        VDP_setPalette(PAL2, spr_gillius_pal1.palette->data);
+        PAL_setPalette(PAL2, spr_gillius_pal1.palette->data, CPU);
         P[1].palID = 1;
       }
     }
@@ -6773,56 +7432,55 @@ void FUNCAO_INPUT_SYSTEM() {
     if (P[2].id == 1) // haohmaru
     {
       if (P[2].palID == 1) {
-        VDP_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data);
+        PAL_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data, CPU);
         P[2].palID = 2;
       } else if (P[2].palID == 2) {
-        VDP_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data);
+        PAL_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data, CPU);
         P[2].palID = 3;
       } else if (P[2].palID == 3) {
-        VDP_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data);
+        PAL_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data, CPU);
         P[2].palID = 4;
       } else if (P[2].palID == 4) {
-        VDP_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data);
+        PAL_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data, CPU);
         P[2].palID = 5;
       } else if (P[2].palID == 5) {
-        VDP_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data);
+        PAL_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data, CPU);
         P[2].palID = 6;
       } else if (P[2].palID == 6) {
-        VDP_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data);
+        PAL_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data, CPU);
         P[2].palID = 7;
       } else if (P[2].palID == 7) {
-        VDP_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data);
+        PAL_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data, CPU);
         P[2].palID = 8;
       } else if (P[2].palID == 8) {
-        VDP_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data);
+        PAL_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data, CPU);
         P[2].palID = 1;
       }
-    }
-    if (P[2].id == 2) // gillius
+    } else if (P[2].id == 2) // gillius
     {
       if (P[2].palID == 1) {
-        VDP_setPalette(PAL3, spr_gillius_pal2.palette->data);
+        PAL_setPalette(PAL3, spr_gillius_pal2.palette->data, CPU);
         P[2].palID = 2;
       } else if (P[2].palID == 2) {
-        VDP_setPalette(PAL3, spr_gillius_pal3.palette->data);
+        PAL_setPalette(PAL3, spr_gillius_pal3.palette->data, CPU);
         P[2].palID = 3;
       } else if (P[2].palID == 3) {
-        VDP_setPalette(PAL3, spr_gillius_pal4.palette->data);
+        PAL_setPalette(PAL3, spr_gillius_pal4.palette->data, CPU);
         P[2].palID = 4;
       } else if (P[2].palID == 4) {
-        VDP_setPalette(PAL3, spr_gillius_pal5.palette->data);
+        PAL_setPalette(PAL3, spr_gillius_pal5.palette->data, CPU);
         P[2].palID = 5;
       } else if (P[2].palID == 5) {
-        VDP_setPalette(PAL3, spr_gillius_pal6.palette->data);
+        PAL_setPalette(PAL3, spr_gillius_pal6.palette->data, CPU);
         P[2].palID = 6;
       } else if (P[2].palID == 6) {
-        VDP_setPalette(PAL3, spr_gillius_pal7.palette->data);
+        PAL_setPalette(PAL3, spr_gillius_pal7.palette->data, CPU);
         P[2].palID = 7;
       } else if (P[2].palID == 7) {
-        VDP_setPalette(PAL3, spr_gillius_pal8.palette->data);
+        PAL_setPalette(PAL3, spr_gillius_pal8.palette->data, CPU);
         P[2].palID = 8;
       } else if (P[2].palID == 8) {
-        VDP_setPalette(PAL3, spr_gillius_pal1.palette->data);
+        PAL_setPalette(PAL3, spr_gillius_pal1.palette->data, CPU);
         P[2].palID = 1;
       }
     }
@@ -7242,20 +7900,18 @@ void FUNCAO_FSM() {
       if (updateWinsFlag != 0) {
         if (updateWinsFlag == 1) // P1
         {
-          if (P[1].wins >= 1) {
-            SPR_setVisibility(GE[12].sprite, VISIBLE);
-          }
-          if (P[1].wins >= 2) {
-            SPR_setVisibility(GE[13].sprite, VISIBLE);
+          if (P[1].wins == 1) {
+            SPR_setPosition(GE[12].sprite, 26 - 8, 25);
+          } else if (P[1].wins == 2) {
+            SPR_setPosition(GE[13].sprite, 52 - 8, 25);
           }
         }
         if (updateWinsFlag == 2) // P2
         {
-          if (P[2].wins >= 1) {
-            SPR_setVisibility(GE[15].sprite, VISIBLE);
-          }
-          if (P[2].wins >= 2) {
-            SPR_setVisibility(GE[14].sprite, VISIBLE);
+          if (P[2].wins == 1) {
+            SPR_setPosition(GE[14].sprite, 240 + 8 + 4, 25);
+          } else if (P[2].wins == 2) {
+            SPR_setPosition(GE[15].sprite, 266 + 8 + 4, 25);
           }
         }
       }
@@ -7678,7 +8334,7 @@ void FUNCAO_FSM() {
         // oponente zero energy = dead
         if ((P[PR].state >= 501 && P[PR].state <= 508) &&
             P[PR].energiaBase == 0) {
-          SPR_releaseSprite(GE[11].sprite);
+          // SPR_releaseSprite(GE[11].sprite);
           PLAYER_STATE(PR, 550);
         }
 
@@ -7848,47 +8504,37 @@ void FUNCAO_FSM() {
       }
 
       // SPARK DE MAGIA SUMINDO
-      if (Spark1_countDown > 0) {
-        SPR_releaseSprite(Spark[1]);
+
+      // desativado pois tem um bug no spark do haomaru
+
+      /*if(Spark1_countDown>0){ SPR_releaseSprite(Spark[1]); }
+      if(Spark2_countDown>0){ SPR_releaseSprite(Spark[2]); }
+      if(PA==1){Spark1_countDown=20;}
+      if(PA==2){Spark2_countDown=20;}
+
+      if(PA==1)
+      {
+              //gillius
+              if(P[PA].id==2){ Spark[PA] = SPR_addSpriteExSafe(
+      &spr_gillius_702, P[PA].fBallX-20, P[PA].fBallY, TILE_ATTR(PAL2, FALSE,
+      FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+      SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC); }
       }
-      if (Spark2_countDown > 0) {
-        SPR_releaseSprite(Spark[2]);
-      }
-      if (PA == 1) {
-        Spark1_countDown = 20;
-      }
-      if (PA == 2) {
-        Spark2_countDown = 20;
+      if(PA==2)
+      {
+              //gillius
+              if(P[PA].id==2){ Spark[PA] = SPR_addSpriteExSafe(
+      &spr_gillius_702, P[PA].fBallX-20, P[PA].fBallY, TILE_ATTR(PAL3, FALSE,
+      FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+      SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC); }
       }
 
-      if (PA == 1) {
-        // gillius
-        if (P[PA].id == 2) {
-          Spark[PA] = SPR_addSpriteExSafe(
-              &spr_gillius_702, P[PA].fBallX - 20, P[PA].fBallY,
-              TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-      }
-      if (PA == 2) {
-        // gillius
-        if (P[PA].id == 2) {
-          Spark[PA] = SPR_addSpriteExSafe(
-              &spr_gillius_702, P[PA].fBallX - 20, P[PA].fBallY,
-              TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-      }
-
-      // se o spark foi carregado com sucesso...
-      if (Spark[PA]) {
-        if (P[PA].direcao == -1) {
-          SPR_setHFlip(Spark[PA], TRUE);
-        }
-        SPR_setDepth(Spark[PA], 1);
-      }
+      //se o spark foi carregado com sucesso...
+      if (Spark[PA])
+      {
+              if(P[PA].direcao == -1){ SPR_setHFlip(Spark[PA], TRUE); }
+              SPR_setDepth(Spark[PA], 1);
+      }*/
 
       // reseta posicao da magia
       P[PA].fBallX = 0;
@@ -8089,14 +8735,14 @@ void FUNCAO_FSM() {
       P[i].fBallActive = 1;
       P[i].fBallX = P[i].x - 32 + (32 * P[i].direcao);
       P[i].fBallY = P[i].y - 80;
-      P[i].fBall = SPR_addSpriteExSafe(
-          &spr_haohmaru_711, P[i].fBallX, P[i].fBallY,
-          TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-              SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-      if (i == 1) {
-        SPR_setVRAMTileIndex(P[1].fBall, 1711);
-      } // define uma posicao especifica para o GFX na VRAM (magia do 'P1')
+      // P[i].fBall = SPR_addSpriteExSafe(&spr_haohmaru_711, P[i].fBallX,
+      // P[i].fBallY, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+      // SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+      // SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+      P[i].fBall = SPR_addSprite(&spr_haohmaru_711, P[i].fBallX, P[i].fBallY,
+                                 TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+      // if(i==1){ SPR_setVRAMTileIndex(P[1].fBall,1711); } //define uma posicao
+      // especifica para o GFX na VRAM (magia do 'P1')
       if (P[i].fBall) {
         SPR_setDepth(P[i].fBall, 1);
       }
@@ -8121,14 +8767,14 @@ void FUNCAO_FSM() {
         P[i].fBallX -= 50;
       }
       P[i].fBallY = P[i].y - 100;
-      P[i].fBall = SPR_addSpriteExSafe(
-          &spr_gillius_701, P[i].fBallX, P[i].fBallY,
-          TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-              SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-      if (i == 1) {
-        SPR_setVRAMTileIndex(P[1].fBall, 1711);
-      } // define uma posicao especifica para o GFX na VRAM (magia do 'P1')
+      // P[i].fBall = SPR_addSpriteExSafe(&spr_gillius_701, P[i].fBallX,
+      // P[i].fBallY, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+      // SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+      // SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+      P[i].fBall = SPR_addSprite(&spr_gillius_701, P[i].fBallX, P[i].fBallY,
+                                 TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+      // if(i==1){ SPR_setVRAMTileIndex(P[1].fBall,1711); } //define uma posicao
+      // especifica para o GFX na VRAM (magia do 'P1')
       if (P[i].fBall) {
         SPR_setDepth(P[i].fBall, 1);
       }
@@ -8179,28 +8825,24 @@ void FUNCAO_FSM() {
         PLAYER_STATE(PA, 613);
         P[PA].wins++;
       }
-      if (gPing10 == 0) {
-        PLAYER_STATE(PA, 613);
-        P[PA].wins++;
-      } // Vc pode carregar uma pose diferente aqui, eu estou usando 3!
+      // if(gPing10==0              ){ PLAYER_STATE(PA,613); P[PA].wins++; }
+      // //Vc pode carregar uma pose diferente aqui, eu estou usando 3!
 
       // Exibe o contador de Wins correspondente
       if (PA == 1) // P1
       {
-        if (P[PA].wins >= 1) {
-          SPR_setVisibility(GE[12].sprite, VISIBLE);
-        }
-        if (P[PA].wins >= 2) {
-          SPR_setVisibility(GE[13].sprite, VISIBLE);
+        if (P[1].wins == 1) {
+          SPR_setPosition(GE[12].sprite, 26 - 8, 25);
+        } else if (P[1].wins == 2) {
+          SPR_setPosition(GE[13].sprite, 52 - 8, 25);
         }
       }
       if (PA == 2) // P2
       {
-        if (P[PA].wins >= 1) {
-          SPR_setVisibility(GE[15].sprite, VISIBLE);
-        }
-        if (P[PA].wins >= 2) {
-          SPR_setVisibility(GE[14].sprite, VISIBLE);
+        if (P[2].wins == 1) {
+          SPR_setPosition(GE[14].sprite, 240 + 8 + 4, 25);
+        } else if (P[2].wins == 2) {
+          SPR_setPosition(GE[15].sprite, 266 + 8 + 4, 25);
         }
       }
     }
@@ -9105,6 +9747,10 @@ void FUNCAO_PHYSICS() // FISICA!
     }
     //-----------------------------------------------------------------------------------------
 
+    //-----------------------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------------------
+
     // Hits Movement, deslocamento dos Players para trás, durante os ataques
     if (P[i].state >= 500 && P[i].state <= 550 &&
         (P[1].hitPause == 0 && P[2].hitPause == 0)) {
@@ -9532,29 +10178,18 @@ void FUNCAO_PHYSICS() // FISICA!
 void FUNCAO_CAMERA_BGANIM() {
 
   // Animacao do Cenario / Background!
-  if (gBG_Choice == 1) {
-    u8 BGtimer = 33;
-    gBgAnim++;
-    if (gBgAnim == BGtimer * 1) {
-      VDP_loadTileData(gfx_bgb1B.tileset->tiles + INDEX_MAR * 8, INDEX_MAR + 1,
-                       468, DMA_QUEUE);
-    }
-    if (gBgAnim == BGtimer * 2) {
-      VDP_loadTileData(gfx_bgb1C.tileset->tiles + INDEX_MAR * 8, INDEX_MAR + 1,
-                       468, DMA_QUEUE);
-    }
-    if (gBgAnim == BGtimer * 3) {
-      VDP_loadTileData(gfx_bgb1D.tileset->tiles + INDEX_MAR * 8, INDEX_MAR + 1,
-                       468, DMA_QUEUE);
-    }
-    if (gBgAnim == BGtimer * 4) {
-      VDP_loadTileData(gfx_bgb1A.tileset->tiles + INDEX_MAR * 8, INDEX_MAR + 1,
-                       468, DMA_QUEUE);
-    }
-    if (gBgAnim == BGtimer * 4) {
-      gBgAnim = 0;
-    }
-  }
+  /*if(gBG_Choice==1){
+          u8 BGtimer = 33;
+          gBgAnim++;
+          if(gBgAnim==BGtimer*1){ VDP_loadTileData(gfx_bgb1B.tileset->tiles +
+  INDEX_MAR*8, INDEX_MAR+1, 468, DMA_QUEUE); } if(gBgAnim==BGtimer*2){
+  VDP_loadTileData(gfx_bgb1C.tileset->tiles + INDEX_MAR*8, INDEX_MAR+1, 468,
+  DMA_QUEUE); } if(gBgAnim==BGtimer*3){
+  VDP_loadTileData(gfx_bgb1D.tileset->tiles + INDEX_MAR*8, INDEX_MAR+1, 468,
+  DMA_QUEUE); } if(gBgAnim==BGtimer*4){
+  VDP_loadTileData(gfx_bgb1A.tileset->tiles + INDEX_MAR*8, INDEX_MAR+1, 468,
+  DMA_QUEUE); } if(gBgAnim==BGtimer*4){ gBgAnim = 0; }
+  }*/
 
   s16 pMax = max(P[1].x, P[2].x);
   s16 pMin = min(P[1].x, P[2].x);
@@ -9580,20 +10215,19 @@ void FUNCAO_CAMERA_BGANIM() {
       P[2].x -= P[2].hSpeed;
       gScrollValue -= P[2].hSpeed;
     }
-    if (gScrollValue == -192) {
-      if (gBG_Choice == 1) {
-        VDP_setTileMapEx(BG_B, gfx_bgb1A.tilemap,
-                         TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, 0), 0, 0, 64, 0,
-                         8, 28, DMA_QUEUE);
-      }
-      if (gBG_Choice == 3) {
-        VDP_setTileMapEx(BG_B, gfx_bgb3.tilemap,
-                         TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, 0), 0, 0, 64, 0,
-                         8, 28, DMA_QUEUE);
-      }
-    }
-    KLog_S1("scroll negativo: ", gScrollValue);
+
+    VDP_setHorizontalScroll(BG_B, gScrollValue);
+
+    /*if(gScrollValue == -192)
+    {
+            if(gBG_Choice==1){
+    VDP_setTileMapEx(BG_B,gfx_bgb1A.tilemap,TILE_ATTR_FULL(PAL0,0,FALSE,FALSE,0),0,0,64,0,8,28,DMA_QUEUE);
+    } if(gBG_Choice==3){ VDP_setTileMapEx(BG_B,gfx_bgb3.tilemap
+    ,TILE_ATTR_FULL(PAL0,0,FALSE,FALSE,0),0,0,64,0,8,28,DMA_QUEUE); }
+    }*/
+    // KLog_S1("scroll negativo: ", gScrollValue);
   }
+
   if ((pMin < 70) & (pMax < 280) & (walk1 | walk2) & (gScrollValue < 0)) {
     if (walk2 == FALSE) {
       P[2].x += P[1].hSpeed;
@@ -9604,19 +10238,17 @@ void FUNCAO_CAMERA_BGANIM() {
       P[2].x += P[2].hSpeed;
       gScrollValue += P[2].hSpeed;
     }
-    if (gScrollValue == -60) {
-      if (gBG_Choice == 1) {
-        VDP_setTileMapEx(BG_B, gfx_bgb1A.tilemap,
-                         TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, 0), 0, 0, 0, 0,
-                         8, 28, DMA_QUEUE);
-      }
-      if (gBG_Choice == 3) {
-        VDP_setTileMapEx(BG_B, gfx_bgb3.tilemap,
-                         TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, 0), 0, 0, 0, 0,
-                         8, 28, DMA_QUEUE);
-      }
-    }
-    KLog_S1("scroll positivo: ", gScrollValue);
+
+    VDP_setHorizontalScroll(BG_B, gScrollValue);
+
+    /*if(gScrollValue == -60)
+    {
+            if(gBG_Choice==1){
+    VDP_setTileMapEx(BG_B,gfx_bgb1A.tilemap,TILE_ATTR_FULL(PAL0,0,FALSE,FALSE,0),0,0,0,0,8,28,DMA_QUEUE);
+    } if(gBG_Choice==3){ VDP_setTileMapEx(BG_B,gfx_bgb3.tilemap
+    ,TILE_ATTR_FULL(PAL0,0,FALSE,FALSE,0),0,0,0,0,8,28,DMA_QUEUE); }
+    }*/
+    // KLog_S1("scroll positivo: ", gScrollValue);
   }
   VDP_setHorizontalScroll(BG_B, gScrollValue);
 }
@@ -9727,80 +10359,80 @@ void FUNCAO_SAMSHOFX() // ESPECIFICO DO SAMURAI SHODOWN 2
     {
       if (P[1].rageLvl == 0) {
         if (P[1].palID == 1) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data, CPU);
         }
         if (P[1].palID == 2) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data, CPU);
         }
         if (P[1].palID == 3) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data, CPU);
         }
         if (P[1].palID == 4) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data, CPU);
         }
         if (P[1].palID == 5) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data, CPU);
         }
         if (P[1].palID == 6) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data, CPU);
         }
         if (P[1].palID == 7) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data, CPU);
         }
         if (P[1].palID == 8) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data, CPU);
         }
       }
       if (P[1].rageLvl == 1) {
         if (P[1].palID == 1) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal1_2a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal1_2a.palette->data, CPU);
         }
         if (P[1].palID == 2) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal2_2a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal2_2a.palette->data, CPU);
         }
         if (P[1].palID == 3) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal3_2a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal3_2a.palette->data, CPU);
         }
         if (P[1].palID == 4) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal4_2a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal4_2a.palette->data, CPU);
         }
         if (P[1].palID == 5) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal5_2a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal5_2a.palette->data, CPU);
         }
         if (P[1].palID == 6) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal6_2a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal6_2a.palette->data, CPU);
         }
         if (P[1].palID == 7) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal7_2a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal7_2a.palette->data, CPU);
         }
         if (P[1].palID == 8) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal8_2a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal8_2a.palette->data, CPU);
         }
       }
       if (P[1].rageLvl == 2) {
         if (P[1].palID == 1) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal1_3a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal1_3a.palette->data, CPU);
         }
         if (P[1].palID == 2) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal2_3a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal2_3a.palette->data, CPU);
         }
         if (P[1].palID == 3) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal3_3a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal3_3a.palette->data, CPU);
         }
         if (P[1].palID == 4) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal4_3a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal4_3a.palette->data, CPU);
         }
         if (P[1].palID == 5) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal5_3a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal5_3a.palette->data, CPU);
         }
         if (P[1].palID == 6) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal6_3a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal6_3a.palette->data, CPU);
         }
         if (P[1].palID == 7) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal7_3a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal7_3a.palette->data, CPU);
         }
         if (P[1].palID == 8) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal8_3a.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal8_3a.palette->data, CPU);
         }
       }
     }
@@ -9812,82 +10444,82 @@ void FUNCAO_SAMSHOFX() // ESPECIFICO DO SAMURAI SHODOWN 2
     {
       if (P[2].rageLvl == 0) {
         if (P[2].palID == 1) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data, CPU);
         }
         if (P[2].palID == 2) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data, CPU);
         }
         if (P[2].palID == 3) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data, CPU);
         }
         if (P[2].palID == 4) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data, CPU);
         }
         if (P[2].palID == 5) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data, CPU);
         }
         if (P[2].palID == 6) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data, CPU);
         }
         if (P[2].palID == 7) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data, CPU);
         }
         if (P[2].palID == 8) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data, CPU);
         }
       }
       // P2
       if (P[2].rageLvl == 1) {
         if (P[2].palID == 1) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal1_2a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal1_2a.palette->data, CPU);
         }
         if (P[2].palID == 2) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal2_2a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal2_2a.palette->data, CPU);
         }
         if (P[2].palID == 3) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal3_2a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal3_2a.palette->data, CPU);
         }
         if (P[2].palID == 4) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal4_2a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal4_2a.palette->data, CPU);
         }
         if (P[2].palID == 5) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal5_2a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal5_2a.palette->data, CPU);
         }
         if (P[2].palID == 6) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal6_2a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal6_2a.palette->data, CPU);
         }
         if (P[2].palID == 7) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal7_2a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal7_2a.palette->data, CPU);
         }
         if (P[2].palID == 8) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal8_2a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal8_2a.palette->data, CPU);
         }
       }
       // P2
       if (P[2].rageLvl == 2) {
         if (P[2].palID == 1) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal1_3a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal1_3a.palette->data, CPU);
         }
         if (P[2].palID == 2) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal2_3a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal2_3a.palette->data, CPU);
         }
         if (P[2].palID == 3) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal3_3a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal3_3a.palette->data, CPU);
         }
         if (P[2].palID == 4) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal4_3a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal4_3a.palette->data, CPU);
         }
         if (P[2].palID == 5) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal5_3a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal5_3a.palette->data, CPU);
         }
         if (P[2].palID == 6) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal6_3a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal6_3a.palette->data, CPU);
         }
         if (P[2].palID == 7) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal7_3a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal7_3a.palette->data, CPU);
         }
         if (P[2].palID == 8) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal8_3a.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal8_3a.palette->data, CPU);
         }
       }
     }
@@ -9901,80 +10533,80 @@ void FUNCAO_SAMSHOFX() // ESPECIFICO DO SAMURAI SHODOWN 2
     {
       if (P[1].rageLvl == 0) {
         if (P[1].palID == 1) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal1_1b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal1_1b.palette->data, CPU);
         }
         if (P[1].palID == 2) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal2_1b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal2_1b.palette->data, CPU);
         }
         if (P[1].palID == 3) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal3_1b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal3_1b.palette->data, CPU);
         }
         if (P[1].palID == 4) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal4_1b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal4_1b.palette->data, CPU);
         }
         if (P[1].palID == 5) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal5_1b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal5_1b.palette->data, CPU);
         }
         if (P[1].palID == 6) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal6_1b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal6_1b.palette->data, CPU);
         }
         if (P[1].palID == 7) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal7_1b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal7_1b.palette->data, CPU);
         }
         if (P[1].palID == 8) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal8_1b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal8_1b.palette->data, CPU);
         }
       }
       if (P[1].rageLvl == 1) {
         if (P[1].palID == 1) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal1_2b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal1_2b.palette->data, CPU);
         }
         if (P[1].palID == 2) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal2_2b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal2_2b.palette->data, CPU);
         }
         if (P[1].palID == 3) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal3_2b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal3_2b.palette->data, CPU);
         }
         if (P[1].palID == 4) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal4_2b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal4_2b.palette->data, CPU);
         }
         if (P[1].palID == 5) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal5_2b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal5_2b.palette->data, CPU);
         }
         if (P[1].palID == 6) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal6_2b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal6_2b.palette->data, CPU);
         }
         if (P[1].palID == 7) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal7_2b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal7_2b.palette->data, CPU);
         }
         if (P[1].palID == 8) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal8_2b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal8_2b.palette->data, CPU);
         }
       }
       if (P[1].rageLvl == 2) {
         if (P[1].palID == 1) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal1_3b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal1_3b.palette->data, CPU);
         }
         if (P[1].palID == 2) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal2_3b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal2_3b.palette->data, CPU);
         }
         if (P[1].palID == 3) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal3_3b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal3_3b.palette->data, CPU);
         }
         if (P[1].palID == 4) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal4_3b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal4_3b.palette->data, CPU);
         }
         if (P[1].palID == 5) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal5_3b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal5_3b.palette->data, CPU);
         }
         if (P[1].palID == 6) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal6_3b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal6_3b.palette->data, CPU);
         }
         if (P[1].palID == 7) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal7_3b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal7_3b.palette->data, CPU);
         }
         if (P[1].palID == 8) {
-          VDP_setPalette(PAL2, spr_haohmaru_pal8_3b.palette->data);
+          PAL_setPalette(PAL2, spr_haohmaru_pal8_3b.palette->data, CPU);
         }
       }
     }
@@ -9986,80 +10618,80 @@ void FUNCAO_SAMSHOFX() // ESPECIFICO DO SAMURAI SHODOWN 2
     {
       if (P[2].rageLvl == 0) {
         if (P[2].palID == 1) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal1_1b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal1_1b.palette->data, CPU);
         }
         if (P[2].palID == 2) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal2_1b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal2_1b.palette->data, CPU);
         }
         if (P[2].palID == 3) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal3_1b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal3_1b.palette->data, CPU);
         }
         if (P[2].palID == 4) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal4_1b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal4_1b.palette->data, CPU);
         }
         if (P[2].palID == 5) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal5_1b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal5_1b.palette->data, CPU);
         }
         if (P[2].palID == 6) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal6_1b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal6_1b.palette->data, CPU);
         }
         if (P[2].palID == 7) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal7_1b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal7_1b.palette->data, CPU);
         }
         if (P[2].palID == 8) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal8_1b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal8_1b.palette->data, CPU);
         }
       }
       if (P[2].rageLvl == 1) {
         if (P[2].palID == 1) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal1_2b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal1_2b.palette->data, CPU);
         }
         if (P[2].palID == 2) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal2_2b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal2_2b.palette->data, CPU);
         }
         if (P[2].palID == 3) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal3_2b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal3_2b.palette->data, CPU);
         }
         if (P[2].palID == 4) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal4_2b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal4_2b.palette->data, CPU);
         }
         if (P[2].palID == 5) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal5_2b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal5_2b.palette->data, CPU);
         }
         if (P[2].palID == 6) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal6_2b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal6_2b.palette->data, CPU);
         }
         if (P[2].palID == 7) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal7_2b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal7_2b.palette->data, CPU);
         }
         if (P[2].palID == 8) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal8_2b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal8_2b.palette->data, CPU);
         }
       }
       if (P[2].rageLvl == 2) {
         if (P[2].palID == 1) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal1_3b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal1_3b.palette->data, CPU);
         }
         if (P[2].palID == 2) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal2_3b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal2_3b.palette->data, CPU);
         }
         if (P[2].palID == 3) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal3_3b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal3_3b.palette->data, CPU);
         }
         if (P[2].palID == 4) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal4_3b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal4_3b.palette->data, CPU);
         }
         if (P[2].palID == 5) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal5_3b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal5_3b.palette->data, CPU);
         }
         if (P[2].palID == 6) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal6_3b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal6_3b.palette->data, CPU);
         }
         if (P[2].palID == 7) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal7_3b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal7_3b.palette->data, CPU);
         }
         if (P[2].palID == 8) {
-          VDP_setPalette(PAL3, spr_haohmaru_pal8_3b.palette->data);
+          PAL_setPalette(PAL3, spr_haohmaru_pal8_3b.palette->data, CPU);
         }
       }
     }
@@ -10250,44 +10882,55 @@ void FUNCAO_INICIALIZACAO() {
   gInd_tileset = 1; // Antes de carregar o Background, definir o ponto de inicio
                     // de carregamento na VRAM
 
-  // Load the tileset 'BGB1'
-  if (gBG_Choice == 1) {
-    gBG_Width = 560; // Largura do Cenario em pixels!
-    gScrollValue = -(gBG_Width - 320) / 2;
-    VDP_loadTileSet(gfx_bgb1A.tileset, gInd_tileset, DMA);
-    VDP_setTileMapEx(BG_B, gfx_bgb1A.tilemap,
-                     TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset), 0, 0,
-                     0, 0, gBG_Width / 8, 28, DMA_QUEUE);
-    VDP_setPalette(PAL0, gfx_bgb1A.palette->data);
-    gInd_tileset += gfx_bgb1A.tileset->numTile;
-  }
+  if (IAP2 == FALSE) {
+    // Load the tileset 'BGB1'
+    if (gBG_Choice == 1) {
+      gBG_Width = 512; // Largura do Cenario em pixels!
+      gScrollValue = -(gBG_Width - 320) / 2;
+      VDP_loadTileSet(gfx_bgb1A.tileset, gInd_tileset, DMA);
+      VDP_setTileMapEx(BG_B, gfx_bgb1A.tilemap,
+                       TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset), 0,
+                       0, 0, 0, gBG_Width / 8, 28, DMA_QUEUE);
+      PAL_setPalette(PAL0, gfx_bgb1A.palette->data, CPU);
+      gInd_tileset += gfx_bgb1A.tileset->numTile;
+    }
 
-  // Load the tileset 'BGB2'
-  if (gBG_Choice == 2) {
-    gBG_Width = 320; // Largura do Cenario em pixels!
-    gScrollValue = -(gBG_Width - 320) / 2;
-    VDP_loadTileSet(gfx_bgb2.tileset, gInd_tileset, DMA);
-    VDP_setTileMapEx(BG_B, gfx_bgb2.tilemap,
-                     TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset), 0, 0,
-                     0, 0, gBG_Width / 8, 28, DMA_QUEUE);
-    VDP_setPalette(PAL0, gfx_bgb2.palette->data);
-    gInd_tileset += gfx_bgb2.tileset->numTile;
-  }
+    // Load the tileset 'BGB2'
+    if (gBG_Choice == 2) {
+      gBG_Width = 512; // Largura do Cenario em pixels!
+      gScrollValue = -(gBG_Width - 320) / 2;
+      VDP_loadTileSet(gfx_bgb2.tileset, gInd_tileset, DMA);
+      VDP_setTileMapEx(BG_B, gfx_bgb2.tilemap,
+                       TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset), 0,
+                       0, 0, 0, gBG_Width / 8, 28, DMA_QUEUE);
+      PAL_setPalette(PAL0, gfx_bgb2.palette->data, CPU);
+      gInd_tileset += gfx_bgb2.tileset->numTile;
+    }
 
-  // Load the tileset 'BGB3'
-  if (gBG_Choice == 3) {
-    gBG_Width = 624; // Largura do Cenario em pixels!
+    // Load the tileset 'BGB3'
+    if (gBG_Choice == 3) {
+      gBG_Width = 512; // Largura do Cenario em pixels!
+      gScrollValue = -(gBG_Width - 320) / 2;
+      VDP_loadTileSet(gfx_bgb3.tileset, gInd_tileset, DMA);
+      VDP_setTileMapEx(BG_B, gfx_bgb3.tilemap,
+                       TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset), 0,
+                       0, 0, 0, gBG_Width / 8, 28, DMA_QUEUE);
+      PAL_setPalette(PAL0, gfx_bgb3.palette->data, CPU);
+      gInd_tileset += gfx_bgb3.tileset->numTile;
+    }
+  } else if (IAP2 == TRUE) {
+    gBG_Width = 512; // Largura do Cenario em pixels!
     gScrollValue = -(gBG_Width - 320) / 2;
-    VDP_loadTileSet(gfx_bgb3.tileset, gInd_tileset, DMA);
-    VDP_setTileMapEx(BG_B, gfx_bgb3.tilemap,
+    VDP_loadTileSet(BGfase[fase]->tileset, gInd_tileset, DMA);
+    VDP_setTileMapEx(BG_B, BGfase[fase]->tilemap,
                      TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, gInd_tileset), 0, 0,
-                     0, 0, gBG_Width / 8, 28, DMA_QUEUE);
-    VDP_setPalette(PAL0, gfx_bgb3.palette->data);
-    gInd_tileset += gfx_bgb3.tileset->numTile;
+                     0, 0, 64, 28, DMA_QUEUE);
+    gInd_tileset += BGfase[fase]->tileset->numTile;
+    PAL_setPalette(PAL0, BGfase[fase]->palette->data, CPU);
   }
 
   // load palette HUD in PAL1, GFX load AFTER round intro...
-  VDP_setPalette(PAL1, spr_n0.palette->data);
+  PAL_setPalette(PAL1, spr_n0.palette->data, CPU);
 
   gAlturaPiso = (224 / 20) * 19;
 
@@ -10342,17 +10985,21 @@ void FUNCAO_INICIALIZACAO() {
   P[2].cicloInteracoesGravidadeCont = 0;
   P[2].fBallActive = 0;
 
-  P[1].sombra = SPR_addSpriteExSafe(
-      &spr_sombra, P[1].x - P[1].axisX, P[1].y - 2,
-      TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-      SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+  // load tilesets
+  VDP_loadTileSet(spr_sombra.animations[0]->frames[0]->tileset, 1522, TRUE);
+
+  P[1].sombra = SPR_addSprite(&spr_sombra, P[1].x - P[1].axisX, P[1].y - 2,
+                              TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+  SPR_setAutoTileUpload(P[1].sombra, FALSE);
+  SPR_setFrame(P[1].sombra, 0);
+  SPR_setVRAMTileIndex(P[1].sombra, 1522);
+
   if (gSombraStyle == 2) {
-    P[2].sombra = SPR_addSpriteExSafe(
-        &spr_sombra, P[2].x - P[1].axisX, P[2].y - 2,
-        TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-        SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-            SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+    P[2].sombra = SPR_addSprite(&spr_sombra, P[2].x - P[1].axisX, P[2].y - 2,
+                                TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+    SPR_setAutoTileUpload(P[2].sombra, FALSE);
+    SPR_setFrame(P[2].sombra, 0);
+    SPR_setVRAMTileIndex(P[2].sombra, 1522);
   }
 
   // reset Graphic Elements
@@ -10440,84 +11087,79 @@ void FUNCAO_INICIALIZACAO() {
   gClockTimer = 60; // Relogio, timer de 1 seg
   gClockLTimer = 9; // Digito esquerdo do Relogio
   gClockRTimer = 9; // Digito direito do Relogio
-  gRound = 1;       // Round Number
+
+  gRound = 1; // Round Number
 
   // Marcadores de Vitoria e Retratos da Interface ingame
-  GE[12].sprite = SPR_addSpriteExSafe(
-      &spr_icon_victory, 26 - 8, 25, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-      SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-  SPR_setDepth(GE[12].sprite, 255);
-  SPR_setVRAMTileIndex(
-      GE[12].sprite, 1530); // define uma posicao especifica para o GFX na VRAM
-  GE[13].sprite = SPR_addSpriteExSafe(
-      &spr_icon_victory, 52 - 8, 25, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-      SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-  SPR_setDepth(GE[13].sprite, 255);
-  SPR_setVRAMTileIndex(
-      GE[13].sprite, 1530); // define uma posicao especifica para o GFX na VRAM
-  GE[14].sprite = SPR_addSpriteExSafe(
-      &spr_icon_victory, 240 + 8 + 4, 25, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-      1,
-      SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-  SPR_setDepth(GE[14].sprite, 255);
-  SPR_setVRAMTileIndex(
-      GE[14].sprite, 1530); // define uma posicao especifica para o GFX na VRAM
-  GE[15].sprite = SPR_addSpriteExSafe(
-      &spr_icon_victory, 266 + 8 + 4, 25, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-      1,
-      SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-  SPR_setDepth(GE[15].sprite, 255);
-  SPR_setVRAMTileIndex(
-      GE[15].sprite, 1530); // define uma posicao especifica para o GFX na VRAM
+  /*GE[12].sprite = SPR_addSpriteExSafe(&spr_icon_victory, 26-8, 25,
+  TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY |
+  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+  SPR_FLAG_AUTO_SPRITE_ALLOC); SPR_setDepth(GE[12].sprite, 255 );
+  SPR_setVRAMTileIndex(GE[12].sprite, 1530); //define uma posicao especifica
+  para o GFX na VRAM GE[13].sprite = SPR_addSpriteExSafe(&spr_icon_victory,
+  52-8, 25, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY |
+  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+  SPR_FLAG_AUTO_SPRITE_ALLOC); SPR_setDepth(GE[13].sprite, 255 );
+  SPR_setVRAMTileIndex(GE[13].sprite, 1530); //define uma posicao especifica
+  para o GFX na VRAM GE[14].sprite =
+  SPR_addSpriteExSafe(&spr_icon_victory,240+8+4, 25, TILE_ATTR(PAL1, FALSE,
+  FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+  SPR_setDepth(GE[14].sprite, 255 );
+  SPR_setVRAMTileIndex(GE[14].sprite, 1530); //define uma posicao especifica
+  para o GFX na VRAM GE[15].sprite =
+  SPR_addSpriteExSafe(&spr_icon_victory,266+8+4, 25, TILE_ATTR(PAL1, FALSE,
+  FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+  SPR_setDepth(GE[15].sprite, 255 );
+  SPR_setVRAMTileIndex(GE[15].sprite, 1530); //define uma posicao especifica
+  para o GFX na VRAM*/
+
+  // load tilesets
+  VDP_loadTileSet(spr_icon_victory.animations[0]->frames[0]->tileset, 1530,
+                  TRUE);
+
+  u8 zz;
+
+  for (zz = 12; zz <= 15; zz++) {
+    GE[zz].sprite = SPR_addSprite(&spr_icon_victory, 320, 224,
+                                  TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+    SPR_setAutoTileUpload(GE[zz].sprite, FALSE);
+    SPR_setFrame(GE[zz].sprite, 0);
+    SPR_setVRAMTileIndex(GE[zz].sprite, 1530);
+  }
 
   // Retratos
-  if (P[1].id == 1) {
-    GE[16].sprite = SPR_addSpriteExSafe(
-        &spr_haohmaru_000, 0, 24, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-        SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-            SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-  }
-  if (P[1].id == 2) {
-    GE[16].sprite = SPR_addSpriteExSafe(
-        &spr_gillius_000, 0, 24, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-        SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-            SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-  }
-  SPR_setDepth(GE[16].sprite, 255);
-  SPR_setVRAMTileIndex(
-      GE[16].sprite, 1522); // define uma posicao especifica para o GFX na VRAM
+  /*if(P[1].id==1){ GE[16].sprite = SPR_addSpriteExSafe(&spr_haohmaru_000, 0,
+  24, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY |
+  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+  SPR_FLAG_AUTO_SPRITE_ALLOC); } if(P[1].id==2){ GE[16].sprite =
+  SPR_addSpriteExSafe(&spr_gillius_000,  0, 24, TILE_ATTR(PAL2, FALSE, FALSE,
+  FALSE), 1, SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC); }
+  SPR_setDepth(GE[16].sprite, 255 );
+  SPR_setVRAMTileIndex(GE[16].sprite, 1522); //define uma posicao especifica
+  para o GFX na VRAM
 
-  if (P[2].id == 1) {
-    GE[17].sprite = SPR_addSpriteExSafe(
-        &spr_haohmaru_000, 304, 24, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-        SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-            SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-  }
-  if (P[2].id == 2) {
-    GE[17].sprite = SPR_addSpriteExSafe(
-        &spr_gillius_000, 304, 24, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-        SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-            SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-  }
-  if (P[1].id == P[2].id) {
-    SPR_setVRAMTileIndex(GE[17].sprite, 1522);
-  } // SE P1 e P2 IGUAIS, ENTAO... define uma posicao especifica para o GFX na
-    // VRAM
-  SPR_setDepth(GE[17].sprite, 255);
-  SPR_setHFlip(GE[17].sprite, TRUE);
+  if(P[2].id==1){ GE[17].sprite = SPR_addSpriteExSafe(&spr_haohmaru_000, 304,
+  24, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY |
+  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+  SPR_FLAG_AUTO_SPRITE_ALLOC); } if(P[2].id==2){ GE[17].sprite =
+  SPR_addSpriteExSafe(&spr_gillius_000,  304, 24, TILE_ATTR(PAL3, FALSE, FALSE,
+  FALSE), 1, SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC); }
+  if(P[1].id==P[2].id){ SPR_setVRAMTileIndex(GE[17].sprite, 1522); } //SE P1 e
+  P2 IGUAIS, ENTAO... define uma posicao especifica para o GFX na VRAM
+  SPR_setDepth(GE[17].sprite, 255 );
+  SPR_setHFlip(GE[17].sprite, TRUE);*/
 
   // Desliga a visibilidade destes elementos de HUD (Marcadores de Vitoria e
-  // Retratos da Interface ingame)
-  SPR_setVisibility(GE[12].sprite, HIDDEN);
-  SPR_setVisibility(GE[13].sprite, HIDDEN);
-  SPR_setVisibility(GE[14].sprite, HIDDEN);
-  SPR_setVisibility(GE[15].sprite, HIDDEN);
-  SPR_setVisibility(GE[16].sprite, HIDDEN);
-  SPR_setVisibility(GE[17].sprite, HIDDEN);
+  // Retratos da Interface ingame) SPR_setVisibility(GE[12].sprite, HIDDEN);
+  // SPR_setVisibility(GE[13].sprite, HIDDEN);
+  // SPR_setVisibility(GE[14].sprite, HIDDEN);
+  // SPR_setVisibility(GE[15].sprite, HIDDEN);
+  // SPR_setVisibility(GE[16].sprite, HIDDEN);
+  // SPR_setVisibility(GE[17].sprite, HIDDEN);
 
   ClockL = SPR_addSpriteEx(
       &spr_n9, 144, 32, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
@@ -10657,26 +11299,40 @@ void FUNCAO_INICIALIZACAO() {
   SPR_setDepth(Rect2HB1_Q4, 1);
 
   // Intro State, Player Start
-  P[1].sprite = SPR_addSpriteExSafe(
-      &spr_point, P[1].x - P[1].axisX, P[1].y - P[1].axisY,
-      TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-      SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-  P[2].sprite = SPR_addSpriteExSafe(
-      &spr_point, P[2].x - P[2].axisX, P[2].y - P[2].axisY,
-      TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-      SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+  // P[1].sprite = SPR_addSpriteExSafe(&spr_point, P[1].x-P[1].axisX,
+  // P[1].y-P[1].axisY, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
+  // SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+  // SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC); P[2].sprite =
+  // SPR_addSpriteExSafe(&spr_point, P[2].x-P[2].axisX, P[2].y-P[2].axisY,
+  // TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY |
+  // SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+  // SPR_FLAG_AUTO_SPRITE_ALLOC);
+
+  VDP_loadTileSet(spr_point.animations[0]->frames[0]->tileset, 1521, TRUE);
+
+  P[1].sprite =
+      SPR_addSprite(&spr_point, P[1].x - P[1].axisX, P[1].y - P[1].axisY,
+                    TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
+  SPR_setAutoTileUpload(P[1].sprite, FALSE);
+  SPR_setFrame(P[1].sprite, 0);
+  SPR_setVRAMTileIndex(P[1].sprite, 1521);
+
+  P[2].sprite =
+      SPR_addSprite(&spr_point, P[2].x - P[2].axisX, P[2].y - P[2].axisY,
+                    TILE_ATTR(PAL3, FALSE, FALSE, FALSE));
+  SPR_setAutoTileUpload(P[2].sprite, FALSE);
+  SPR_setFrame(P[2].sprite, 0);
+  SPR_setVRAMTileIndex(P[2].sprite, 1521);
 
   // Se Player1 e Player2 com o mesmo personagem, desliguei a intro, pois elas
-  // somadas, usam muitos tiles /*samsho2*/
-  if (P[1].id != P[2].id) {
-    PLAYER_STATE(1, 610);
-    PLAYER_STATE(2, 610);
-  } else {
-    PLAYER_STATE(1, 100);
-    PLAYER_STATE(2, 100);
-  }
+  // somadas, usam muitos tiles /*samsho2*/ if(P[1].id!=P[2].id)
+  //{
+  PLAYER_STATE(1, 610);
+  PLAYER_STATE(2, 610);
+  //}else{
+  //	PLAYER_STATE(1,100);
+  //	PLAYER_STATE(2,100);
+  //}
 
   SPR_setHFlip(P[2].sprite, TRUE);
 
@@ -10690,104 +11346,109 @@ void FUNCAO_INICIALIZACAO() {
     P[2].palID = 2; // Por padrao, P2 fica com a paleta 2 'cor alternativa'
   }
 
+  if (IAP2) {
+    P[1].palID = 1;
+    P[2].palID = 2;
+  }
+
   if (P[1].id == 1 && P[1].palID == 1) {
-    VDP_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data);
+    PAL_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data, CPU);
   } // haohmaru
   if (P[1].id == 1 && P[1].palID == 2) {
-    VDP_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data);
+    PAL_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data, CPU);
   } // haohmaru
   if (P[1].id == 1 && P[1].palID == 3) {
-    VDP_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data);
+    PAL_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data, CPU);
   } // haohmaru
   if (P[1].id == 1 && P[1].palID == 4) {
-    VDP_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data);
+    PAL_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data, CPU);
   } // haohmaru
   if (P[1].id == 1 && P[1].palID == 5) {
-    VDP_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data);
+    PAL_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data, CPU);
   } // haohmaru
   if (P[1].id == 1 && P[1].palID == 6) {
-    VDP_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data);
+    PAL_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data, CPU);
   } // haohmaru
   if (P[1].id == 1 && P[1].palID == 7) {
-    VDP_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data);
+    PAL_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data, CPU);
   } // haohmaru
   if (P[1].id == 1 && P[1].palID == 8) {
-    VDP_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data);
+    PAL_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data, CPU);
   } // haohmaru
 
   if (P[1].id == 2 && P[1].palID == 1) {
-    VDP_setPalette(PAL2, spr_gillius_pal1.palette->data);
+    PAL_setPalette(PAL2, spr_gillius_pal1.palette->data, CPU);
   } // gillius
   if (P[1].id == 2 && P[1].palID == 2) {
-    VDP_setPalette(PAL2, spr_gillius_pal2.palette->data);
+    PAL_setPalette(PAL2, spr_gillius_pal2.palette->data, CPU);
   } // gillius
   if (P[1].id == 2 && P[1].palID == 3) {
-    VDP_setPalette(PAL2, spr_gillius_pal3.palette->data);
+    PAL_setPalette(PAL2, spr_gillius_pal3.palette->data, CPU);
   } // gillius
   if (P[1].id == 2 && P[1].palID == 4) {
-    VDP_setPalette(PAL2, spr_gillius_pal4.palette->data);
+    PAL_setPalette(PAL2, spr_gillius_pal4.palette->data, CPU);
   } // gillius
   if (P[1].id == 2 && P[1].palID == 5) {
-    VDP_setPalette(PAL2, spr_gillius_pal5.palette->data);
+    PAL_setPalette(PAL2, spr_gillius_pal5.palette->data, CPU);
   } // gillius
   if (P[1].id == 2 && P[1].palID == 6) {
-    VDP_setPalette(PAL2, spr_gillius_pal6.palette->data);
+    PAL_setPalette(PAL2, spr_gillius_pal6.palette->data, CPU);
   } // gillius
   if (P[1].id == 2 && P[1].palID == 7) {
-    VDP_setPalette(PAL2, spr_gillius_pal7.palette->data);
+    PAL_setPalette(PAL2, spr_gillius_pal7.palette->data, CPU);
   } // gillius
   if (P[1].id == 2 && P[1].palID == 8) {
-    VDP_setPalette(PAL2, spr_gillius_pal8.palette->data);
+    PAL_setPalette(PAL2, spr_gillius_pal8.palette->data, CPU);
   } // gillius
 
   if (P[2].id == 1 && P[2].palID == 1) {
-    VDP_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data);
+    PAL_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data, CPU);
   } // haohmaru
   if (P[2].id == 1 && P[2].palID == 2) {
-    VDP_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data);
+    PAL_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data, CPU);
   } // haohmaru
   if (P[2].id == 1 && P[2].palID == 3) {
-    VDP_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data);
+    PAL_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data, CPU);
   } // haohmaru
   if (P[2].id == 1 && P[2].palID == 4) {
-    VDP_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data);
+    PAL_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data, CPU);
   } // haohmaru
   if (P[2].id == 1 && P[2].palID == 5) {
-    VDP_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data);
+    PAL_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data, CPU);
   } // haohmaru
   if (P[2].id == 1 && P[2].palID == 6) {
-    VDP_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data);
+    PAL_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data, CPU);
   } // haohmaru
   if (P[2].id == 1 && P[2].palID == 7) {
-    VDP_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data);
+    PAL_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data, CPU);
   } // haohmaru
   if (P[2].id == 1 && P[2].palID == 8) {
-    VDP_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data);
+    PAL_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data, CPU);
   } // haohmaru
 
   if (P[2].id == 2 && P[2].palID == 1) {
-    VDP_setPalette(PAL3, spr_gillius_pal1.palette->data);
+    PAL_setPalette(PAL3, spr_gillius_pal1.palette->data, CPU);
   } // gillius
   if (P[2].id == 2 && P[2].palID == 2) {
-    VDP_setPalette(PAL3, spr_gillius_pal2.palette->data);
+    PAL_setPalette(PAL3, spr_gillius_pal2.palette->data, CPU);
   } // gillius
   if (P[2].id == 2 && P[2].palID == 3) {
-    VDP_setPalette(PAL3, spr_gillius_pal3.palette->data);
+    PAL_setPalette(PAL3, spr_gillius_pal3.palette->data, CPU);
   } // gillius
   if (P[2].id == 2 && P[2].palID == 4) {
-    VDP_setPalette(PAL3, spr_gillius_pal4.palette->data);
+    PAL_setPalette(PAL3, spr_gillius_pal4.palette->data, CPU);
   } // gillius
   if (P[2].id == 2 && P[2].palID == 5) {
-    VDP_setPalette(PAL3, spr_gillius_pal5.palette->data);
+    PAL_setPalette(PAL3, spr_gillius_pal5.palette->data, CPU);
   } // gillius
   if (P[2].id == 2 && P[2].palID == 6) {
-    VDP_setPalette(PAL3, spr_gillius_pal6.palette->data);
+    PAL_setPalette(PAL3, spr_gillius_pal6.palette->data, CPU);
   } // gillius
   if (P[2].id == 2 && P[2].palID == 7) {
-    VDP_setPalette(PAL3, spr_gillius_pal7.palette->data);
+    PAL_setPalette(PAL3, spr_gillius_pal7.palette->data, CPU);
   } // gillius
   if (P[2].id == 2 && P[2].palID == 8) {
-    VDP_setPalette(PAL3, spr_gillius_pal8.palette->data);
+    PAL_setPalette(PAL3, spr_gillius_pal8.palette->data, CPU);
   } // gillius
 
   // AXIS
@@ -10799,16 +11460,18 @@ void FUNCAO_INICIALIZACAO() {
     SPR_releaseSprite(GE[2].sprite);
     GE[2].sprite = NULL;
   }
-  GE[1].sprite = SPR_addSpriteExSafe(
-      &spr_point, P[1].x - 4, P[1].y - 5, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-      1,
-      SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-  GE[2].sprite = SPR_addSpriteExSafe(
-      &spr_point, P[2].x - 4, P[2].y - 5, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-      1,
-      SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+  GE[1].sprite = SPR_addSprite(&spr_point, P[1].x - 4, P[1].y - 5,
+                               TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+  SPR_setAutoTileUpload(GE[1].sprite, FALSE);
+  SPR_setFrame(GE[1].sprite, 0);
+  SPR_setVRAMTileIndex(GE[1].sprite, 1521);
+
+  GE[2].sprite = SPR_addSprite(&spr_point, P[2].x - 4, P[2].y - 5,
+                               TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+  SPR_setAutoTileUpload(GE[2].sprite, FALSE);
+  SPR_setFrame(GE[2].sprite, 0);
+  SPR_setVRAMTileIndex(GE[2].sprite, 1521);
+
   SPR_setVisibility(GE[1].sprite, HIDDEN);
   SPR_setVisibility(GE[2].sprite, HIDDEN);
 
@@ -10827,46 +11490,35 @@ void FUNCAO_INICIALIZACAO() {
 }
 
 void FUNCAO_ROUND_INIT() {
+
+  pausarJogo = 0;
+
   /*samsho2*/ //-Intro Rotine -BEGIN-//
-  if (gFrames == 3) {
+  /*if(gFrames== 3){
 
-    // clear sprite
-    if (HUD_Lethers) {
-      SPR_releaseSprite(HUD_Lethers);
-      HUD_Lethers = NULL;
-    }
+         //clear sprite
+         if (HUD_Lethers){ SPR_releaseSprite(HUD_Lethers); HUD_Lethers = NULL; }
 
-    // Gairyu Isle Evening
-    if (gBG_Choice == 1) {
-      HUD_Lethers = SPR_addSpriteEx(
-          &spr_BG_desc1, 72, 48, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-              SPR_FLAG_AUTO_SPRITE_ALLOC);
-      SPR_setDepth(HUD_Lethers, 1);
-    }
-    // Gairyu Isle Night
-    if (gBG_Choice == 2) {
-      HUD_Lethers = SPR_addSpriteEx(
-          &spr_BG_desc2, 72, 48, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-              SPR_FLAG_AUTO_SPRITE_ALLOC);
-      SPR_setDepth(HUD_Lethers, 1);
-    }
-    // Himalaya Top of The Montain
-    if (gBG_Choice == 3) {
-      HUD_Lethers = SPR_addSpriteEx(
-          &spr_BG_desc3, 72, 48, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-              SPR_FLAG_AUTO_SPRITE_ALLOC);
-      SPR_setDepth(HUD_Lethers, 1);
-    }
+         //Gairyu Isle Evening
+         if(gBG_Choice==1){ HUD_Lethers = SPR_addSpriteEx(&spr_BG_desc1, 72, 48,
+  TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1, SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE
+  | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+  SPR_setDepth(HUD_Lethers, 1 ); }
+         //Gairyu Isle Night
+         if(gBG_Choice==2){ HUD_Lethers = SPR_addSpriteEx(&spr_BG_desc2, 72, 48,
+  TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1, SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE
+  | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+  SPR_setDepth(HUD_Lethers, 1 ); }
+         //Himalaya Top of The Montain
+         if(gBG_Choice==3){ HUD_Lethers = SPR_addSpriteEx(&spr_BG_desc3, 72, 48,
+  TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1, SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE
+  | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+  SPR_setDepth(HUD_Lethers, 1 ); }
   }
-  if (gFrames == 63) {
-    SPR_releaseSprite(HUD_Lethers);
-  }
+  if(gFrames== 63){ SPR_releaseSprite(HUD_Lethers); }*/
 
   // start SFX
   if (gFrames == 64 && gRound == 1) {
@@ -10874,13 +11526,14 @@ void FUNCAO_ROUND_INIT() {
     XGM_startPlayPCM(INGAME_SFX, 1, SOUND_PCM_CH3);
   }
 
+  // if(gFrames== 65){ HUD_Lethers = SPR_addSpriteEx(&spr_engarde, 96, 64,
+  // TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+  // SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+  // SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+  // SPR_FLAG_AUTO_SPRITE_ALLOC); SPR_setDepth(HUD_Lethers, 1 ); }
   if (gFrames == 65) {
-    HUD_Lethers = SPR_addSpriteEx(
-        &spr_engarde, 96, 64, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-        SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-            SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-            SPR_FLAG_AUTO_SPRITE_ALLOC);
-    SPR_setDepth(HUD_Lethers, 1);
+    HUD_Lethers = SPR_addSprite(&spr_engarde, 96, 64,
+                                TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
   }
   if (gFrames == 70) {
     SPR_setAnimAndFrame(HUD_Lethers, 0, 1);
@@ -10928,45 +11581,49 @@ void FUNCAO_ROUND_INIT() {
     SPR_releaseSprite(HUD_Lethers);
   }
   if (gFrames == 193) {
+    /*if(gRound==1){ HUD_Lethers = SPR_addSpriteEx(&spr_duel1, 112, 64,
+    TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+    SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+    SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+    SPR_FLAG_AUTO_SPRITE_ALLOC); SPR_setDepth(HUD_Lethers, 1 ); } if(gRound==2){
+    HUD_Lethers = SPR_addSpriteEx(&spr_duel2, 112, 64, TILE_ATTR(PAL1, FALSE,
+    FALSE, FALSE), 1, SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE |
+    SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+    SPR_setDepth(HUD_Lethers, 1 ); } if(gRound==3){ HUD_Lethers =
+    SPR_addSpriteEx(&spr_duel3, 112, 64, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
+    1, SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+    SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+    SPR_FLAG_AUTO_SPRITE_ALLOC); SPR_setDepth(HUD_Lethers, 1 ); } if(gRound==4){
+    HUD_Lethers = SPR_addSpriteEx(&spr_duel4, 112, 64, TILE_ATTR(PAL1, FALSE,
+    FALSE, FALSE), 1, SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE |
+    SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+    SPR_setDepth(HUD_Lethers, 1 ); } if(gRound==5){ HUD_Lethers =
+    SPR_addSpriteEx(&spr_duel5, 112, 64, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
+    1, SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+    SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+    SPR_FLAG_AUTO_SPRITE_ALLOC); SPR_setDepth(HUD_Lethers, 1 ); }*/
+
     if (gRound == 1) {
-      HUD_Lethers = SPR_addSpriteEx(
-          &spr_duel1, 112, 64, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-              SPR_FLAG_AUTO_SPRITE_ALLOC);
-      SPR_setDepth(HUD_Lethers, 1);
+      HUD_Lethers = SPR_addSprite(&spr_duel1, 112, 64,
+                                  TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
     }
     if (gRound == 2) {
-      HUD_Lethers = SPR_addSpriteEx(
-          &spr_duel2, 112, 64, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-              SPR_FLAG_AUTO_SPRITE_ALLOC);
-      SPR_setDepth(HUD_Lethers, 1);
+      HUD_Lethers = SPR_addSprite(&spr_duel2, 112, 64,
+                                  TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
     }
     if (gRound == 3) {
-      HUD_Lethers = SPR_addSpriteEx(
-          &spr_duel3, 112, 64, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-              SPR_FLAG_AUTO_SPRITE_ALLOC);
-      SPR_setDepth(HUD_Lethers, 1);
+      HUD_Lethers = SPR_addSprite(&spr_duel3, 112, 64,
+                                  TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
     }
     if (gRound == 4) {
-      HUD_Lethers = SPR_addSpriteEx(
-          &spr_duel4, 112, 64, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-              SPR_FLAG_AUTO_SPRITE_ALLOC);
-      SPR_setDepth(HUD_Lethers, 1);
+      HUD_Lethers = SPR_addSprite(&spr_duel4, 112, 64,
+                                  TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
     }
     if (gRound == 5) {
-      HUD_Lethers = SPR_addSpriteEx(
-          &spr_duel5, 112, 64, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-              SPR_FLAG_AUTO_SPRITE_ALLOC);
-      SPR_setDepth(HUD_Lethers, 1);
+      HUD_Lethers = SPR_addSprite(&spr_duel5, 112, 64,
+                                  TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
     }
   }
   if (gFrames == 195) {
@@ -11014,13 +11671,14 @@ void FUNCAO_ROUND_INIT() {
   if (gFrames == 251) {
     SPR_releaseSprite(HUD_Lethers);
   }
+  // if(gFrames==293){ HUD_Lethers = SPR_addSpriteEx(&spr_begin, 120, 64,
+  // TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+  // SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+  // SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+  // SPR_FLAG_AUTO_SPRITE_ALLOC); SPR_setDepth(HUD_Lethers, 1 ); }
   if (gFrames == 293) {
-    HUD_Lethers = SPR_addSpriteEx(
-        &spr_begin, 120, 64, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-        SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-            SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-            SPR_FLAG_AUTO_SPRITE_ALLOC);
-    SPR_setDepth(HUD_Lethers, 1);
+    HUD_Lethers = SPR_addSprite(&spr_begin, 120, 64,
+                                TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
   }
   if (gFrames == 295) {
     SPR_setAnimAndFrame(HUD_Lethers, 0, 1);
@@ -11040,20 +11698,39 @@ void FUNCAO_ROUND_INIT() {
 
   if (gFrames == 302 && gRound == 1) {
     // comeca a tocar a musica
-    XGM_startPlay(music_stage1);
-    XGM_isPlaying(); // FIX
+    if (IAP2) {
+      if (P[2].id == 1) {
+        XGM_startPlay(music_stage1);
+        XGM_isPlaying();
+      } // FIX
+      else if (P[2].id == 2) {
+        XGM_startPlay(music_battle);
+        XGM_isPlaying();
+      } // FIX
+    } else {
+      XGM_startPlay(music_stage1);
+      XGM_isPlaying();
+    }
   }
 
   if (gFrames == 352) {
     SPR_setVisibility(ClockL, VISIBLE); // reativado apos a intro...
     SPR_setVisibility(ClockR, VISIBLE);
 
+    if (P[1].wins == 1) {
+      SPR_setPosition(GE[12].sprite, 26 - 8, 25);
+    }
+
+    if (P[2].wins == 1) {
+      SPR_setPosition(GE[14].sprite, 240 + 8 + 4, 25);
+    }
+
     // BG_A
     VDP_loadTileSet(gfx_bga.tileset, gInd_tileset, DMA); // Load the tileset
     VDP_setTileMapEx(BG_A, gfx_bga.tilemap,
                      TILE_ATTR_FULL(PAL1, 1, FALSE, FALSE, gInd_tileset), 0, 0,
                      0, 0, 40, 28, DMA_QUEUE);
-    VDP_setPalette(PAL1, gfx_bga.palette->data);
+    PAL_setPalette(PAL1, gfx_bga.palette->data, CPU);
     gInd_tileset += gfx_bga.tileset->numTile;
 
     // Barras de Energia
@@ -11074,8 +11751,8 @@ void FUNCAO_ROUND_INIT() {
           1664); // define uma posicao especifica para o GFX na VRAM
 
       // Retratos
-      SPR_setVisibility(GE[16].sprite, VISIBLE);
-      SPR_setVisibility(GE[17].sprite, VISIBLE);
+      // SPR_setVisibility(GE[16].sprite, VISIBLE);
+      // SPR_setVisibility(GE[17].sprite, VISIBLE);
     }
 
     GE[5].sprite = SPR_addSpriteExSafe(
@@ -11105,27 +11782,33 @@ void FUNCAO_ROUND_INIT() {
         GE[8].sprite,
         1683 + 8); // define uma posicao especifica para o GFX na VRAM
 
-    GE[9].sprite = SPR_addSpriteExSafe(
-        &spr_pow, 22, 192, TILE_ATTR(PAL1, TRUE, FALSE, FALSE), 1,
-        SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-            SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-    GE[10].sprite = SPR_addSpriteExSafe(
-        &spr_pow, 266, 192, TILE_ATTR(PAL1, TRUE, FALSE, FALSE), 1,
-        SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-            SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+    if (GE[9].sprite) {
+      SPR_releaseSprite(GE[9].sprite);
+      GE[9].sprite = NULL;
+    }
+
+    if (GE[10].sprite) {
+      SPR_releaseSprite(GE[10].sprite);
+      GE[10].sprite = NULL;
+    }
+
+    GE[9].sprite =
+        SPR_addSprite(&spr_pow, 320, 224, TILE_ATTR(PAL1, TRUE, FALSE, FALSE));
+    GE[10].sprite =
+        SPR_addSprite(&spr_pow, 320, 224, TILE_ATTR(PAL1, TRUE, FALSE, FALSE));
     SPR_setVRAMTileIndex(
-        GE[9].sprite, 1441); // define uma posicao especifica para o GFX na VRAM
+        GE[9].sprite, 1508); // define uma posicao especifica para o GFX na VRAM
     SPR_setVRAMTileIndex(
         GE[10].sprite,
-        1441); // define uma posicao especifica para o GFX na VRAM *1699
+        1495); // define uma posicao especifica para o GFX na VRAM *1699
 
     SPR_setHFlip(GE[3].sprite, TRUE);
     SPR_setHFlip(GE[5].sprite, TRUE);
     SPR_setHFlip(GE[8].sprite, TRUE);
 
     // POW icons invisiveis (barra de SP vazia)
-    SPR_setVisibility(GE[9].sprite, HIDDEN);
-    SPR_setVisibility(GE[10].sprite, HIDDEN);
+    // SPR_setVisibility(GE[ 9].sprite, HIDDEN);
+    // SPR_setVisibility(GE[10].sprite, HIDDEN);
 
     // DEPTH
     SPR_setDepth(GE[3].sprite, 1);  // Barra de energia P1
@@ -11148,6 +11831,8 @@ void FUNCAO_ROUND_RESTART() {
   if (P[1].wins == 2 || P[2].wins == 2) {
     // A LUTA ACABOU!
 
+    // gPodeMover = 0;
+
     // Atualiza Winner e Lose ID's usadas na tela de WINNER!
     if (P[1].wins == 2) {
       gWinnerID = P[1].id;
@@ -11159,13 +11844,25 @@ void FUNCAO_ROUND_RESTART() {
     }
 
     gRoom = 9;
-    gDescompressionExit = 11;
+
+    if (IAP2) {
+      if (P[2].wins == 2)
+        gDescompressionExit = 11;
+      else
+        gDescompressionExit = 100;
+    } else
+      gDescompressionExit = 11;
+
     gFrames = 1;
     CLEAR_VDP();
   } else {
     // A LUTA NAO ACABOU, + 1 ROUND!
     gPodeMover = 0;
     gRound++;
+
+    if (gRound > 5)
+      gRound = 5;
+
     gFrames = 64; // reinicia o round apos os dizeres com o nome do cenario
                   // /*samsho2*/
     gInd_tileset -= gfx_bga.tileset->numTile;
@@ -11225,13 +11922,22 @@ void FUNCAO_ROUND_RESTART() {
 
 void CLEAR_VDP() {
   SYS_disableInts();
-  SPR_reset();
+
+  PAL_setColorsDMA(0, (u16 *)palette_black, 64);
+
+  SPR_end();
+
+  VDP_init();
+
+  SPR_initEx(848); // 720
+
+  // SPR_reset();
   // VDP_resetSprites();
   // VDP_releaseAllSprites();
   // SPR_defragVRAM();
   VDP_clearPlane(BG_A, TRUE);
   VDP_clearPlane(BG_B, TRUE);
-  VDP_setPaletteColors(0, (u16 *)palette_black, 64);
+
   VDP_setBackgroundColor(0);
   // VDP_resetScreen();
   SYS_enableInts();

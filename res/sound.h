@@ -32,5 +32,7 @@ extern const u8 snd_gillius_750[14848];
 extern const u8 music_stage1[22528];
 extern const u8 music_char_select[4864];
 extern const u8 music_title[6912];
+extern const u8 music_battle[29952];
+extern const u8 music_conclusion[5888];
 
 #endif // _RES_SOUND_H_
