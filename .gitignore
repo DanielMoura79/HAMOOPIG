@@ -1,4 +1,4 @@
-#out/*
+out/*
 .DS_Store
 SGDK
 src/boot/*
