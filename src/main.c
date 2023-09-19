@@ -104,7 +104,7 @@ u8 cursorP1_ID;        // Atribui ID ao player de acordo com o cursor de selecao
 u8 cursorP1ConfirmFX;  // timer auxiliar, ver 'cursorConfirmTimer'
 u8 cursorP1ColorChoice; // Escolha de cor
 u8 cursorP2linha = 1;   // Posicao inicial do P2 na tela de Char Select
-u8 cursorP2coluna = 1;  // Posicao inicial do P2 na tela de Char Select
+u8 cursorP2coluna = 4;  // Posicao inicial do P2 na tela de Char Select
 u8 cursorP2_ID;       // Atribui ID ao player de acordo com o cursor de selecao
 u8 cursorP2ConfirmFX; // timer auxiliar, ver 'cursorConfirmTimer'
 u8 cursorP2ColorChoice; // Escolha de cor
@@ -332,66 +332,278 @@ int main(u16 hard) /************** MAIN **************/
         VDP_setPalette(PAL0, bg_title_bgb.palette->data);
         gInd_tileset += bg_title_bgb.tileset->numTile;
 
-        VDP_loadTileSet(bg_title_bga1.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_A, bg_title_bga1.tilemap,
+        VDP_loadTileSet(bg_title_bga.tileset, gInd_tileset, DMA);
+        VDP_setTileMapEx(BG_A, bg_title_bga.tilemap,
                          TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset), 0,
                          0, 0, 0, 40, 28, DMA_QUEUE);
-        VDP_setPalette(PAL1, bg_title_bga1.palette->data);
-        gInd_tileset += bg_title_bga1.tileset->numTile;
-
-        VDP_setBackgroundColor(
-            15); // Range 0-63 //4 Paletas de 16 cores = 64 cores
+        VDP_setPalette(PAL1, bg_title_bga.palette->data);
+        gInd_tileset += bg_title_bga.tileset->numTile;
 
         GE[1].sprite = SPR_addSpriteExSafe(
-            &bone_terry, 111, 134, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
+            &spr_roman_two, 184, 32, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        VDP_setPalette(PAL2, bone_terry.palette->data);
+        VDP_setPalette(PAL2, spr_roman_two.palette->data);
         SPR_setDepth(GE[1].sprite, 255);
+
+        // Petalas
+
+        VDP_setPalette(PAL3, spr_petala_big.palette->data);
+
+        GE[2].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 40, 40, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setVRAMTileIndex(
+            GE[2].sprite,
+            1451); // define uma posicao especifica para o GFX na VRAM
+
+        GE[3].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 160, 120, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setVRAMTileIndex(
+            GE[3].sprite,
+            1461); // define uma posicao especifica para o GFX na VRAM
+        SPR_setAnimAndFrame(GE[3].sprite, 0, 2);
+
+        GE[4].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 80, 70, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setVRAMTileIndex(
+            GE[4].sprite,
+            1471); // define uma posicao especifica para o GFX na VRAM
+        SPR_setAnimAndFrame(GE[4].sprite, 0, 3);
+
+        GE[5].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 50, 110, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setVRAMTileIndex(
+            GE[5].sprite,
+            1481); // define uma posicao especifica para o GFX na VRAM
+        SPR_setAnimAndFrame(GE[5].sprite, 0, 8);
+
+        GE[6].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 110, 150, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setVRAMTileIndex(
+            GE[6].sprite,
+            1491); // define uma posicao especifica para o GFX na VRAM
+        SPR_setAnimAndFrame(GE[6].sprite, 0, 12);
+
+        GE[7].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 50, 160, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setVRAMTileIndex(
+            GE[7].sprite,
+            1501); // define uma posicao especifica para o GFX na VRAM
+        SPR_setAnimAndFrame(GE[7].sprite, 0, 1);
+
+        GE[8].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 30, 140, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setVRAMTileIndex(
+            GE[8].sprite,
+            1511); // define uma posicao especifica para o GFX na VRAM
+        SPR_setAnimAndFrame(GE[8].sprite, 0, 14);
+
+        GE[9].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 30, 160, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setVRAMTileIndex(
+            GE[9].sprite,
+            1521); // define uma posicao especifica para o GFX na VRAM
+
+        GE[10].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 70, 180, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        // SPR_setVRAMTileIndex(GE[10].sprite, 1521); //define uma posicao
+        // especifica para o GFX na VRAM
+
+        GE[11].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 170, 10, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setAnimAndFrame(GE[11].sprite, 0, 1);
+        GE[12].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 150, 30, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setAnimAndFrame(GE[12].sprite, 0, 3);
+        GE[13].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 180, 50, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setAnimAndFrame(GE[13].sprite, 0, 5);
+        GE[14].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 200, 70, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setAnimAndFrame(GE[14].sprite, 0, 7);
+        GE[15].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 230, 90, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setAnimAndFrame(GE[15].sprite, 0, 9);
+
+        GE[16].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 20, 20, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setVRAMTileIndex(
+            GE[16].sprite,
+            1441); // define uma posicao especifica para o GFX na VRAM
+        SPR_setAnimAndFrame(GE[16].sprite, 0, 6);
+
+        GE[17].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 270, 110, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setAnimAndFrame(GE[17].sprite, 0, 1);
+        GE[18].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 250, 130, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setAnimAndFrame(GE[18].sprite, 0, 3);
+        GE[19].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 280, 200, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setAnimAndFrame(GE[19].sprite, 0, 5);
+        GE[20].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 240, 15, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setAnimAndFrame(GE[20].sprite, 0, 7);
+        GE[21].sprite = SPR_addSpriteExSafe(
+            &spr_petala_big, 300, 180, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setAnimAndFrame(GE[21].sprite, 0, 7);
+
+        // Posicao Inicial Aleatoria das Petalas
+        for (int i = 0; i <= 21; i++) {
+          if (i == 2) {
+            PetalaPX[i] = 219;
+            PetalaPY[i] = 160;
+          }
+          if (i == 3) {
+            PetalaPX[i] = 242;
+            PetalaPY[i] = 108;
+          }
+          if (i == 4) {
+            PetalaPX[i] = 2;
+            PetalaPY[i] = 162;
+          }
+          if (i == 5) {
+            PetalaPX[i] = 313;
+            PetalaPY[i] = 215;
+          }
+          if (i == 6) {
+            PetalaPX[i] = 122;
+            PetalaPY[i] = 107;
+          }
+          if (i == 7) {
+            PetalaPX[i] = 47;
+            PetalaPY[i] = 186;
+          }
+          if (i == 8) {
+            PetalaPX[i] = 129;
+            PetalaPY[i] = 95;
+          }
+          if (i == 9) {
+            PetalaPX[i] = 142;
+            PetalaPY[i] = 42;
+          }
+          if (i == 10) {
+            PetalaPX[i] = 242;
+            PetalaPY[i] = 37;
+          }
+          if (i == 11) {
+            PetalaPX[i] = 86;
+            PetalaPY[i] = 78;
+          }
+          if (i == 12) {
+            PetalaPX[i] = 188;
+            PetalaPY[i] = 130;
+          }
+          if (i == 13) {
+            PetalaPX[i] = 174;
+            PetalaPY[i] = 185;
+          }
+          if (i == 14) {
+            PetalaPX[i] = 319;
+            PetalaPY[i] = 222;
+          }
+          if (i == 15) {
+            PetalaPX[i] = 45;
+            PetalaPY[i] = 213;
+          }
+          if (i == 16) {
+            PetalaPX[i] = 175;
+            PetalaPY[i] = 50;
+          }
+          if (i == 17) {
+            PetalaPX[i] = 265;
+            PetalaPY[i] = 136;
+          }
+          if (i == 18) {
+            PetalaPX[i] = 128;
+            PetalaPY[i] = 133;
+          }
+          if (i == 19) {
+            PetalaPX[i] = 145;
+            PetalaPY[i] = 126;
+          }
+          if (i == 20) {
+            PetalaPX[i] = 60;
+            PetalaPY[i] = 93;
+          }
+          if (i == 21) {
+            PetalaPX[i] = 70;
+            PetalaPY[i] = 20;
+          }
+        }
+
+        // Todas as Petalas acima do algarismo romano 'II' /*samsho2*/
+        for (int i = 2; i <= 21; i++) {
+          SPR_setDepth(GE[i].sprite, 1);
+        }
       }
 
-      if (gFrames == 16 * 1) {
-        gInd_tileset -= bg_title_bga1.tileset->numTile;
-        VDP_loadTileSet(bg_title_bga2.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_A, bg_title_bga2.tilemap,
-                         TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset), 0,
-                         0, 0, 0, 40, 28, DMA_QUEUE);
-        VDP_setPalette(PAL1, bg_title_bga2.palette->data);
-        gInd_tileset += bg_title_bga2.tileset->numTile;
-      }
-
-      if (gFrames == 16 * 2) {
-        gInd_tileset -= bg_title_bga2.tileset->numTile;
-        VDP_loadTileSet(bg_title_bga3.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_A, bg_title_bga3.tilemap,
-                         TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset), 0,
-                         0, 0, 0, 40, 28, DMA_QUEUE);
-        VDP_setPalette(PAL1, bg_title_bga3.palette->data);
-        gInd_tileset += bg_title_bga3.tileset->numTile;
-      }
-
-      if (gFrames == 16 * 3) {
-        gInd_tileset -= bg_title_bga3.tileset->numTile;
-        VDP_loadTileSet(bg_title_bga4.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_A, bg_title_bga4.tilemap,
-                         TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset), 0,
-                         0, 0, 0, 40, 28, DMA_QUEUE);
-        VDP_setPalette(PAL1, bg_title_bga4.palette->data);
-        gInd_tileset += bg_title_bga4.tileset->numTile;
-      }
-
-      if (gFrames == 16 * 4) {
-        gInd_tileset -= bg_title_bga4.tileset->numTile;
-        VDP_loadTileSet(bg_title_bga1.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_A, bg_title_bga1.tilemap,
-                         TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset), 0,
-                         0, 0, 0, 40, 28, DMA_QUEUE);
-        VDP_setPalette(PAL1, bg_title_bga1.palette->data);
-        gInd_tileset += bg_title_bga1.tileset->numTile;
-      }
-
-      if (gFrames >= 16 * 5) {
-        gFrames = 15;
+      // Movimenta as Petalas
+      for (int i = 2; i <= 21; i++) {
+        PetalaPX[i]--;
+        PetalaPY[i]++;
+        if (i == 1 || i == 2) {
+          PetalaPX[i]--;
+          PetalaPY[i]++;
+        }
+        if (i == 5 || i == 10 || i == 15 || i == 20) {
+          PetalaPY[i]++;
+        }
+        if (i == 6 || i == 11 || i == 16 || i == 21) {
+          if (gPing2 == 1) {
+            PetalaPX[i]++;
+          }
+          if (gPing10 >= 1 && gPing10 <= 4) {
+            PetalaPY[i]++;
+          }
+        }
+        if (PetalaPX[i] <= -25) {
+          PetalaPX[i] = 320;
+        }
+        if (PetalaPY[i] > 245) {
+          PetalaPY[i] = -24;
+        }
+        SPR_setPosition(GE[i].sprite, PetalaPX[i], PetalaPY[i]);
       }
 
       if (P[1].key_JOY_START_status == 1 && gFrames > 5) {
@@ -431,9 +643,9 @@ int main(u16 hard) /************** MAIN **************/
         // Fique atento para mudar aqui, ALTERE caso tenha outros personagens no
         // jogo
         P[1].id = 1;
-        cursorP1_ID = 1; // terry selecao inicial
-        P[2].id = 1;
-        cursorP2_ID = 1; // terry selecao inicial
+        cursorP1_ID = 1; // haohmaru selecao inicial
+        P[2].id = 2;
+        cursorP2_ID = 2; // gillius selecao inicial
 
         cursorP1ColorChoice = 1;
         cursorP2ColorChoice = 1;
@@ -452,49 +664,59 @@ int main(u16 hard) /************** MAIN **************/
 
         VDP_loadTileSet(bg_char_select_bga.tileset, gInd_tileset, DMA);
         VDP_setTileMapEx(BG_A, bg_char_select_bga.tilemap,
-                         TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset), 0,
-                         0, 0, 0, 40, 28, DMA_QUEUE);
+                         TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
+                         12, 19, 0, 0, 16, 8, DMA_QUEUE);
         VDP_setPalette(PAL1, bg_char_select_bga.palette->data);
         gInd_tileset += bg_char_select_bga.tileset->numTile;
 
-        // icon VS
+        // Cursores
+        GE[2].sprite = SPR_addSpriteExSafe(
+            &spr_char_sel_cursor_p2, 192, 148,
+            TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        SPR_setVRAMTileIndex(
+            GE[2].sprite,
+            1461); // define uma posicao especifica para o GFX na VRAM
         GE[1].sprite = SPR_addSpriteExSafe(
-            &spr_icon_vs, 136, 104, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+            &spr_char_sel_cursor_p1, 96, 148,
+            TILE_ATTR(PAL0, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         SPR_setVRAMTileIndex(
             GE[1].sprite,
-            1461); // define uma posicao especifica para o GFX na VRAM
-        VDP_setPalette(PAL1, spr_icon_vs.palette->data);
+            1441); // define uma posicao especifica para o GFX na VRAM
 
         // Retratos grandes
         GE[3].sprite = SPR_addSpriteExSafe(
-            &spr_terry_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
+            &spr_haohmaru_001, 16, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        VDP_setPalette(PAL2, spr_terry_001.palette->data);
+        VDP_setPalette(PAL2, spr_haohmaru_001.palette->data);
         GE[4].sprite = SPR_addSpriteExSafe(
-            &spr_terry_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+            &spr_gillius_001, 232, 16, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        VDP_setPalette(PAL3, spr_terry_001.palette->data);
+        VDP_setPalette(PAL3, spr_gillius_001.palette->data);
         SPR_setHFlip(GE[4].sprite, TRUE);
 
-        // Nomes
+        // Lutadores
         GE[5].sprite = SPR_addSpriteExSafe(
-            &spr_terry_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+            &spr_haohmaru_100CS, 8, 98 - 8,
+            TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         GE[6].sprite = SPR_addSpriteExSafe(
-            &spr_terry_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+            &spr_gillius_100CS, 228, 124 - 8,
+            TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        // SPR_setHFlip(GE[6].sprite, TRUE);
+        SPR_setHFlip(GE[6].sprite, TRUE);
       }
 
       // Tamanho do seletor, quantidade total de personagens (Colunas * Linhas)
-      u8 QtdeColunas = 11;
-      u8 QtdeLinhas = 1;
+      u8 QtdeColunas = 4;
+      u8 QtdeLinhas = 2;
       u8 moverCursorP1 = 0;
       u8 moverCursorP2 = 0;
       u8 tamanhoDoIcone =
@@ -575,9 +797,9 @@ int main(u16 hard) /************** MAIN **************/
       /*
                   1       2       3       4     coluna
               +-------+-------+-------+-------+
-        1     | char1 | char2 | char3 | char4 | ... char11
+        1     | char1 | char2 | char3 | char4 |
               +-------+-------+-------+-------+
-        2     |       |       |       |       |
+        2     | char5 | char6 | char7 | char8 |
               +-------+-------+-------+-------+
       linha
       */
@@ -595,33 +817,29 @@ int main(u16 hard) /************** MAIN **************/
           cursorP1_ID = 2;
         }
         if (cursorP1coluna == 3 && cursorP1linha == 1) {
-          cursorP1_ID = 3;
+          cursorP1_ID = 1;
         }
         if (cursorP1coluna == 4 && cursorP1linha == 1) {
-          cursorP1_ID = 4;
+          cursorP1_ID = 2;
         }
-        if (cursorP1coluna == 5 && cursorP1linha == 1) {
-          cursorP1_ID = 5;
+        if (cursorP1coluna == 1 && cursorP1linha == 2) {
+          cursorP1_ID = 2;
         }
-        if (cursorP1coluna == 6 && cursorP1linha == 1) {
-          cursorP1_ID = 6;
+        if (cursorP1coluna == 2 && cursorP1linha == 2) {
+          cursorP1_ID = 1;
         }
-        if (cursorP1coluna == 7 && cursorP1linha == 1) {
-          cursorP1_ID = 7;
+        if (cursorP1coluna == 3 && cursorP1linha == 2) {
+          cursorP1_ID = 2;
         }
-        if (cursorP1coluna == 8 && cursorP1linha == 1) {
-          cursorP1_ID = 8;
-        }
-        if (cursorP1coluna == 9 && cursorP1linha == 1) {
-          cursorP1_ID = 9;
-        }
-        if (cursorP1coluna == 10 && cursorP1linha == 1) {
-          cursorP1_ID = 10;
-        }
-        if (cursorP1coluna == 11 && cursorP1linha == 1) {
-          cursorP1_ID = 11;
+        if (cursorP1coluna == 4 && cursorP1linha == 2) {
+          cursorP1_ID = 1;
         }
         P[1].id = cursorP1_ID;
+
+        // Movimentacao de Sprite do cursor
+        SPR_setPosition(GE[1].sprite,
+                        96 + ((cursorP1coluna - 1) * tamanhoDoIcone),
+                        148 + ((cursorP1linha - 1) * tamanhoDoIcone));
 
         // Update Visual Char
         if (GE[3].sprite) {
@@ -635,125 +853,26 @@ int main(u16 hard) /************** MAIN **************/
 
         if (cursorP1_ID == 1) {
           GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_terry_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
+              &spr_haohmaru_001, 16, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE),
+              1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_terry_001.palette->data);
+          VDP_setPalette(PAL2, spr_haohmaru_001.palette->data);
           GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_terry_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+              &spr_haohmaru_100CS, 8, 98 - 8,
+              TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         }
         if (cursorP1_ID == 2) {
           GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_andy_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
+              &spr_gillius_001, 16, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_andy_001.palette->data);
+          VDP_setPalette(PAL2, spr_gillius_001.palette->data);
           GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_andy_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP1_ID == 3) {
-          GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_joe_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_joe_001.palette->data);
-          GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_joe_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP1_ID == 4) {
-          GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_richard_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_richard_001.palette->data);
-          GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_richard_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-              1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP1_ID == 5) {
-          GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_michael_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_michael_001.palette->data);
-          GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_michael_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-              1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP1_ID == 6) {
-          GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_duck_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_duck_001.palette->data);
-          GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_duck_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP1_ID == 7) {
-          GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_tung_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_tung_001.palette->data);
-          GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_tung_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP1_ID == 8) {
-          GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_hwa_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_hwa_001.palette->data);
-          GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_hwa_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP1_ID == 9) {
-          GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_raiden_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_raiden_001.palette->data);
-          GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_raiden_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-              1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP1_ID == 10) {
-          GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_billy_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_billy_001.palette->data);
-          GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_billy_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP1_ID == 11) {
-          GE[3].sprite = SPR_addSpriteExSafe(
-              &spr_geese_001, 32, 64, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL2, spr_geese_001.palette->data);
-          GE[5].sprite = SPR_addSpriteExSafe(
-              &spr_geese_name, 32, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+              &spr_gillius_100CS, -14, 124 - 8,
+              TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         }
@@ -772,33 +891,29 @@ int main(u16 hard) /************** MAIN **************/
           cursorP2_ID = 2;
         }
         if (cursorP2coluna == 3 && cursorP2linha == 1) {
-          cursorP2_ID = 3;
+          cursorP2_ID = 1;
         }
         if (cursorP2coluna == 4 && cursorP2linha == 1) {
-          cursorP2_ID = 4;
+          cursorP2_ID = 2;
         }
-        if (cursorP2coluna == 5 && cursorP2linha == 1) {
-          cursorP2_ID = 5;
+        if (cursorP2coluna == 1 && cursorP2linha == 2) {
+          cursorP2_ID = 2;
         }
-        if (cursorP2coluna == 6 && cursorP2linha == 1) {
-          cursorP2_ID = 6;
+        if (cursorP2coluna == 2 && cursorP2linha == 2) {
+          cursorP2_ID = 1;
         }
-        if (cursorP2coluna == 7 && cursorP2linha == 1) {
-          cursorP2_ID = 7;
+        if (cursorP2coluna == 3 && cursorP2linha == 2) {
+          cursorP2_ID = 2;
         }
-        if (cursorP2coluna == 8 && cursorP2linha == 1) {
-          cursorP2_ID = 8;
-        }
-        if (cursorP2coluna == 9 && cursorP2linha == 1) {
-          cursorP2_ID = 9;
-        }
-        if (cursorP2coluna == 10 && cursorP2linha == 1) {
-          cursorP2_ID = 10;
-        }
-        if (cursorP2coluna == 11 && cursorP2linha == 1) {
-          cursorP2_ID = 11;
+        if (cursorP2coluna == 4 && cursorP2linha == 2) {
+          cursorP2_ID = 1;
         }
         P[2].id = cursorP2_ID;
+
+        // Movimentacao de Sprite do cursor
+        SPR_setPosition(GE[2].sprite,
+                        96 + ((cursorP2coluna - 1) * tamanhoDoIcone),
+                        148 + ((cursorP2linha - 1) * tamanhoDoIcone));
 
         // Update Visual Char
         if (GE[4].sprite) {
@@ -812,135 +927,33 @@ int main(u16 hard) /************** MAIN **************/
 
         if (cursorP2_ID == 1) {
           GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_terry_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_terry_001.palette->data);
-          GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_terry_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
+              &spr_haohmaru_001, 232, 16, TILE_ATTR(PAL3, FALSE, FALSE, FALSE),
               1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          VDP_setPalette(PAL3, spr_haohmaru_001.palette->data);
+          GE[6].sprite = SPR_addSpriteExSafe(
+              &spr_haohmaru_100CS, 230, 98 - 8,
+              TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+          SPR_setHFlip(GE[6].sprite, TRUE);
         }
         if (cursorP2_ID == 2) {
           GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_andy_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_andy_001.palette->data);
-          GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_andy_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP2_ID == 3) {
-          GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_joe_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_joe_001.palette->data);
-          GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_joe_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP2_ID == 4) {
-          GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_richard_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE),
+              &spr_gillius_001, 232, 16, TILE_ATTR(PAL3, FALSE, FALSE, FALSE),
               1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_richard_001.palette->data);
+          VDP_setPalette(PAL3, spr_gillius_001.palette->data);
           GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_richard_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-              1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP2_ID == 5) {
-          GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_michael_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE),
-              1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_michael_001.palette->data);
-          GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_michael_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-              1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP2_ID == 6) {
-          GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_duck_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_duck_001.palette->data);
-          GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_duck_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP2_ID == 7) {
-          GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_tung_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_tung_001.palette->data);
-          GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_tung_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP2_ID == 8) {
-          GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_hwa_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_hwa_001.palette->data);
-          GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_hwa_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP2_ID == 9) {
-          GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_raiden_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_raiden_001.palette->data);
-          GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_raiden_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-              1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP2_ID == 10) {
-          GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_billy_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_billy_001.palette->data);
-          GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_billy_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-              1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-        }
-        if (cursorP2_ID == 11) {
-          GE[4].sprite = SPR_addSpriteExSafe(
-              &spr_geese_001, 192, 64, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
-          VDP_setPalette(PAL3, spr_geese_001.palette->data);
-          GE[6].sprite = SPR_addSpriteExSafe(
-              &spr_geese_name, 192, 168, TILE_ATTR(PAL1, FALSE, FALSE, FALSE),
-              1,
+              &spr_gillius_100CS, 228, 124 - 8,
+              TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
               SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                   SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         }
         SPR_setHFlip(GE[4].sprite, TRUE);
-        // SPR_setHFlip(GE[6].sprite, TRUE);
+        SPR_setHFlip(GE[6].sprite, TRUE);
       } //---end P2
 
       // Seleciona o Char, P1
@@ -1033,20 +1046,30 @@ int main(u16 hard) /************** MAIN **************/
             }
             if (cursorP1_ID == 2) // gillius
             {
-              /*
-              if(cursorP1ColorChoice==1){ VDP_setPalette(PAL2,
-              spr_gillius_pal1.palette->data); } if(cursorP1ColorChoice==2){
-              VDP_setPalette(PAL2, spr_gillius_pal2.palette->data); }
-              if(cursorP1ColorChoice==3){ VDP_setPalette(PAL2,
-              spr_gillius_pal3.palette->data); } if(cursorP1ColorChoice==4){
-              VDP_setPalette(PAL2, spr_gillius_pal4.palette->data); }
-              if(cursorP1ColorChoice==5){ VDP_setPalette(PAL2,
-              spr_gillius_pal5.palette->data); } if(cursorP1ColorChoice==6){
-              VDP_setPalette(PAL2, spr_gillius_pal6.palette->data); }
-              if(cursorP1ColorChoice==7){ VDP_setPalette(PAL2,
-              spr_gillius_pal7.palette->data); } if(cursorP1ColorChoice==8){
-              VDP_setPalette(PAL2, spr_gillius_pal8.palette->data); }
-              */
+              if (cursorP1ColorChoice == 1) {
+                VDP_setPalette(PAL2, spr_gillius_pal1.palette->data);
+              }
+              if (cursorP1ColorChoice == 2) {
+                VDP_setPalette(PAL2, spr_gillius_pal2.palette->data);
+              }
+              if (cursorP1ColorChoice == 3) {
+                VDP_setPalette(PAL2, spr_gillius_pal3.palette->data);
+              }
+              if (cursorP1ColorChoice == 4) {
+                VDP_setPalette(PAL2, spr_gillius_pal4.palette->data);
+              }
+              if (cursorP1ColorChoice == 5) {
+                VDP_setPalette(PAL2, spr_gillius_pal5.palette->data);
+              }
+              if (cursorP1ColorChoice == 6) {
+                VDP_setPalette(PAL2, spr_gillius_pal6.palette->data);
+              }
+              if (cursorP1ColorChoice == 7) {
+                VDP_setPalette(PAL2, spr_gillius_pal7.palette->data);
+              }
+              if (cursorP1ColorChoice == 8) {
+                VDP_setPalette(PAL2, spr_gillius_pal8.palette->data);
+              }
             }
             // Movimentacao de Sprite do cursor de cor
             SPR_setPosition(GE[1].sprite, 20 + ((cursorP1ColorChoice - 1) * 8),
@@ -1166,20 +1189,30 @@ int main(u16 hard) /************** MAIN **************/
             }
             if (cursorP2_ID == 2) // gillius
             {
-              /*
-              if(cursorP2ColorChoice==1){ VDP_setPalette(PAL3,
-              spr_gillius_pal1.palette->data); } if(cursorP2ColorChoice==2){
-              VDP_setPalette(PAL3, spr_gillius_pal2.palette->data); }
-              if(cursorP2ColorChoice==3){ VDP_setPalette(PAL3,
-              spr_gillius_pal3.palette->data); } if(cursorP2ColorChoice==4){
-              VDP_setPalette(PAL3, spr_gillius_pal4.palette->data); }
-              if(cursorP2ColorChoice==5){ VDP_setPalette(PAL3,
-              spr_gillius_pal5.palette->data); } if(cursorP2ColorChoice==6){
-              VDP_setPalette(PAL3, spr_gillius_pal6.palette->data); }
-              if(cursorP2ColorChoice==7){ VDP_setPalette(PAL3,
-              spr_gillius_pal7.palette->data); } if(cursorP2ColorChoice==8){
-              VDP_setPalette(PAL3, spr_gillius_pal8.palette->data); }
-              */
+              if (cursorP2ColorChoice == 1) {
+                VDP_setPalette(PAL3, spr_gillius_pal1.palette->data);
+              }
+              if (cursorP2ColorChoice == 2) {
+                VDP_setPalette(PAL3, spr_gillius_pal2.palette->data);
+              }
+              if (cursorP2ColorChoice == 3) {
+                VDP_setPalette(PAL3, spr_gillius_pal3.palette->data);
+              }
+              if (cursorP2ColorChoice == 4) {
+                VDP_setPalette(PAL3, spr_gillius_pal4.palette->data);
+              }
+              if (cursorP2ColorChoice == 5) {
+                VDP_setPalette(PAL3, spr_gillius_pal5.palette->data);
+              }
+              if (cursorP2ColorChoice == 6) {
+                VDP_setPalette(PAL3, spr_gillius_pal6.palette->data);
+              }
+              if (cursorP2ColorChoice == 7) {
+                VDP_setPalette(PAL3, spr_gillius_pal7.palette->data);
+              }
+              if (cursorP2ColorChoice == 8) {
+                VDP_setPalette(PAL3, spr_gillius_pal8.palette->data);
+              }
             }
             // Movimentacao de Sprite do cursor de cor
             SPR_setPosition(GE[2].sprite, 237 + ((cursorP2ColorChoice - 1) * 8),
@@ -1273,11 +1306,11 @@ int main(u16 hard) /************** MAIN **************/
             SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
                 SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
         VDP_setPalette(PAL3, spr_BG_desc1.palette->data);
-        // GE[2].sprite = SPR_addSpriteExSafe(&kuroko_shoulder, 104, 128,
-        // TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY |
-        // SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-        // SPR_FLAG_AUTO_SPRITE_ALLOC); VDP_setPalette(PAL2,
-        // kuroko_shoulder.palette->data);
+        GE[2].sprite = SPR_addSpriteExSafe(
+            &kuroko_shoulder, 104, 128, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
+            SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        VDP_setPalette(PAL2, kuroko_shoulder.palette->data);
         GE[3].sprite = SPR_addSpriteExSafe(
             &spr_stage_sel_icon, 282, 168, TILE_ATTR(PAL0, FALSE, FALSE, FALSE),
             1,
@@ -1507,12 +1540,12 @@ int main(u16 hard) /************** MAIN **************/
         }
         if (gWinnerID == 2) // gillius
         {
-          /*
-          VDP_loadTileSet(bg_win_gillius_bga.tileset,gInd_tileset,DMA);
-          VDP_setTileMapEx(BG_A,bg_win_gillius_bga.tilemap,TILE_ATTR_FULL(PAL1,0,FALSE,FALSE,gInd_tileset),0,0,0,0,40,28,DMA_QUEUE);
+          VDP_loadTileSet(bg_win_gillius_bga.tileset, gInd_tileset, DMA);
+          VDP_setTileMapEx(BG_A, bg_win_gillius_bga.tilemap,
+                           TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, gInd_tileset),
+                           0, 0, 0, 0, 40, 28, DMA_QUEUE);
           VDP_setPalette(PAL1, bg_win_gillius_bga.palette->data);
           gInd_tileset += bg_win_gillius_bga.tileset->numTile;
-          */
         }
 
         // Elementos Graficos
@@ -1546,29 +1579,31 @@ int main(u16 hard) /************** MAIN **************/
         }
         if (gWinnerID == 2) // gillius
         {
-          /*
-          if(gPing2==0){
-                  GE[1].sprite = SPR_addSpriteExSafe(&spr_gillius_win_phrase1A,
-          168,  40, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC); GE[2].sprite
-          = SPR_addSpriteExSafe(&spr_gillius_win_phrase1B,  168, 112,
-          TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY |
-          SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-          SPR_FLAG_AUTO_SPRITE_ALLOC);
+          if (gPing2 == 0) {
+            GE[1].sprite = SPR_addSpriteExSafe(
+                &spr_gillius_win_phrase1A, 168, 40,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+            GE[2].sprite = SPR_addSpriteExSafe(
+                &spr_gillius_win_phrase1B, 168, 112,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
           }
-          if(gPing2==1){
-                  GE[1].sprite = SPR_addSpriteExSafe(&spr_gillius_win_phrase2A,
-          168,  40, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
-          SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
-          SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC); GE[2].sprite
-          = SPR_addSpriteExSafe(&spr_gillius_win_phrase2B,  168, 112,
-          TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1, SPR_FLAG_AUTO_VISIBILITY |
-          SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-          SPR_FLAG_AUTO_SPRITE_ALLOC);
+          if (gPing2 == 1) {
+            GE[1].sprite = SPR_addSpriteExSafe(
+                &spr_gillius_win_phrase2A, 168, 40,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+            GE[2].sprite = SPR_addSpriteExSafe(
+                &spr_gillius_win_phrase2B, 168, 112,
+                TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+                SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                    SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
           }
           VDP_setPalette(PAL3, spr_gillius_win_phrase1A.palette->data);
-          */
         }
 
         // Continue; Rematch
@@ -1735,21 +1770,23 @@ void PLAYER_STATE(u8 Player, u16 State) {
     }
   }
 
-  //--- TERRY ---// #ID:1
+  //--- HAOHMARU ---// #ID:1
   if (P[Player].id == 1) {
     if (State == 100) {
       P[Player].y = gAlturaPiso;
-      P[Player].w = 8 * 8;
-      P[Player].h = 13 * 8;
+      P[Player].w = 10 * 8;
+      P[Player].h = 15 * 8;
       P[Player].axisX = P[Player].w / 2;
       P[Player].axisY = P[Player].h;
-      P[Player].dataAnim[1] = 6;
-      P[Player].dataAnim[2] = 6;
-      P[Player].dataAnim[3] = 6;
-      P[Player].dataAnim[4] = 6;
-      P[Player].animFrameTotal = 4;
+      P[Player].dataAnim[1] = 8;
+      P[Player].dataAnim[2] = 7;
+      P[Player].dataAnim[3] = 7;
+      P[Player].dataAnim[4] = 7;
+      P[Player].dataAnim[5] = 7;
+      P[Player].dataAnim[6] = 7;
+      P[Player].animFrameTotal = 6;
       P[Player].sprite = SPR_addSpriteExSafe(
-          &spr_terry_100, P[Player].x - P[Player].axisX,
+          &spr_haohmaru_100, P[Player].x - P[Player].axisX,
           P[Player].y - P[Player].axisY,
           TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
           SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
@@ -2924,17 +2961,42 @@ void PLAYER_STATE(u8 Player, u16 State) {
               SPR_FLAG_AUTO_SPRITE_ALLOC);
     }
     if (State == 610) {
-      P[Player].w = 8 * 8;
-      P[Player].h = 13 * 8;
+      P[Player].w = 18 * 8;
+      P[Player].h = 18 * 8;
       P[Player].axisX = ((P[Player].w) / 2) + 30;
       P[Player].axisY = (P[Player].h) - 11;
-      P[Player].dataAnim[1] = 30;
-      P[Player].dataAnim[2] = 30;
-      P[Player].dataAnim[3] = 30;
-      P[Player].dataAnim[4] = 30;
-      P[Player].animFrameTotal = 4;
+      P[Player].dataAnim[1] = 75;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 6;
+      P[Player].dataAnim[4] = 6;
+      P[Player].dataAnim[5] = 5;
+      P[Player].dataAnim[6] = 7;
+      P[Player].dataAnim[7] = 11;
+      P[Player].dataAnim[8] = 6;
+      P[Player].dataAnim[9] = 12;
+      P[Player].dataAnim[10] = 6;
+      P[Player].dataAnim[11] = 2;
+      P[Player].dataAnim[12] = 2;
+      P[Player].dataAnim[13] = 2;
+      P[Player].dataAnim[14] = 2;
+      P[Player].dataAnim[15] = 4;
+      P[Player].dataAnim[16] = 4;
+      P[Player].dataAnim[17] = 4;
+      P[Player].dataAnim[18] = 12;
+      P[Player].dataAnim[19] = 2;
+      P[Player].dataAnim[20] = 6;
+      P[Player].dataAnim[21] = 2;
+      P[Player].dataAnim[22] = 2;
+      P[Player].dataAnim[23] = 2;
+      P[Player].dataAnim[24] = 2;
+      P[Player].dataAnim[25] = 2;
+      P[Player].dataAnim[26] = 2;
+      P[Player].dataAnim[27] = 2;
+      P[Player].dataAnim[28] = 2;
+      P[Player].dataAnim[29] = 161;
+      P[Player].animFrameTotal = 29;
       P[Player].sprite = SPR_addSpriteExSafe(
-          &spr_terry_610, P[Player].x - P[Player].axisX,
+          &spr_haohmaru_610, P[Player].x - P[Player].axisX,
           P[Player].y - P[Player].axisY,
           TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
           SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
@@ -3235,1289 +3297,1360 @@ void PLAYER_STATE(u8 Player, u16 State) {
     }
   }
 
-  /*
   //--- GILLIUS ---// #ID:2
-  if(P[Player].id==2)
-  {
-          if(State==100){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 13*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-12;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 10;
-                  P[Player].dataAnim[2]  = 8;
-                  P[Player].dataAnim[3]  = 8;
-                  P[Player].dataAnim[4]  = 8;
-                  P[Player].dataAnim[5]  = 9;
-                  P[Player].animFrameTotal = 5;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_100,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==101){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 15*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)+20;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 8;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].animFrameTotal = 3;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_101,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==102){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 22*8;
-                  P[Player].h = 16*8;
-                  P[Player].axisX = (P[Player].w/2)+30;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].dataAnim[4]  = 2;
-                  P[Player].dataAnim[5]  = 2;
-                  P[Player].dataAnim[7]  = 2;
-                  P[Player].dataAnim[8]  = 2;
-                  P[Player].dataAnim[9]  = 5;
-                  P[Player].animFrameTotal = 9;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_102,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==103){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 24*8;
-                  P[Player].h = 18*8;
-                  P[Player].axisX = (P[Player].w/2)+33;
-                  P[Player].axisY = P[Player].h-19;
-                  P[Player].dataAnim[1]  = 6;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].dataAnim[4]  = 2;
-                  P[Player].dataAnim[5]  = 4;
-                  P[Player].dataAnim[6]  = 6;
-                  P[Player].dataAnim[7]  = 2;
-                  P[Player].dataAnim[8]  = 2;
-                  P[Player].dataAnim[9]  = 4;
-                  P[Player].dataAnim[10] = 6;
-                  P[Player].dataAnim[11] = 10;
-                  P[Player].animFrameTotal = 11;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_103,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==104){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 19*8;
-                  P[Player].h = 14*8;
-                  P[Player].axisX = (P[Player].w/2)+16;
-                  P[Player].axisY = P[Player].h-8;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 8;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].animFrameTotal = 3;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_104,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==105){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 17*8;
-                  P[Player].h = 15*8;
-                  P[Player].axisX = (P[Player].w/2)+16;
-                  P[Player].axisY = P[Player].h-8;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].dataAnim[4]  = 12;
-                  P[Player].dataAnim[5]  = 2;
-                  P[Player].dataAnim[6]  = 2;
-                  P[Player].dataAnim[7]  = 4;
-                  P[Player].animFrameTotal = 7;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_105,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==106){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 21*8;
-                  P[Player].h = 16*8;
-                  P[Player].axisX = (P[Player].w/2)+16;
-                  P[Player].axisY = P[Player].h-8;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 12;
-                  P[Player].dataAnim[5]  = 6;
-                  P[Player].dataAnim[6]  = 2;
-                  P[Player].dataAnim[7]  = 2;
-                  P[Player].dataAnim[8]  = 4;
-                  P[Player].animFrameTotal = 8;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_106,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==107){
-                  P[Player].w = 12*8;
-                  P[Player].h = 14*8;
-                  P[Player].axisX = ((P[Player].w)/2)+1;
-                  P[Player].axisY =  (P[Player].h);
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].animFrameTotal = 2;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_107,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==108){
-                  P[Player].w = 12*8;
-                  P[Player].h = 14*8;
-                  P[Player].axisX = ((P[Player].w)/2)+1;
-                  P[Player].axisY =  (P[Player].h);
-                  P[Player].dataAnim[1]  = 12;
-                  P[Player].animFrameTotal = 1;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_108,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==109){
-                  P[Player].w = 12*8;
-                  P[Player].h = 14*8;
-                  P[Player].axisX = ((P[Player].w)/2)+1;
-                  P[Player].axisY =  (P[Player].h);
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].animFrameTotal = 2;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_109,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==110){
-                  P[Player].w = 12*8;
-                  P[Player].h = 14*8;
-                  P[Player].axisX = ((P[Player].w)/2)+1;
-                  P[Player].axisY =  (P[Player].h);
-                  P[Player].dataAnim[1]  = 12;
-                  P[Player].animFrameTotal = 1;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_108,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==151){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 15*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)+20;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 8;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].dataAnim[4]  = 8;
-                  P[Player].dataAnim[5]  = 8;
-                  P[Player].animFrameTotal = 5;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_151,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==152){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 21*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)+10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 12;
-                  P[Player].dataAnim[4]  = 8;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_152,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==153){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 19*8;
-                  P[Player].h = 19*8;
-                  P[Player].axisX = (P[Player].w/2)+20;
-                  P[Player].axisY = P[Player].h-19;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].dataAnim[4]  = 2;
-                  P[Player].dataAnim[5]  = 2;
-                  P[Player].dataAnim[6]  = 2;
-                  P[Player].dataAnim[7]  = 2;
-                  P[Player].dataAnim[8]  = 2;
-                  P[Player].dataAnim[9]  = 2;
-                  P[Player].dataAnim[10] = 2;
-                  P[Player].dataAnim[11] = 2;
-                  P[Player].dataAnim[12] = 2;
-                  P[Player].dataAnim[13] = 2;
-                  P[Player].dataAnim[14] = 2;
-                  P[Player].dataAnim[15] = 2;
-                  P[Player].animFrameTotal = 15;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_153,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==154){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 17*8;
-                  P[Player].h = 15*8;
-                  P[Player].axisX = (P[Player].w/2)+16;
-                  P[Player].axisY = P[Player].h-8;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_154,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==155){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 17*8;
-                  P[Player].h = 15*8;
-                  P[Player].axisX = (P[Player].w/2)+16;
-                  P[Player].axisY = P[Player].h-8;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 4;
-                  P[Player].dataAnim[5]  = 4;
-                  P[Player].animFrameTotal = 5;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_155,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==156){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 16*8;
-                  P[Player].h = 16*8;
-                  P[Player].axisX = (P[Player].w/2)-8;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].dataAnim[4]  = 10;
-                  P[Player].dataAnim[5]  = 2;
-                  P[Player].dataAnim[6]  = 2;
-                  P[Player].dataAnim[7]  = 6;
-                  P[Player].animFrameTotal = 7;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_156,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==200){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 11*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)+4;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 250;
-                  P[Player].animFrameTotal = 1;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_200,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==201){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 20*8;
-                  P[Player].h = 9*8;
-                  P[Player].axisX = (P[Player].w/2)+40;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 1;
-                  P[Player].dataAnim[3]  = 8;
-                  P[Player].dataAnim[4]  = 2;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_201,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==202){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 20*8;
-                  P[Player].h = 10*8;
-                  P[Player].axisX = (P[Player].w/2)+40;
-                  P[Player].axisY = P[Player].h-7;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 12;
-                  P[Player].dataAnim[5]  = 2;
-                  P[Player].animFrameTotal = 5;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_202,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==203){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 23*8;
-                  P[Player].h = 15*8;
-                  P[Player].axisX = (P[Player].w/2)+32;
-                  P[Player].axisY = P[Player].h-8;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].dataAnim[4]  = 4;
-                  P[Player].dataAnim[5]  = 2;
-                  P[Player].dataAnim[7]  = 2;
-                  P[Player].dataAnim[8]  = 2;
-                  P[Player].dataAnim[9]  = 2;
-                  P[Player].animFrameTotal = 9;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_203,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==204){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 16*8;
-                  P[Player].h = 11*8;
-                  P[Player].axisX = (P[Player].w/2)+24;
-                  P[Player].axisY = P[Player].h-2;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 6;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].animFrameTotal = 3;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_204,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==205){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 19*8;
-                  P[Player].h = 11*8;
-                  P[Player].axisX = (P[Player].w/2)+32;
-                  P[Player].axisY = P[Player].h-6;
-                  P[Player].dataAnim[1]  = 3;
-                  P[Player].dataAnim[2]  = 12;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].dataAnim[4]  = 5;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_205,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==206){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 18*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)+30;
-                  P[Player].axisY = P[Player].h-10;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 12;
-                  P[Player].dataAnim[4]  = 8;
-                  P[Player].dataAnim[5]  = 6;
-                  P[Player].dataAnim[6]  = 2;
-                  P[Player].dataAnim[7]  = 2;
-                  P[Player].dataAnim[8]  = 4;
-                  P[Player].animFrameTotal = 8;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_206,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==207){
-                  P[Player].w = 13*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = ((P[Player].w)/2)+1;
-                  P[Player].axisY =  (P[Player].h);
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].animFrameTotal = 2;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_207,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==208){
-                  P[Player].w = 13*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = ((P[Player].w)/2)+1;
-                  P[Player].axisY =  (P[Player].h);
-                  P[Player].dataAnim[1]  = 12;
-                  P[Player].animFrameTotal = 1;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_208,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==209){
-                  P[Player].w = 13*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = ((P[Player].w)/2)+1;
-                  P[Player].axisY =  (P[Player].h);
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].animFrameTotal = 2;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_209,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==210){
-                  P[Player].w = 13*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = ((P[Player].w)/2)+1;
-                  P[Player].axisY =  (P[Player].h);
-                  P[Player].dataAnim[1]  = 12;
-                  P[Player].animFrameTotal = 1;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_208,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==300){
-                  P[Player].w = 16*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = (P[Player].w/2)-20;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 6;
-                  P[Player].dataAnim[2]  = 6;
-                  P[Player].dataAnim[3]  = 6;
-                  P[Player].dataAnim[4]  = 8;
-                  P[Player].dataAnim[5]  = 6;
-                  P[Player].dataAnim[6]  = 6;
-                  P[Player].dataAnim[7]  = 99;
-                  P[Player].animFrameTotal = 7;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_300,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==301 || State==311 || State==321){
-                  P[Player].w = 20*8;
-                  P[Player].h = 16*8;
-                  P[Player].axisX = (P[Player].w/2)+1;
-                  P[Player].axisY = P[Player].h-1;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 12;
-                  P[Player].dataAnim[4]  = 8;
-                  P[Player].dataAnim[5]  = 99;
-                  P[Player].animFrameTotal = 5;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_301,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==302 || State==312 || State==322){
-                  P[Player].w = 20*8;
-                  P[Player].h = 20*8;
-                  P[Player].axisX = (P[Player].w/2)+1;
-                  P[Player].axisY = P[Player].h-1;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 3;
-                  P[Player].dataAnim[4]  = 13;
-                  P[Player].dataAnim[5]  = 6;
-                  P[Player].dataAnim[6]  = 99;
-                  P[Player].animFrameTotal = 6;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_302,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==303 || State==313 || State==323){
-                  P[Player].w = 23*8;
-                  P[Player].h = 20*8;
-                  P[Player].axisX = (P[Player].w/2)+10;
-                  P[Player].axisY = P[Player].h-1;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].dataAnim[4]  = 4;
-                  P[Player].dataAnim[5]  = 2;
-                  P[Player].dataAnim[7]  = 2;
-                  P[Player].dataAnim[8]  = 2;
-                  P[Player].dataAnim[9]  = 99;
-                  P[Player].animFrameTotal = 9;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_303,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==304 || State==314 || State==324){
-                  P[Player].w = 17*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h+20;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 20;
-                  P[Player].dataAnim[3]  = 99;
-                  P[Player].animFrameTotal = 3;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_304,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==305 || State==315 || State==325 || State==306 || State==316
-  || State==326){ P[Player].w = 16*8; P[Player].h = 12*8; P[Player].axisX =
-  (P[Player].w/2)-1; P[Player].axisY = P[Player].h+20; P[Player].dataAnim[1]  =
-  2; P[Player].dataAnim[2]  = 2; P[Player].dataAnim[3]  = 20;
-                  P[Player].dataAnim[4]  = 99;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_306,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==310){
-                  P[Player].w = 14*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-20;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 99;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_310,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==320){
-                  P[Player].w = 10*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = (P[Player].w/2)-20;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 99;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_320,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==410){
-                  P[Player].w = 14*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 4;
-                  P[Player].dataAnim[5]  = 4;
-                  P[Player].dataAnim[6]  = 4;
-                  P[Player].dataAnim[7]  = 4;
-                  P[Player].dataAnim[8]  = 4;
-                  P[Player].animFrameTotal = 8;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_410,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==420){
-                  P[Player].w = 14*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 4;
-                  P[Player].dataAnim[5]  = 4;
-                  P[Player].dataAnim[6]  = 4;
-                  P[Player].dataAnim[7]  = 4;
-                  P[Player].dataAnim[8]  = 4;
-                  P[Player].animFrameTotal = 8;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_420,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==470){
-                  P[Player].w = 16*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-16-8;
-                  P[Player].dataAnim[1]  = 9;
-                  P[Player].dataAnim[2]  = 90;
-                  P[Player].dataAnim[3]  = 9;
-                  P[Player].dataAnim[4]  = 9;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_470,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==471){
-                  P[Player].w = 13*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 14;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 4;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_471,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==472){
-                  P[Player].w = 13*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 14;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 4;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_472,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==481){
-                  P[Player].w = 13*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 4;
-                  P[Player].dataAnim[5]  = 4;
-                  P[Player].dataAnim[6]  = 4;
-                  P[Player].animFrameTotal = 6;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_481,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==501){
-                  P[Player].w = 14*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 12;
-                  P[Player].animFrameTotal = 1;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_501,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==502){
-                  P[Player].w = 14*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 14;
-                  P[Player].dataAnim[3]  = 5;
-                  P[Player].animFrameTotal = 3;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_502,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==503){
-                  P[Player].w = 14*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 6;
-                  P[Player].dataAnim[3]  = 25;
-                  P[Player].dataAnim[4]  = 5;
-                  P[Player].dataAnim[5]  = 4;
-                  P[Player].animFrameTotal = 5;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_503,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==506){
-                  P[Player].w = 14*8;
-                  P[Player].h = 11*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 12;
-                  P[Player].animFrameTotal = 1;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_506,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==507){
-                  P[Player].w = 14*8;
-                  P[Player].h = 14*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 14;
-                  P[Player].dataAnim[3]  = 5;
-                  P[Player].animFrameTotal = 3;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_507,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==508){
-                  P[Player].w = 14*8;
-                  P[Player].h = 14*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 6;
-                  P[Player].dataAnim[3]  = 25;
-                  P[Player].dataAnim[4]  = 5;
-                  P[Player].dataAnim[5]  = 4;
-                  P[Player].animFrameTotal = 5;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_508,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==511){
-                  P[Player].w = 12*8;
-                  P[Player].h = 11*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 12;
-                  P[Player].animFrameTotal = 1;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_511,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==512){
-                  P[Player].w = 12*8;
-                  P[Player].h = 11*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 14;
-                  P[Player].dataAnim[3]  = 5;
-                  P[Player].animFrameTotal = 3;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_512,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==513){
-                  P[Player].w = 12*8;
-                  P[Player].h = 11*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 6;
-                  P[Player].dataAnim[3]  = 25;
-                  P[Player].dataAnim[4]  = 5;
-                  P[Player].dataAnim[5]  = 4;
-                  P[Player].animFrameTotal = 5;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_513,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==516){
-                  P[Player].y = gAlturaPiso-1;
-                  P[Player].gravidadeY = gravidadePadrao;
-                  P[Player].impulsoY = -22;
-                  P[Player].w = 10*8;
-                  P[Player].h = 15*8;
-                  P[Player].axisX = P[Player].w/2;
-                  P[Player].axisY = P[Player].h-1;
-                  P[Player].dataAnim[1]  = 3;
-                  P[Player].dataAnim[2]  = 2;
-                  P[Player].dataAnim[3]  = 2;
-                  P[Player].dataAnim[4]  = 2;
-                  P[Player].dataAnim[5]  = 2;
-                  P[Player].dataAnim[6]  = 2;
-                  P[Player].dataAnim[7]  = 2;
-                  P[Player].dataAnim[8]  = 250;
-                  P[Player].animFrameTotal = 8;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_516,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==550){
-                  P[Player].gravidadeY = gravidadePadrao;
-                  P[Player].impulsoY = impulsoPadrao;
-                  P[Player].y-=4*8; //Compensa o deslocamento do eixo Y (.axisY)
-                  P[Player].w = 18*8;
-                  P[Player].h = 16*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4*8;
-                  P[Player].dataAnim[1]  = 9;
-                  P[Player].dataAnim[2]  = 9;
-                  P[Player].dataAnim[3]  = 9;
-                  P[Player].dataAnim[4]  = 9;
-                  P[Player].dataAnim[5]  = 9;
-                  P[Player].dataAnim[6]  = 99;
-                  P[Player].animFrameTotal = 6;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_550,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==551){
-                  P[Player].w = 17*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-3*8;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 99;
-                  P[Player].animFrameTotal = 2;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_551,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==552){
-                  P[Player].w = 20*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-9;
-                  P[Player].dataAnim[1]  = 9;
-                  P[Player].dataAnim[2]  = 9;
-                  P[Player].dataAnim[3]  = 9;
-                  P[Player].dataAnim[4]  = 9;
-                  P[Player].dataAnim[5]  = 9;
-                  P[Player].animFrameTotal = 5;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_552,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==570){
-                  P[Player].w = 20*8;
-                  P[Player].h = 6*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-8;
-                  P[Player].dataAnim[1]  = 60;
-                  P[Player].animFrameTotal = 1;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_570,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==601 || State==602 || State==603 || State==604|| State==605
-  || State==606 || State==473 || State==475 || State==480 || State==482){
-                  P[Player].y = gAlturaPiso;
-                  P[Player].w = 10*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = (P[Player].w/2);
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].animFrameTotal = 1;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_601,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==607){
-                  P[Player].w = 13*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].animFrameTotal = 3;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_607,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==608){
-                  P[Player].w = 10*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-10;
-                  P[Player].axisY = P[Player].h-4;
-                  P[Player].dataAnim[1]  = 4;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].animFrameTotal = 3;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_608,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==610){
-                  P[Player].w = 11*8;
-                  P[Player].h = 14*8;
-                  P[Player].axisX = (P[Player].w/2)-1;
-                  P[Player].axisY = P[Player].h-9;
-                  P[Player].dataAnim[1]  = 60;
-                  P[Player].dataAnim[2]  = 10;
-                  P[Player].dataAnim[3]  = 10;
-                  P[Player].dataAnim[4]  = 10;
-                  P[Player].dataAnim[5]  = 10;
-                  P[Player].dataAnim[6]  = 10;
-                  P[Player].dataAnim[7]  = 10;
-                  P[Player].dataAnim[8]  = 10;
-                  P[Player].dataAnim[9]  = 10;
-                  P[Player].dataAnim[10] = 10;
-                  P[Player].dataAnim[11] = 10;
-                  P[Player].dataAnim[12] = 10;
-                  P[Player].dataAnim[13] = 10;
-                  P[Player].dataAnim[14] = 10;
-                  P[Player].dataAnim[15] = 5;
-                  P[Player].animFrameTotal = 15;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_610,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==611){
-                  P[Player].w = 12*8;
-                  P[Player].h = 16*8;
-                  P[Player].axisX = (P[Player].w/2)-1;
-                  P[Player].axisY = P[Player].h-9;
-                  P[Player].dataAnim[1]  = 60;
-                  P[Player].dataAnim[2]  = 10;
-                  P[Player].dataAnim[3]  = 10;
-                  P[Player].dataAnim[4]  = 250;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_611,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==612){
-                  P[Player].w = 12*8;
-                  P[Player].h = 12*8;
-                  P[Player].axisX = (P[Player].w/2)-1;
-                  P[Player].axisY = P[Player].h-9;
-                  P[Player].dataAnim[1]  = 60;
-                  P[Player].dataAnim[2]  = 10;
-                  P[Player].dataAnim[3]  = 10;
-                  P[Player].dataAnim[4]  = 10;
-                  P[Player].dataAnim[5]  = 10;
-                  P[Player].dataAnim[6]  = 10;
-                  P[Player].dataAnim[7]  = 200;
-                  P[Player].animFrameTotal = 7;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_612,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==613){
-                  P[Player].w = 14*8;
-                  P[Player].h = 17*8;
-                  P[Player].axisX = (P[Player].w/2)-1;
-                  P[Player].axisY = P[Player].h-9;
-                  P[Player].dataAnim[1]  = 20;
-                  P[Player].dataAnim[2]  = 6;
-                  P[Player].dataAnim[3]  = 6;
-                  P[Player].dataAnim[4]  = 6;
-                  P[Player].dataAnim[5]  = 6;
-                  P[Player].dataAnim[6]  = 6;
-                  P[Player].dataAnim[7]  = 60;
-                  P[Player].dataAnim[8]  = 6;
-                  P[Player].dataAnim[9]  = 6;
-                  P[Player].dataAnim[10] = 6;
-                  P[Player].dataAnim[11] = 12;
-                  P[Player].dataAnim[12] = 200;
-                  P[Player].animFrameTotal = 12;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_613,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==615){
-                  P[Player].w = 12*8;
-                  P[Player].h = 11*8;
-                  P[Player].axisX = (P[Player].w/2)-1;
-                  P[Player].axisY = P[Player].h-9;
-                  P[Player].dataAnim[1]  = 60;
-                  P[Player].dataAnim[2]  = 250;
-                  P[Player].animFrameTotal = 2;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_615,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==618){
-                  P[Player].w = 12*8;
-                  P[Player].h = 16*8;
-                  P[Player].axisX = (P[Player].w/2)-1;
-                  P[Player].axisY = P[Player].h-9;
-                  P[Player].dataAnim[1]  = 10;
-                  P[Player].dataAnim[2]  = 10;
-                  P[Player].dataAnim[3]  = 10;
-                  P[Player].dataAnim[4]  = 60;
-                  P[Player].animFrameTotal = 4;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_611,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==700){
-                  P[Player].w = 15*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = (P[Player].w/2)+10;
-                  P[Player].axisY = P[Player].h-7;
-                  P[Player].dataAnim[1]  = 2;
-                  P[Player].dataAnim[2]  = 4;
-                  P[Player].dataAnim[3]  = 4;
-                  P[Player].dataAnim[4]  = 4;
-                  P[Player].dataAnim[5]  = 13;
-                  P[Player].dataAnim[6]  = 12;
-                  P[Player].animFrameTotal = 6;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_700,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==710){
-                  P[Player].gravidadeY = gravidadePadrao;
-                  //if(P[i].attackPower==1){ P[Player].impulsoY = impulsoPadrao;
+  if (P[Player].id == 2) {
+    if (State == 100) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 13 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 12;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 10;
+      P[Player].dataAnim[2] = 8;
+      P[Player].dataAnim[3] = 8;
+      P[Player].dataAnim[4] = 8;
+      P[Player].dataAnim[5] = 9;
+      P[Player].animFrameTotal = 5;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_100, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 101) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 15 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 20;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 8;
+      P[Player].dataAnim[3] = 4;
+      P[Player].animFrameTotal = 3;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_101, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 102) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 22 * 8;
+      P[Player].h = 16 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 30;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 2;
+      P[Player].dataAnim[4] = 2;
+      P[Player].dataAnim[5] = 2;
+      P[Player].dataAnim[7] = 2;
+      P[Player].dataAnim[8] = 2;
+      P[Player].dataAnim[9] = 5;
+      P[Player].animFrameTotal = 9;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_102, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 103) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 24 * 8;
+      P[Player].h = 18 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 33;
+      P[Player].axisY = P[Player].h - 19;
+      P[Player].dataAnim[1] = 6;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 2;
+      P[Player].dataAnim[4] = 2;
+      P[Player].dataAnim[5] = 4;
+      P[Player].dataAnim[6] = 6;
+      P[Player].dataAnim[7] = 2;
+      P[Player].dataAnim[8] = 2;
+      P[Player].dataAnim[9] = 4;
+      P[Player].dataAnim[10] = 6;
+      P[Player].dataAnim[11] = 10;
+      P[Player].animFrameTotal = 11;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_103, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 104) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 19 * 8;
+      P[Player].h = 14 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 16;
+      P[Player].axisY = P[Player].h - 8;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 8;
+      P[Player].dataAnim[3] = 4;
+      P[Player].animFrameTotal = 3;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_104, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 105) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 17 * 8;
+      P[Player].h = 15 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 16;
+      P[Player].axisY = P[Player].h - 8;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 2;
+      P[Player].dataAnim[4] = 12;
+      P[Player].dataAnim[5] = 2;
+      P[Player].dataAnim[6] = 2;
+      P[Player].dataAnim[7] = 4;
+      P[Player].animFrameTotal = 7;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_105, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 106) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 21 * 8;
+      P[Player].h = 16 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 16;
+      P[Player].axisY = P[Player].h - 8;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 12;
+      P[Player].dataAnim[5] = 6;
+      P[Player].dataAnim[6] = 2;
+      P[Player].dataAnim[7] = 2;
+      P[Player].dataAnim[8] = 4;
+      P[Player].animFrameTotal = 8;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_106, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 107) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 14 * 8;
+      P[Player].axisX = ((P[Player].w) / 2) + 1;
+      P[Player].axisY = (P[Player].h);
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].animFrameTotal = 2;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_107, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 108) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 14 * 8;
+      P[Player].axisX = ((P[Player].w) / 2) + 1;
+      P[Player].axisY = (P[Player].h);
+      P[Player].dataAnim[1] = 12;
+      P[Player].animFrameTotal = 1;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_108, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 109) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 14 * 8;
+      P[Player].axisX = ((P[Player].w) / 2) + 1;
+      P[Player].axisY = (P[Player].h);
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].animFrameTotal = 2;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_109, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 110) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 14 * 8;
+      P[Player].axisX = ((P[Player].w) / 2) + 1;
+      P[Player].axisY = (P[Player].h);
+      P[Player].dataAnim[1] = 12;
+      P[Player].animFrameTotal = 1;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_108, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 151) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 15 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 20;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 8;
+      P[Player].dataAnim[3] = 2;
+      P[Player].dataAnim[4] = 8;
+      P[Player].dataAnim[5] = 8;
+      P[Player].animFrameTotal = 5;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_151, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 152) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 21 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 12;
+      P[Player].dataAnim[4] = 8;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_152, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 153) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 19 * 8;
+      P[Player].h = 19 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 20;
+      P[Player].axisY = P[Player].h - 19;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 2;
+      P[Player].dataAnim[4] = 2;
+      P[Player].dataAnim[5] = 2;
+      P[Player].dataAnim[6] = 2;
+      P[Player].dataAnim[7] = 2;
+      P[Player].dataAnim[8] = 2;
+      P[Player].dataAnim[9] = 2;
+      P[Player].dataAnim[10] = 2;
+      P[Player].dataAnim[11] = 2;
+      P[Player].dataAnim[12] = 2;
+      P[Player].dataAnim[13] = 2;
+      P[Player].dataAnim[14] = 2;
+      P[Player].dataAnim[15] = 2;
+      P[Player].animFrameTotal = 15;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_153, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 154) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 17 * 8;
+      P[Player].h = 15 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 16;
+      P[Player].axisY = P[Player].h - 8;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_154, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 155) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 17 * 8;
+      P[Player].h = 15 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 16;
+      P[Player].axisY = P[Player].h - 8;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 4;
+      P[Player].dataAnim[5] = 4;
+      P[Player].animFrameTotal = 5;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_155, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 156) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 16 * 8;
+      P[Player].h = 16 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 8;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 2;
+      P[Player].dataAnim[4] = 10;
+      P[Player].dataAnim[5] = 2;
+      P[Player].dataAnim[6] = 2;
+      P[Player].dataAnim[7] = 6;
+      P[Player].animFrameTotal = 7;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_156, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 200) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 11 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 4;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 250;
+      P[Player].animFrameTotal = 1;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_200, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 201) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 20 * 8;
+      P[Player].h = 9 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 40;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 1;
+      P[Player].dataAnim[3] = 8;
+      P[Player].dataAnim[4] = 2;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_201, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 202) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 20 * 8;
+      P[Player].h = 10 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 40;
+      P[Player].axisY = P[Player].h - 7;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 12;
+      P[Player].dataAnim[5] = 2;
+      P[Player].animFrameTotal = 5;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_202, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 203) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 23 * 8;
+      P[Player].h = 15 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 32;
+      P[Player].axisY = P[Player].h - 8;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 2;
+      P[Player].dataAnim[4] = 4;
+      P[Player].dataAnim[5] = 2;
+      P[Player].dataAnim[7] = 2;
+      P[Player].dataAnim[8] = 2;
+      P[Player].dataAnim[9] = 2;
+      P[Player].animFrameTotal = 9;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_203, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 204) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 16 * 8;
+      P[Player].h = 11 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 24;
+      P[Player].axisY = P[Player].h - 2;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 6;
+      P[Player].dataAnim[3] = 2;
+      P[Player].animFrameTotal = 3;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_204, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 205) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 19 * 8;
+      P[Player].h = 11 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 32;
+      P[Player].axisY = P[Player].h - 6;
+      P[Player].dataAnim[1] = 3;
+      P[Player].dataAnim[2] = 12;
+      P[Player].dataAnim[3] = 2;
+      P[Player].dataAnim[4] = 5;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_205, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 206) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 18 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 30;
+      P[Player].axisY = P[Player].h - 10;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 12;
+      P[Player].dataAnim[4] = 8;
+      P[Player].dataAnim[5] = 6;
+      P[Player].dataAnim[6] = 2;
+      P[Player].dataAnim[7] = 2;
+      P[Player].dataAnim[8] = 4;
+      P[Player].animFrameTotal = 8;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_206, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 207) {
+      P[Player].w = 13 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = ((P[Player].w) / 2) + 1;
+      P[Player].axisY = (P[Player].h);
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].animFrameTotal = 2;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_207, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 208) {
+      P[Player].w = 13 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = ((P[Player].w) / 2) + 1;
+      P[Player].axisY = (P[Player].h);
+      P[Player].dataAnim[1] = 12;
+      P[Player].animFrameTotal = 1;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_208, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 209) {
+      P[Player].w = 13 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = ((P[Player].w) / 2) + 1;
+      P[Player].axisY = (P[Player].h);
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].animFrameTotal = 2;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_209, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 210) {
+      P[Player].w = 13 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = ((P[Player].w) / 2) + 1;
+      P[Player].axisY = (P[Player].h);
+      P[Player].dataAnim[1] = 12;
+      P[Player].animFrameTotal = 1;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_208, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 300) {
+      P[Player].w = 16 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 20;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 6;
+      P[Player].dataAnim[2] = 6;
+      P[Player].dataAnim[3] = 6;
+      P[Player].dataAnim[4] = 8;
+      P[Player].dataAnim[5] = 6;
+      P[Player].dataAnim[6] = 6;
+      P[Player].dataAnim[7] = 99;
+      P[Player].animFrameTotal = 7;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_300, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 301 || State == 311 || State == 321) {
+      P[Player].w = 20 * 8;
+      P[Player].h = 16 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 1;
+      P[Player].axisY = P[Player].h - 1;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 12;
+      P[Player].dataAnim[4] = 8;
+      P[Player].dataAnim[5] = 99;
+      P[Player].animFrameTotal = 5;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_301, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 302 || State == 312 || State == 322) {
+      P[Player].w = 20 * 8;
+      P[Player].h = 20 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 1;
+      P[Player].axisY = P[Player].h - 1;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 3;
+      P[Player].dataAnim[4] = 13;
+      P[Player].dataAnim[5] = 6;
+      P[Player].dataAnim[6] = 99;
+      P[Player].animFrameTotal = 6;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_302, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 303 || State == 313 || State == 323) {
+      P[Player].w = 23 * 8;
+      P[Player].h = 20 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 10;
+      P[Player].axisY = P[Player].h - 1;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 2;
+      P[Player].dataAnim[4] = 4;
+      P[Player].dataAnim[5] = 2;
+      P[Player].dataAnim[7] = 2;
+      P[Player].dataAnim[8] = 2;
+      P[Player].dataAnim[9] = 99;
+      P[Player].animFrameTotal = 9;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_303, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 304 || State == 314 || State == 324) {
+      P[Player].w = 17 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h + 20;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 20;
+      P[Player].dataAnim[3] = 99;
+      P[Player].animFrameTotal = 3;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_304, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 305 || State == 315 || State == 325 || State == 306 ||
+        State == 316 || State == 326) {
+      P[Player].w = 16 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 1;
+      P[Player].axisY = P[Player].h + 20;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 20;
+      P[Player].dataAnim[4] = 99;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_306, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 310) {
+      P[Player].w = 14 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 20;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 99;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_310, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 320) {
+      P[Player].w = 10 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 20;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 99;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_320, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 410) {
+      P[Player].w = 14 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 4;
+      P[Player].dataAnim[5] = 4;
+      P[Player].dataAnim[6] = 4;
+      P[Player].dataAnim[7] = 4;
+      P[Player].dataAnim[8] = 4;
+      P[Player].animFrameTotal = 8;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_410, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 420) {
+      P[Player].w = 14 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 4;
+      P[Player].dataAnim[5] = 4;
+      P[Player].dataAnim[6] = 4;
+      P[Player].dataAnim[7] = 4;
+      P[Player].dataAnim[8] = 4;
+      P[Player].animFrameTotal = 8;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_420, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 470) {
+      P[Player].w = 16 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 16 - 8;
+      P[Player].dataAnim[1] = 9;
+      P[Player].dataAnim[2] = 90;
+      P[Player].dataAnim[3] = 9;
+      P[Player].dataAnim[4] = 9;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_470, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 471) {
+      P[Player].w = 13 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 14;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 4;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_471, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 472) {
+      P[Player].w = 13 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 14;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 4;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_472, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 481) {
+      P[Player].w = 13 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 4;
+      P[Player].dataAnim[5] = 4;
+      P[Player].dataAnim[6] = 4;
+      P[Player].animFrameTotal = 6;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_481, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 501) {
+      P[Player].w = 14 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 12;
+      P[Player].animFrameTotal = 1;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_501, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 502) {
+      P[Player].w = 14 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 14;
+      P[Player].dataAnim[3] = 5;
+      P[Player].animFrameTotal = 3;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_502, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 503) {
+      P[Player].w = 14 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 6;
+      P[Player].dataAnim[3] = 25;
+      P[Player].dataAnim[4] = 5;
+      P[Player].dataAnim[5] = 4;
+      P[Player].animFrameTotal = 5;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_503, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 506) {
+      P[Player].w = 14 * 8;
+      P[Player].h = 11 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 12;
+      P[Player].animFrameTotal = 1;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_506, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 507) {
+      P[Player].w = 14 * 8;
+      P[Player].h = 14 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 14;
+      P[Player].dataAnim[3] = 5;
+      P[Player].animFrameTotal = 3;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_507, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 508) {
+      P[Player].w = 14 * 8;
+      P[Player].h = 14 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 6;
+      P[Player].dataAnim[3] = 25;
+      P[Player].dataAnim[4] = 5;
+      P[Player].dataAnim[5] = 4;
+      P[Player].animFrameTotal = 5;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_508, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 511) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 11 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 12;
+      P[Player].animFrameTotal = 1;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_511, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 512) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 11 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 14;
+      P[Player].dataAnim[3] = 5;
+      P[Player].animFrameTotal = 3;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_512, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 513) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 11 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 6;
+      P[Player].dataAnim[3] = 25;
+      P[Player].dataAnim[4] = 5;
+      P[Player].dataAnim[5] = 4;
+      P[Player].animFrameTotal = 5;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_513, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 516) {
+      P[Player].y = gAlturaPiso - 1;
+      P[Player].gravidadeY = gravidadePadrao;
+      P[Player].impulsoY = -22;
+      P[Player].w = 10 * 8;
+      P[Player].h = 15 * 8;
+      P[Player].axisX = P[Player].w / 2;
+      P[Player].axisY = P[Player].h - 1;
+      P[Player].dataAnim[1] = 3;
+      P[Player].dataAnim[2] = 2;
+      P[Player].dataAnim[3] = 2;
+      P[Player].dataAnim[4] = 2;
+      P[Player].dataAnim[5] = 2;
+      P[Player].dataAnim[6] = 2;
+      P[Player].dataAnim[7] = 2;
+      P[Player].dataAnim[8] = 250;
+      P[Player].animFrameTotal = 8;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_516, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 550) {
+      P[Player].gravidadeY = gravidadePadrao;
+      P[Player].impulsoY = impulsoPadrao;
+      P[Player].y -= 4 * 8; // Compensa o deslocamento do eixo Y (.axisY)
+      P[Player].w = 18 * 8;
+      P[Player].h = 16 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4 * 8;
+      P[Player].dataAnim[1] = 9;
+      P[Player].dataAnim[2] = 9;
+      P[Player].dataAnim[3] = 9;
+      P[Player].dataAnim[4] = 9;
+      P[Player].dataAnim[5] = 9;
+      P[Player].dataAnim[6] = 99;
+      P[Player].animFrameTotal = 6;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_550, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 551) {
+      P[Player].w = 17 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 3 * 8;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 99;
+      P[Player].animFrameTotal = 2;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_551, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 552) {
+      P[Player].w = 20 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 9;
+      P[Player].dataAnim[1] = 9;
+      P[Player].dataAnim[2] = 9;
+      P[Player].dataAnim[3] = 9;
+      P[Player].dataAnim[4] = 9;
+      P[Player].dataAnim[5] = 9;
+      P[Player].animFrameTotal = 5;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_552, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 570) {
+      P[Player].w = 20 * 8;
+      P[Player].h = 6 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 8;
+      P[Player].dataAnim[1] = 60;
+      P[Player].animFrameTotal = 1;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_570, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 601 || State == 602 || State == 603 || State == 604 ||
+        State == 605 || State == 606 || State == 473 || State == 475 ||
+        State == 480 || State == 482) {
+      P[Player].y = gAlturaPiso;
+      P[Player].w = 10 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = (P[Player].w / 2);
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 4;
+      P[Player].animFrameTotal = 1;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_601, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 607) {
+      P[Player].w = 13 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].animFrameTotal = 3;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_607, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 608) {
+      P[Player].w = 10 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 10;
+      P[Player].axisY = P[Player].h - 4;
+      P[Player].dataAnim[1] = 4;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].animFrameTotal = 3;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_608, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 610) {
+      P[Player].w = 11 * 8;
+      P[Player].h = 14 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 1;
+      P[Player].axisY = P[Player].h - 9;
+      P[Player].dataAnim[1] = 60;
+      P[Player].dataAnim[2] = 10;
+      P[Player].dataAnim[3] = 10;
+      P[Player].dataAnim[4] = 10;
+      P[Player].dataAnim[5] = 10;
+      P[Player].dataAnim[6] = 10;
+      P[Player].dataAnim[7] = 10;
+      P[Player].dataAnim[8] = 10;
+      P[Player].dataAnim[9] = 10;
+      P[Player].dataAnim[10] = 10;
+      P[Player].dataAnim[11] = 10;
+      P[Player].dataAnim[12] = 10;
+      P[Player].dataAnim[13] = 10;
+      P[Player].dataAnim[14] = 10;
+      P[Player].dataAnim[15] = 5;
+      P[Player].animFrameTotal = 15;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_610, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 611) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 16 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 1;
+      P[Player].axisY = P[Player].h - 9;
+      P[Player].dataAnim[1] = 60;
+      P[Player].dataAnim[2] = 10;
+      P[Player].dataAnim[3] = 10;
+      P[Player].dataAnim[4] = 250;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_611, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 612) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 12 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 1;
+      P[Player].axisY = P[Player].h - 9;
+      P[Player].dataAnim[1] = 60;
+      P[Player].dataAnim[2] = 10;
+      P[Player].dataAnim[3] = 10;
+      P[Player].dataAnim[4] = 10;
+      P[Player].dataAnim[5] = 10;
+      P[Player].dataAnim[6] = 10;
+      P[Player].dataAnim[7] = 200;
+      P[Player].animFrameTotal = 7;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_612, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 613) {
+      P[Player].w = 14 * 8;
+      P[Player].h = 17 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 1;
+      P[Player].axisY = P[Player].h - 9;
+      P[Player].dataAnim[1] = 20;
+      P[Player].dataAnim[2] = 6;
+      P[Player].dataAnim[3] = 6;
+      P[Player].dataAnim[4] = 6;
+      P[Player].dataAnim[5] = 6;
+      P[Player].dataAnim[6] = 6;
+      P[Player].dataAnim[7] = 60;
+      P[Player].dataAnim[8] = 6;
+      P[Player].dataAnim[9] = 6;
+      P[Player].dataAnim[10] = 6;
+      P[Player].dataAnim[11] = 12;
+      P[Player].dataAnim[12] = 200;
+      P[Player].animFrameTotal = 12;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_613, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 615) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 11 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 1;
+      P[Player].axisY = P[Player].h - 9;
+      P[Player].dataAnim[1] = 60;
+      P[Player].dataAnim[2] = 250;
+      P[Player].animFrameTotal = 2;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_615, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 618) {
+      P[Player].w = 12 * 8;
+      P[Player].h = 16 * 8;
+      P[Player].axisX = (P[Player].w / 2) - 1;
+      P[Player].axisY = P[Player].h - 9;
+      P[Player].dataAnim[1] = 10;
+      P[Player].dataAnim[2] = 10;
+      P[Player].dataAnim[3] = 10;
+      P[Player].dataAnim[4] = 60;
+      P[Player].animFrameTotal = 4;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_611, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 700) {
+      P[Player].w = 15 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 10;
+      P[Player].axisY = P[Player].h - 7;
+      P[Player].dataAnim[1] = 2;
+      P[Player].dataAnim[2] = 4;
+      P[Player].dataAnim[3] = 4;
+      P[Player].dataAnim[4] = 4;
+      P[Player].dataAnim[5] = 13;
+      P[Player].dataAnim[6] = 12;
+      P[Player].animFrameTotal = 6;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_700, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 710) {
+      P[Player].gravidadeY = gravidadePadrao;
+      // if(P[i].attackPower==1){ P[Player].impulsoY = impulsoPadrao; }
+      // if(P[i].attackPower==2){ P[Player].impulsoY = impulsoPadrao-2; }
+      // if(P[i].attackPower==3){ P[Player].impulsoY = impulsoPadrao-3; }
+      P[Player].impulsoY =
+          impulsoPadrao -
+          3; // optei por manter sempre o mesmo impulso vertical, aqui
+      P[i].cicloInteracoesGravidade = 2;
+      P[Player].w = 16 * 8;
+      P[Player].h = 16 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 10;
+      P[Player].axisY = P[Player].h - 8;
+      P[Player].dataAnim[1] = 3;
+      P[Player].dataAnim[2] = 3;
+      P[Player].dataAnim[3] = 3;
+      P[Player].dataAnim[4] = 3;
+      P[Player].dataAnim[5] = 2;
+      P[Player].dataAnim[6] = 2;
+      P[Player].dataAnim[7] = 2;
+      P[Player].dataAnim[8] = 1;
+      P[Player].dataAnim[9] = 1;
+      P[Player].dataAnim[10] = 1;
+      P[Player].dataAnim[11] = 1;
+      P[Player].dataAnim[12] = 1;
+      P[Player].dataAnim[13] = 1;
+      P[Player].dataAnim[14] = 1;
+      P[Player].dataAnim[15] = 1;
+      P[Player].dataAnim[16] = 1;
+      P[Player].dataAnim[17] = 1;
+      P[Player].dataAnim[18] = 99;
+      P[Player].animFrameTotal = 18;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_710, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 711) {
+      P[Player].w = 11 * 8;
+      P[Player].h = 10 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 10;
+      P[Player].axisY = P[Player].h - 8;
+      P[Player].dataAnim[1] = 12;
+      P[Player].dataAnim[2] = 6;
+      P[Player].animFrameTotal = 2;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_711, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
+    if (State == 720) {
+      P[Player].gravidadeY = gravidadePadrao;
+      // if(P[i].attackPower==1){ P[Player].impulsoY = impulsoPadrao; }
+      // if(P[i].attackPower==2){ P[Player].impulsoY = impulsoPadrao-2; }
+      // if(P[i].attackPower==3){ P[Player].impulsoY = impulsoPadrao-3; }
+      P[Player].impulsoY =
+          -6; // optei por manter sempre o mesmo impulso vertical, aqui
+      P[i].cicloInteracoesGravidade = 6;
+      P[Player].w = 16 * 8;
+      P[Player].h = 13 * 8;
+      P[Player].axisX = (P[Player].w / 2) + 10;
+      P[Player].axisY = P[Player].h - 8;
+      P[Player].dataAnim[1] = 8;
+      P[Player].dataAnim[2] = 8;
+      P[Player].dataAnim[3] = 3;
+      P[Player].dataAnim[4] = 3;
+      P[Player].dataAnim[5] = 3;
+      P[Player].dataAnim[6] = 3;
+      P[Player].dataAnim[7] = 3;
+      P[Player].dataAnim[8] = 8;
+      P[Player].dataAnim[9] = 8;
+      P[Player].animFrameTotal = 9;
+      P[Player].sprite = SPR_addSpriteExSafe(
+          &spr_gillius_720, P[Player].x - P[Player].axisX,
+          P[Player].y - P[Player].axisY,
+          TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
+              SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
+              SPR_FLAG_AUTO_SPRITE_ALLOC);
+    }
   }
-                  //if(P[i].attackPower==2){ P[Player].impulsoY =
-  impulsoPadrao-2; }
-                  //if(P[i].attackPower==3){ P[Player].impulsoY =
-  impulsoPadrao-3; } P[Player].impulsoY = impulsoPadrao-3; //optei por manter
-  sempre o mesmo impulso vertical, aqui P[i].cicloInteracoesGravidade=2;
-                  P[Player].w = 16*8;
-                  P[Player].h = 16*8;
-                  P[Player].axisX = (P[Player].w/2)+10;
-                  P[Player].axisY = P[Player].h-8;
-                  P[Player].dataAnim[1]  = 3;
-                  P[Player].dataAnim[2]  = 3;
-                  P[Player].dataAnim[3]  = 3;
-                  P[Player].dataAnim[4]  = 3;
-                  P[Player].dataAnim[5]  = 2;
-                  P[Player].dataAnim[6]  = 2;
-                  P[Player].dataAnim[7]  = 2;
-                  P[Player].dataAnim[8]  = 1;
-                  P[Player].dataAnim[9]  = 1;
-                  P[Player].dataAnim[10] = 1;
-                  P[Player].dataAnim[11] = 1;
-                  P[Player].dataAnim[12] = 1;
-                  P[Player].dataAnim[13] = 1;
-                  P[Player].dataAnim[14] = 1;
-                  P[Player].dataAnim[15] = 1;
-                  P[Player].dataAnim[16] = 1;
-                  P[Player].dataAnim[17] = 1;
-                  P[Player].dataAnim[18] = 99;
-                  P[Player].animFrameTotal = 18;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_710,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==711){
-                  P[Player].w = 11*8;
-                  P[Player].h = 10*8;
-                  P[Player].axisX = (P[Player].w/2)+10;
-                  P[Player].axisY = P[Player].h-8;
-                  P[Player].dataAnim[1]  = 12;
-                  P[Player].dataAnim[2]  = 6;
-                  P[Player].animFrameTotal = 2;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_711,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-          if(State==720){
-                  P[Player].gravidadeY = gravidadePadrao;
-                  //if(P[i].attackPower==1){ P[Player].impulsoY = impulsoPadrao;
-  }
-                  //if(P[i].attackPower==2){ P[Player].impulsoY =
-  impulsoPadrao-2; }
-                  //if(P[i].attackPower==3){ P[Player].impulsoY =
-  impulsoPadrao-3; } P[Player].impulsoY = -6; //optei por manter sempre o mesmo
-  impulso vertical, aqui P[i].cicloInteracoesGravidade=6; P[Player].w = 16*8;
-                  P[Player].h = 13*8;
-                  P[Player].axisX = (P[Player].w/2)+10;
-                  P[Player].axisY = P[Player].h-8;
-                  P[Player].dataAnim[1]  = 8;
-                  P[Player].dataAnim[2]  = 8;
-                  P[Player].dataAnim[3]  = 3;
-                  P[Player].dataAnim[4]  = 3;
-                  P[Player].dataAnim[5]  = 3;
-                  P[Player].dataAnim[6]  = 3;
-                  P[Player].dataAnim[7]  = 3;
-                  P[Player].dataAnim[8]  = 8;
-                  P[Player].dataAnim[9]  = 8;
-                  P[Player].animFrameTotal = 9;
-                  P[Player].sprite = SPR_addSpriteExSafe(&spr_gillius_720,
-  P[Player].x-P[Player].axisX, P[Player].y-P[Player].axisY,
-  TILE_ATTR(P[Player].paleta, FALSE, FALSE, FALSE), 1,
-  SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY |
-  SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD |
-  SPR_FLAG_AUTO_SPRITE_ALLOC);
-          }
-
-  }
-  */
 
   if (P[Player].direcao == 1) {
     SPR_setHFlip(P[Player].sprite, FALSE);
@@ -6605,20 +6738,31 @@ void FUNCAO_INPUT_SYSTEM() {
     }
     if (P[1].id == 2) // gillius
     {
-      /*
-      if(      P[1].palID==1){ VDP_setPalette(PAL2,
-      spr_gillius_pal2.palette->data); P[1].palID=2; }else if(P[1].palID==2){
-      VDP_setPalette(PAL2, spr_gillius_pal3.palette->data); P[1].palID=3; }else
-      if(P[1].palID==3){ VDP_setPalette(PAL2, spr_gillius_pal4.palette->data);
-      P[1].palID=4; }else if(P[1].palID==4){ VDP_setPalette(PAL2,
-      spr_gillius_pal5.palette->data); P[1].palID=5; }else if(P[1].palID==5){
-      VDP_setPalette(PAL2, spr_gillius_pal6.palette->data); P[1].palID=6; }else
-      if(P[1].palID==6){ VDP_setPalette(PAL2, spr_gillius_pal7.palette->data);
-      P[1].palID=7; }else if(P[1].palID==7){ VDP_setPalette(PAL2,
-      spr_gillius_pal8.palette->data); P[1].palID=8; }else if(P[1].palID==8){
-      VDP_setPalette(PAL2, spr_gillius_pal1.palette->data); P[1].palID=1;
+      if (P[1].palID == 1) {
+        VDP_setPalette(PAL2, spr_gillius_pal2.palette->data);
+        P[1].palID = 2;
+      } else if (P[1].palID == 2) {
+        VDP_setPalette(PAL2, spr_gillius_pal3.palette->data);
+        P[1].palID = 3;
+      } else if (P[1].palID == 3) {
+        VDP_setPalette(PAL2, spr_gillius_pal4.palette->data);
+        P[1].palID = 4;
+      } else if (P[1].palID == 4) {
+        VDP_setPalette(PAL2, spr_gillius_pal5.palette->data);
+        P[1].palID = 5;
+      } else if (P[1].palID == 5) {
+        VDP_setPalette(PAL2, spr_gillius_pal6.palette->data);
+        P[1].palID = 6;
+      } else if (P[1].palID == 6) {
+        VDP_setPalette(PAL2, spr_gillius_pal7.palette->data);
+        P[1].palID = 7;
+      } else if (P[1].palID == 7) {
+        VDP_setPalette(PAL2, spr_gillius_pal8.palette->data);
+        P[1].palID = 8;
+      } else if (P[1].palID == 8) {
+        VDP_setPalette(PAL2, spr_gillius_pal1.palette->data);
+        P[1].palID = 1;
       }
-      */
     }
   }
   if (P[2].key_JOY_MODE_status == 1) {
@@ -6656,20 +6800,31 @@ void FUNCAO_INPUT_SYSTEM() {
     }
     if (P[2].id == 2) // gillius
     {
-      /*
-      if(      P[2].palID==1){ VDP_setPalette(PAL3,
-      spr_gillius_pal2.palette->data); P[2].palID=2; }else if(P[2].palID==2){
-      VDP_setPalette(PAL3, spr_gillius_pal3.palette->data); P[2].palID=3; }else
-      if(P[2].palID==3){ VDP_setPalette(PAL3, spr_gillius_pal4.palette->data);
-      P[2].palID=4; }else if(P[2].palID==4){ VDP_setPalette(PAL3,
-      spr_gillius_pal5.palette->data); P[2].palID=5; }else if(P[2].palID==5){
-      VDP_setPalette(PAL3, spr_gillius_pal6.palette->data); P[2].palID=6; }else
-      if(P[2].palID==6){ VDP_setPalette(PAL3, spr_gillius_pal7.palette->data);
-      P[2].palID=7; }else if(P[2].palID==7){ VDP_setPalette(PAL3,
-      spr_gillius_pal8.palette->data); P[2].palID=8; }else if(P[2].palID==8){
-      VDP_setPalette(PAL3, spr_gillius_pal1.palette->data); P[2].palID=1;
+      if (P[2].palID == 1) {
+        VDP_setPalette(PAL3, spr_gillius_pal2.palette->data);
+        P[2].palID = 2;
+      } else if (P[2].palID == 2) {
+        VDP_setPalette(PAL3, spr_gillius_pal3.palette->data);
+        P[2].palID = 3;
+      } else if (P[2].palID == 3) {
+        VDP_setPalette(PAL3, spr_gillius_pal4.palette->data);
+        P[2].palID = 4;
+      } else if (P[2].palID == 4) {
+        VDP_setPalette(PAL3, spr_gillius_pal5.palette->data);
+        P[2].palID = 5;
+      } else if (P[2].palID == 5) {
+        VDP_setPalette(PAL3, spr_gillius_pal6.palette->data);
+        P[2].palID = 6;
+      } else if (P[2].palID == 6) {
+        VDP_setPalette(PAL3, spr_gillius_pal7.palette->data);
+        P[2].palID = 7;
+      } else if (P[2].palID == 7) {
+        VDP_setPalette(PAL3, spr_gillius_pal8.palette->data);
+        P[2].palID = 8;
+      } else if (P[2].palID == 8) {
+        VDP_setPalette(PAL3, spr_gillius_pal1.palette->data);
+        P[2].palID = 1;
       }
-      */
     }
   }
 }
@@ -7706,6 +7861,27 @@ void FUNCAO_FSM() {
         Spark2_countDown = 20;
       }
 
+      if (PA == 1) {
+        // gillius
+        if (P[PA].id == 2) {
+          Spark[PA] = SPR_addSpriteExSafe(
+              &spr_gillius_702, P[PA].fBallX - 20, P[PA].fBallY,
+              TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
+              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        }
+      }
+      if (PA == 2) {
+        // gillius
+        if (P[PA].id == 2) {
+          Spark[PA] = SPR_addSpriteExSafe(
+              &spr_gillius_702, P[PA].fBallX - 20, P[PA].fBallY,
+              TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+              SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+                  SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+        }
+      }
+
       // se o spark foi carregado com sucesso...
       if (Spark[PA]) {
         if (P[PA].direcao == -1) {
@@ -7839,6 +8015,58 @@ void FUNCAO_FSM() {
 
       } //---end char; HAOHMARU
 
+      if (P[i].id == 2) // GILLIUS
+      {
+        // 700
+        // Rock Throw
+        if // v, v>, > + P ; baixo, baixo+frente, frente + Soco
+            (magic_avaliable == 1 &&
+             ((P[i].direcao == 1 &&
+               (P[i].joyDirTimer[2] < P[i].joyDirTimer[6]) &&
+               (P[i].joyDirTimer[2] != 0)) ||
+              (P[i].direcao == -1 &&
+               (P[i].joyDirTimer[2] < P[i].joyDirTimer[4]) &&
+               (P[i].joyDirTimer[2] != 0))) &&
+             (P[i].attackButton == 1 || P[i].attackButton == 2 ||
+              P[i].attackButton == 3)) {
+          PLAYER_STATE(i, 700);
+          magic_avaliable = 0;
+        }
+
+        // 710
+        // Axe Spin
+        if // v, <v, < + P ; baixo, baixo+tras, tras + Soco
+            (magic_avaliable == 1 &&
+             ((P[i].direcao == -1 &&
+               (P[i].joyDirTimer[2] < P[i].joyDirTimer[6]) &&
+               (P[i].joyDirTimer[2] != 0)) ||
+              (P[i].direcao == 1 &&
+               (P[i].joyDirTimer[2] < P[i].joyDirTimer[4]) &&
+               (P[i].joyDirTimer[2] != 0))) &&
+             (P[i].attackButton == 1 || P[i].attackButton == 2 ||
+              P[i].attackButton == 3)) {
+          PLAYER_STATE(i, 710);
+          magic_avaliable = 0;
+        }
+
+        // 720
+        // Shoulder Ram
+        if // v, v>, > + K ; baixo, baixo+frente, frente + Chute
+            (magic_avaliable == 1 &&
+             ((P[i].direcao == 1 &&
+               (P[i].joyDirTimer[2] < P[i].joyDirTimer[6]) &&
+               (P[i].joyDirTimer[2] != 0)) ||
+              (P[i].direcao == -1 &&
+               (P[i].joyDirTimer[2] < P[i].joyDirTimer[4]) &&
+               (P[i].joyDirTimer[2] != 0))) &&
+             (P[i].attackButton == 4 || P[i].attackButton == 5 ||
+              P[i].attackButton == 6)) {
+          PLAYER_STATE(i, 720);
+          magic_avaliable = 0;
+        }
+
+      } //---end char; GILLIUS
+
       if (magic_avaliable == 0) {
         // reset input array
         P[i].inputArray[0] = 0;
@@ -7863,6 +8091,38 @@ void FUNCAO_FSM() {
       P[i].fBallY = P[i].y - 80;
       P[i].fBall = SPR_addSpriteExSafe(
           &spr_haohmaru_711, P[i].fBallX, P[i].fBallY,
+          TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
+          SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
+              SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
+      if (i == 1) {
+        SPR_setVRAMTileIndex(P[1].fBall, 1711);
+      } // define uma posicao especifica para o GFX na VRAM (magia do 'P1')
+      if (P[i].fBall) {
+        SPR_setDepth(P[i].fBall, 1);
+      }
+      if (P[i].direcao == -1) {
+        SPR_setHFlip(P[i].fBall, TRUE);
+      }
+      P[i].fBallDirecao = P[i].direcao;
+    }
+
+    // GILLIUS MAGIA 701 (FIREBALL)
+    if (P[i].id == 2 && P[i].state == 700 && P[i].animFrame == 5 &&
+        P[i].frameTimeAtual == 1) {
+      if (P[i].fBallActive == 1) {
+        if (P[i].fBall) {
+          SPR_releaseSprite(P[i].fBall);
+          P[i].fBall = NULL;
+        }
+      }
+      P[i].fBallActive = 1;
+      P[i].fBallX = P[i].x + (50 * P[i].direcao);
+      if (P[i].direcao == -1) {
+        P[i].fBallX -= 50;
+      }
+      P[i].fBallY = P[i].y - 100;
+      P[i].fBall = SPR_addSpriteExSafe(
+          &spr_gillius_701, P[i].fBallX, P[i].fBallY,
           TILE_ATTR(PAL1, FALSE, FALSE, FALSE), 1,
           SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
               SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
@@ -9463,20 +9723,346 @@ void FUNCAO_SAMSHOFX() // ESPECIFICO DO SAMURAI SHODOWN 2
   // ESPECIFICO DO SAMURAI SHODOW. ESPADA PISCANDO E SOMBRA
   if (gPing2 == 0) {
     // P1
+    if (P[1].id == 1) // haohmaru
+    {
+      if (P[1].rageLvl == 0) {
+        if (P[1].palID == 1) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data);
+        }
+        if (P[1].palID == 2) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data);
+        }
+        if (P[1].palID == 3) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data);
+        }
+        if (P[1].palID == 4) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data);
+        }
+        if (P[1].palID == 5) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data);
+        }
+        if (P[1].palID == 6) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data);
+        }
+        if (P[1].palID == 7) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data);
+        }
+        if (P[1].palID == 8) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data);
+        }
+      }
+      if (P[1].rageLvl == 1) {
+        if (P[1].palID == 1) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal1_2a.palette->data);
+        }
+        if (P[1].palID == 2) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal2_2a.palette->data);
+        }
+        if (P[1].palID == 3) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal3_2a.palette->data);
+        }
+        if (P[1].palID == 4) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal4_2a.palette->data);
+        }
+        if (P[1].palID == 5) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal5_2a.palette->data);
+        }
+        if (P[1].palID == 6) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal6_2a.palette->data);
+        }
+        if (P[1].palID == 7) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal7_2a.palette->data);
+        }
+        if (P[1].palID == 8) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal8_2a.palette->data);
+        }
+      }
+      if (P[1].rageLvl == 2) {
+        if (P[1].palID == 1) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal1_3a.palette->data);
+        }
+        if (P[1].palID == 2) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal2_3a.palette->data);
+        }
+        if (P[1].palID == 3) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal3_3a.palette->data);
+        }
+        if (P[1].palID == 4) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal4_3a.palette->data);
+        }
+        if (P[1].palID == 5) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal5_3a.palette->data);
+        }
+        if (P[1].palID == 6) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal6_3a.palette->data);
+        }
+        if (P[1].palID == 7) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal7_3a.palette->data);
+        }
+        if (P[1].palID == 8) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal8_3a.palette->data);
+        }
+      }
+    }
     if (gSombraStyle == 2) {
       SPR_setVisibility(P[1].sombra, VISIBLE);
     }
     // P2
+    if (P[2].id == 1) // haohmaru
+    {
+      if (P[2].rageLvl == 0) {
+        if (P[2].palID == 1) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data);
+        }
+        if (P[2].palID == 2) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data);
+        }
+        if (P[2].palID == 3) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data);
+        }
+        if (P[2].palID == 4) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data);
+        }
+        if (P[2].palID == 5) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data);
+        }
+        if (P[2].palID == 6) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data);
+        }
+        if (P[2].palID == 7) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data);
+        }
+        if (P[2].palID == 8) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data);
+        }
+      }
+      // P2
+      if (P[2].rageLvl == 1) {
+        if (P[2].palID == 1) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal1_2a.palette->data);
+        }
+        if (P[2].palID == 2) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal2_2a.palette->data);
+        }
+        if (P[2].palID == 3) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal3_2a.palette->data);
+        }
+        if (P[2].palID == 4) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal4_2a.palette->data);
+        }
+        if (P[2].palID == 5) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal5_2a.palette->data);
+        }
+        if (P[2].palID == 6) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal6_2a.palette->data);
+        }
+        if (P[2].palID == 7) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal7_2a.palette->data);
+        }
+        if (P[2].palID == 8) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal8_2a.palette->data);
+        }
+      }
+      // P2
+      if (P[2].rageLvl == 2) {
+        if (P[2].palID == 1) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal1_3a.palette->data);
+        }
+        if (P[2].palID == 2) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal2_3a.palette->data);
+        }
+        if (P[2].palID == 3) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal3_3a.palette->data);
+        }
+        if (P[2].palID == 4) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal4_3a.palette->data);
+        }
+        if (P[2].palID == 5) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal5_3a.palette->data);
+        }
+        if (P[2].palID == 6) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal6_3a.palette->data);
+        }
+        if (P[2].palID == 7) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal7_3a.palette->data);
+        }
+        if (P[2].palID == 8) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal8_3a.palette->data);
+        }
+      }
+    }
     if (gSombraStyle == 2) {
       SPR_setVisibility(P[2].sombra, HIDDEN);
     }
   }
   if (gPing2 == 1) {
     // P1
+    if (P[1].id == 1) // haohmaru
+    {
+      if (P[1].rageLvl == 0) {
+        if (P[1].palID == 1) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal1_1b.palette->data);
+        }
+        if (P[1].palID == 2) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal2_1b.palette->data);
+        }
+        if (P[1].palID == 3) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal3_1b.palette->data);
+        }
+        if (P[1].palID == 4) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal4_1b.palette->data);
+        }
+        if (P[1].palID == 5) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal5_1b.palette->data);
+        }
+        if (P[1].palID == 6) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal6_1b.palette->data);
+        }
+        if (P[1].palID == 7) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal7_1b.palette->data);
+        }
+        if (P[1].palID == 8) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal8_1b.palette->data);
+        }
+      }
+      if (P[1].rageLvl == 1) {
+        if (P[1].palID == 1) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal1_2b.palette->data);
+        }
+        if (P[1].palID == 2) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal2_2b.palette->data);
+        }
+        if (P[1].palID == 3) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal3_2b.palette->data);
+        }
+        if (P[1].palID == 4) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal4_2b.palette->data);
+        }
+        if (P[1].palID == 5) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal5_2b.palette->data);
+        }
+        if (P[1].palID == 6) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal6_2b.palette->data);
+        }
+        if (P[1].palID == 7) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal7_2b.palette->data);
+        }
+        if (P[1].palID == 8) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal8_2b.palette->data);
+        }
+      }
+      if (P[1].rageLvl == 2) {
+        if (P[1].palID == 1) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal1_3b.palette->data);
+        }
+        if (P[1].palID == 2) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal2_3b.palette->data);
+        }
+        if (P[1].palID == 3) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal3_3b.palette->data);
+        }
+        if (P[1].palID == 4) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal4_3b.palette->data);
+        }
+        if (P[1].palID == 5) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal5_3b.palette->data);
+        }
+        if (P[1].palID == 6) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal6_3b.palette->data);
+        }
+        if (P[1].palID == 7) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal7_3b.palette->data);
+        }
+        if (P[1].palID == 8) {
+          VDP_setPalette(PAL2, spr_haohmaru_pal8_3b.palette->data);
+        }
+      }
+    }
     if (gSombraStyle == 2) {
       SPR_setVisibility(P[1].sombra, HIDDEN);
     }
     // P2
+    if (P[2].id == 1) // haohmaru
+    {
+      if (P[2].rageLvl == 0) {
+        if (P[2].palID == 1) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal1_1b.palette->data);
+        }
+        if (P[2].palID == 2) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal2_1b.palette->data);
+        }
+        if (P[2].palID == 3) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal3_1b.palette->data);
+        }
+        if (P[2].palID == 4) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal4_1b.palette->data);
+        }
+        if (P[2].palID == 5) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal5_1b.palette->data);
+        }
+        if (P[2].palID == 6) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal6_1b.palette->data);
+        }
+        if (P[2].palID == 7) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal7_1b.palette->data);
+        }
+        if (P[2].palID == 8) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal8_1b.palette->data);
+        }
+      }
+      if (P[2].rageLvl == 1) {
+        if (P[2].palID == 1) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal1_2b.palette->data);
+        }
+        if (P[2].palID == 2) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal2_2b.palette->data);
+        }
+        if (P[2].palID == 3) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal3_2b.palette->data);
+        }
+        if (P[2].palID == 4) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal4_2b.palette->data);
+        }
+        if (P[2].palID == 5) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal5_2b.palette->data);
+        }
+        if (P[2].palID == 6) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal6_2b.palette->data);
+        }
+        if (P[2].palID == 7) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal7_2b.palette->data);
+        }
+        if (P[2].palID == 8) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal8_2b.palette->data);
+        }
+      }
+      if (P[2].rageLvl == 2) {
+        if (P[2].palID == 1) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal1_3b.palette->data);
+        }
+        if (P[2].palID == 2) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal2_3b.palette->data);
+        }
+        if (P[2].palID == 3) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal3_3b.palette->data);
+        }
+        if (P[2].palID == 4) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal4_3b.palette->data);
+        }
+        if (P[2].palID == 5) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal5_3b.palette->data);
+        }
+        if (P[2].palID == 6) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal6_3b.palette->data);
+        }
+        if (P[2].palID == 7) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal7_3b.palette->data);
+        }
+        if (P[2].palID == 8) {
+          VDP_setPalette(PAL3, spr_haohmaru_pal8_3b.palette->data);
+        }
+      }
+    }
     if (gSombraStyle == 2) {
       SPR_setVisibility(P[2].sombra, VISIBLE);
     }
@@ -9891,13 +10477,13 @@ void FUNCAO_INICIALIZACAO() {
   // Retratos
   if (P[1].id == 1) {
     GE[16].sprite = SPR_addSpriteExSafe(
-        &spr_terry_000, 0, 24, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
+        &spr_haohmaru_000, 0, 24, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
         SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
             SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
   }
   if (P[1].id == 2) {
     GE[16].sprite = SPR_addSpriteExSafe(
-        &spr_terry_000, 0, 24, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
+        &spr_gillius_000, 0, 24, TILE_ATTR(PAL2, FALSE, FALSE, FALSE), 1,
         SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
             SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
   }
@@ -9907,13 +10493,13 @@ void FUNCAO_INICIALIZACAO() {
 
   if (P[2].id == 1) {
     GE[17].sprite = SPR_addSpriteExSafe(
-        &spr_terry_000, 304, 24, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+        &spr_haohmaru_000, 304, 24, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
         SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
             SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
   }
   if (P[2].id == 2) {
     GE[17].sprite = SPR_addSpriteExSafe(
-        &spr_terry_000, 304, 24, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
+        &spr_gillius_000, 304, 24, TILE_ATTR(PAL3, FALSE, FALSE, FALSE), 1,
         SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC |
             SPR_FLAG_AUTO_TILE_UPLOAD | SPR_FLAG_AUTO_SPRITE_ALLOC);
   }
@@ -10105,8 +10691,8 @@ void FUNCAO_INICIALIZACAO() {
   }
 
   if (P[1].id == 1 && P[1].palID == 1) {
-    VDP_setPalette(PAL2, spr_terry_pal1.palette->data);
-  } // terry
+    VDP_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data);
+  } // haohmaru
   if (P[1].id == 1 && P[1].palID == 2) {
     VDP_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data);
   } // haohmaru
@@ -10129,24 +10715,34 @@ void FUNCAO_INICIALIZACAO() {
     VDP_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data);
   } // haohmaru
 
-  /*
-  if(P[1].id==2 && P[1].palID==1){ VDP_setPalette(PAL2,
-  spr_gillius_pal1.palette->data); } //gillius if(P[1].id==2 && P[1].palID==2){
-  VDP_setPalette(PAL2, spr_gillius_pal2.palette->data); } //gillius
-  if(P[1].id==2 && P[1].palID==3){ VDP_setPalette(PAL2,
-  spr_gillius_pal3.palette->data); } //gillius if(P[1].id==2 && P[1].palID==4){
-  VDP_setPalette(PAL2, spr_gillius_pal4.palette->data); } //gillius
-  if(P[1].id==2 && P[1].palID==5){ VDP_setPalette(PAL2,
-  spr_gillius_pal5.palette->data); } //gillius if(P[1].id==2 && P[1].palID==6){
-  VDP_setPalette(PAL2, spr_gillius_pal6.palette->data); } //gillius
-  if(P[1].id==2 && P[1].palID==7){ VDP_setPalette(PAL2,
-  spr_gillius_pal7.palette->data); } //gillius if(P[1].id==2 && P[1].palID==8){
-  VDP_setPalette(PAL2, spr_gillius_pal8.palette->data); } //gillius
-  */
+  if (P[1].id == 2 && P[1].palID == 1) {
+    VDP_setPalette(PAL2, spr_gillius_pal1.palette->data);
+  } // gillius
+  if (P[1].id == 2 && P[1].palID == 2) {
+    VDP_setPalette(PAL2, spr_gillius_pal2.palette->data);
+  } // gillius
+  if (P[1].id == 2 && P[1].palID == 3) {
+    VDP_setPalette(PAL2, spr_gillius_pal3.palette->data);
+  } // gillius
+  if (P[1].id == 2 && P[1].palID == 4) {
+    VDP_setPalette(PAL2, spr_gillius_pal4.palette->data);
+  } // gillius
+  if (P[1].id == 2 && P[1].palID == 5) {
+    VDP_setPalette(PAL2, spr_gillius_pal5.palette->data);
+  } // gillius
+  if (P[1].id == 2 && P[1].palID == 6) {
+    VDP_setPalette(PAL2, spr_gillius_pal6.palette->data);
+  } // gillius
+  if (P[1].id == 2 && P[1].palID == 7) {
+    VDP_setPalette(PAL2, spr_gillius_pal7.palette->data);
+  } // gillius
+  if (P[1].id == 2 && P[1].palID == 8) {
+    VDP_setPalette(PAL2, spr_gillius_pal8.palette->data);
+  } // gillius
 
   if (P[2].id == 1 && P[2].palID == 1) {
-    VDP_setPalette(PAL3, spr_terry_pal1.palette->data);
-  } // terry
+    VDP_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data);
+  } // haohmaru
   if (P[2].id == 1 && P[2].palID == 2) {
     VDP_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data);
   } // haohmaru
@@ -10169,20 +10765,30 @@ void FUNCAO_INICIALIZACAO() {
     VDP_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data);
   } // haohmaru
 
-  /*
-  if(P[2].id==2 && P[2].palID==1){ VDP_setPalette(PAL3,
-  spr_gillius_pal1.palette->data); } //gillius if(P[2].id==2 && P[2].palID==2){
-  VDP_setPalette(PAL3, spr_gillius_pal2.palette->data); } //gillius
-  if(P[2].id==2 && P[2].palID==3){ VDP_setPalette(PAL3,
-  spr_gillius_pal3.palette->data); } //gillius if(P[2].id==2 && P[2].palID==4){
-  VDP_setPalette(PAL3, spr_gillius_pal4.palette->data); } //gillius
-  if(P[2].id==2 && P[2].palID==5){ VDP_setPalette(PAL3,
-  spr_gillius_pal5.palette->data); } //gillius if(P[2].id==2 && P[2].palID==6){
-  VDP_setPalette(PAL3, spr_gillius_pal6.palette->data); } //gillius
-  if(P[2].id==2 && P[2].palID==7){ VDP_setPalette(PAL3,
-  spr_gillius_pal7.palette->data); } //gillius if(P[2].id==2 && P[2].palID==8){
-  VDP_setPalette(PAL3, spr_gillius_pal8.palette->data); } //gillius
-  */
+  if (P[2].id == 2 && P[2].palID == 1) {
+    VDP_setPalette(PAL3, spr_gillius_pal1.palette->data);
+  } // gillius
+  if (P[2].id == 2 && P[2].palID == 2) {
+    VDP_setPalette(PAL3, spr_gillius_pal2.palette->data);
+  } // gillius
+  if (P[2].id == 2 && P[2].palID == 3) {
+    VDP_setPalette(PAL3, spr_gillius_pal3.palette->data);
+  } // gillius
+  if (P[2].id == 2 && P[2].palID == 4) {
+    VDP_setPalette(PAL3, spr_gillius_pal4.palette->data);
+  } // gillius
+  if (P[2].id == 2 && P[2].palID == 5) {
+    VDP_setPalette(PAL3, spr_gillius_pal5.palette->data);
+  } // gillius
+  if (P[2].id == 2 && P[2].palID == 6) {
+    VDP_setPalette(PAL3, spr_gillius_pal6.palette->data);
+  } // gillius
+  if (P[2].id == 2 && P[2].palID == 7) {
+    VDP_setPalette(PAL3, spr_gillius_pal7.palette->data);
+  } // gillius
+  if (P[2].id == 2 && P[2].palID == 8) {
+    VDP_setPalette(PAL3, spr_gillius_pal8.palette->data);
+  } // gillius
 
   // AXIS
   if (GE[1].sprite) {
