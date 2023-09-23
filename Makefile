@@ -15,7 +15,14 @@ shell:
 	docker run -it --rm -v "${PWD}":/src --entrypoint=/bin/bash sgdk:${SGDK_VERSION} 
 
 clean:
-	rm -rf out/*
+	rm -rf out/* build/*
 
 format:
 	clang-format -i src/main.c
+
+.PHONY: build
+build:	build-sgdk
+	mkdir -p build && \
+	cd build && \
+	cmake .. && \
+	make
