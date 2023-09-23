@@ -1,5 +1,4 @@
 out/*
 .DS_Store
-SGDK
 src/boot/*
 build/*
