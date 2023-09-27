@@ -1,8 +1,9 @@
 SGDK_VERSION=1.65
 SGDK_FOLDER=SGDK
-
 SED=sed
-ifeq ($(detected_OS),Darwin)        # Mac OS X
+OS=$(shell uname -s)
+
+ifeq ($(OS),Darwin)        # Mac OS X
     SED = gsed
 endif
 
@@ -14,6 +15,7 @@ compile-sgdk:
 	make -f /sgdk/makefile.gen
 
 pull:
+	git submodule foreach git reset --hard
 	git submodule update --init --remote --recursive
 	cd ${SGDK_FOLDER} && git checkout tags/v${SGDK_VERSION}
 
