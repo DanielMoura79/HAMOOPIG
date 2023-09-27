@@ -2,14 +2,15 @@ SGDK_VERSION=1.70
 SGDK_FOLDER=SGDK
 SED=sed
 OS=$(shell uname -s)
-
 ifeq ($(OS),Darwin)        # Mac OS X
     SED = gsed
 endif
+UID=$(shell id -u)
+GID=$(shell id -g)
 
 .PHONY: compile
 compile:
-	docker run -it --rm -v "${PWD}":/workdir -w /workdir sgdk:${SGDK_VERSION}
+	docker run -it --rm --user ${UID}:${GID} -v "${PWD}":/workdir -w /workdir  sgdk:${SGDK_VERSION}
 
 compile-sgdk:
 	make -f /sgdk/makefile.gen
@@ -38,5 +39,5 @@ format:
 build:	build-sgdk
 	mkdir -p build && \
 	cd build && \
-	cmake .. && \
+	cmake SGDK_VERSION=${SGDK_VERSION} UID=${UID} GID=${GID} .. && \
 	make
