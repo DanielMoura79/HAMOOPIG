@@ -3,8 +3,15 @@ cmake_minimum_required(VERSION 3.10)
 project(HAMOOPIG)
 
 set(SGDK_VERSION 1.90)
-set(UID 1001)
-set(GID 1001)
+
+# Current uid/gid
+if (UNIX OR APPLE)
+    execute_process (COMMAND "id -u" OUTPUT_VARIABLE UID)
+    execute_process (COMMAND "id -g" OUTPUT_VARIABLE GID)
+else()
+    set(UID 1000)
+    set(GID 1000)
+endif ()
 
 set(SGDK_COMPILE_COMMAND
     docker run -it --rm --user ${UID}:${GID} -v ${CMAKE_CURRENT_SOURCE_DIR}:/src sgdk:${SGDK_VERSION}
