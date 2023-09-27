@@ -1,18 +1,25 @@
+SGDK_VERSION=1.65
+SGDK_FOLDER=SGDK
+
 .PHONY: compile
 compile:
 	docker run -it --rm -v "${PWD}":/src sgdk:${SGDK_VERSION}
 
-SGDK_VERSION=1.70
-SGDK_FOLDER=SGDK
+compile-sgdk:
+	make -f /sgdk/makefile.gen
+
 pull:
 	git submodule update --init --remote --recursive
 	cd ${SGDK_FOLDER} && git checkout tags/v${SGDK_VERSION}
 
-build-sgdk:	pull
+patch:
+	gsed -i 's/FROM ubuntu/FROM amd64\/ubuntu/g' ${SGDK_FOLDER}/Dockerfile 
+
+build-sgdk:	pull patch
 	cd ${SGDK_FOLDER} && docker build . -t sgdk:${SGDK_VERSION}
 
 shell:
-	docker run -it --rm -v "${PWD}":/src --entrypoint=/bin/bash sgdk:${SGDK_VERSION} 
+	docker run -it --rm -v "${PWD}":/workdir -w /workdir --entrypoint=/bin/bash sgdk:${SGDK_VERSION} 
 
 clean:
 	rm -rf out/* build/*
