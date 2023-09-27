@@ -1,4 +1,4 @@
-SGDK_VERSION=1.65
+SGDK_VERSION=1.70
 SGDK_FOLDER=SGDK
 SED=sed
 OS=$(shell uname -s)
@@ -29,7 +29,7 @@ shell:
 	docker run -it --rm -v "${PWD}":/workdir -w /workdir --entrypoint=/bin/bash sgdk:${SGDK_VERSION} 
 
 clean:
-	rm -rf out/* build/*
+	rm -rf out/* build/* src/boot/*
 
 format:
 	clang-format -i src/main.c

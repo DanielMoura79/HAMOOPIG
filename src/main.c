@@ -298,11 +298,11 @@ int main(u16 hard) /************** MAIN **************/
 	 VDP_init();                    //Inicializa a VDP (Video Display Processor)
 	 VDP_setScreenWidth320();       //Resolucao padrao de 320x224 (Largura)
 	 VDP_setScreenHeight224();      //Resolucao padrao de 320x224 (Altura)
-	 VDP_setPlaneSize(64,32,TRUE);  //Recomendado para BGs grandes //old: SGDK 1.65
+	//VDP_setPlaneSize(64,32,TRUE);  //Recomendado para BGs grandes //old: SGDK 1.65
 	 VDP_setTextPlane(BG_A);        //Textos serao desenhados no BG_A
 	 VDP_setTextPalette(PAL1);      //Textos serao desenhados com a ultima cor da PAL0
-     SPR_init(127, 384, 256);       //SPR_init(u16 maxSprite, u16 vramSize, u16 unpackBufferSize) //old: SGDK 1.65
-	 //SPR_initEx(720);       		//SPR_initEx(u16 vramSize)
+    //  SPR_init(127, 384, 256);       //SPR_init(u16 maxSprite, u16 vramSize, u16 unpackBufferSize) //old: SGDK 1.65
+	 SPR_initEx(848);       		//SPR_initEx(u16 vramSize)
 	 VDP_setBackgroundColor(0);     //Range 0-63 //4 Paletas de 16 cores = 64 cores
 	SYS_enableInts();
 	
