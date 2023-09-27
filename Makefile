@@ -1,4 +1,4 @@
-SGDK_VERSION=1.70
+SGDK_VERSION=1.90
 SGDK_FOLDER=SGDK
 SED=sed
 OS=$(shell uname -s)

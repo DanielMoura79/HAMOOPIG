@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(HAMOOPIG)
 
-set(SGDK_VERSION 1.70)
+set(SGDK_VERSION 1.90)
 set(UID 1001)
 set(GID 1001)
 
