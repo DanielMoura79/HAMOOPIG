@@ -304,25 +304,21 @@ struct GraphicElementDEF {
 	Sprite* sprite;      //Sprite do Graphic Element
 }; struct GraphicElementDEF GE[25];
 
-int main(u16 hard) /************** MAIN **************/
+int main() /************** MAIN **************/
 {
     //Inicializacao da VDP (Video Display Processor)
 	SYS_disableInts();
 	 VDP_init();                    //Inicializa a VDP (Video Display Processor)
 	 VDP_setScreenWidth320();       //Resolucao padrao de 320x224 (Largura)
 	 VDP_setScreenHeight224();      //Resolucao padrao de 320x224 (Altura)
-	//VDP_setPlaneSize(64,32,TRUE);  //Recomendado para BGs grandes //old: SGDK 1.65
 	 VDP_setTextPlane(BG_A);        //Textos serao desenhados no BG_A
 	 VDP_setTextPalette(PAL1);      //Textos serao desenhados com a ultima cor da PAL0
-    //  SPR_init(127, 384, 256);       //SPR_init(u16 maxSprite, u16 vramSize, u16 unpackBufferSize) //old: SGDK 1.65
-	 SPR_init();       		//SPR_initEx(u16 vramSize)
+	 SPR_init();       				//SPR_initEx(u16 vramSize)
 	 VDP_setBackgroundColor(0);     //Range 0-63 //4 Paletas de 16 cores = 64 cores
 	SYS_enableInts();
 	
 	//XGM_setPCM(SFX_ARG, arg_sfx, sizeof(arg_sfx)); 
 	//XGM_setPCM(SFX_FATAL, fatalfury_sfx, sizeof(fatalfury_sfx)); 
-	
-	if(!hard){ SYS_hardReset(); } //Previne bug do Reset //hpig 1.1
 
 	//////////////////////////////////////////////////////I.A. (config)
 	fase = 4; //manter o valor igual a 1
@@ -387,8 +383,8 @@ int main(u16 hard) /************** MAIN **************/
 			{
 				//XGM_startPlay(music_stage8);
 				//XGM_isPlaying(); //FIX
-				
-				PAL_setPaletteColors(0, (u16 *)palette_black, CPU); 
+
+				//PAL_setPaletteColors(0, (u16 *)palette_black, CPU); 
 				//BG_B
 				VDP_loadTileSet(room_0_bgb.tileset, 1, DMA); //Load the tileset
 				VDP_setTileMapEx(BG_B,room_0_bgb.tilemap, TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, 1), 0, 0, 0, 0, 40, 28, DMA);
@@ -2409,27 +2405,27 @@ void FUNCAO_INPUT_SYSTEM()
 		
 		if(P[1].id==1) //haohmaru
 		{
-			if(      P[1].palID==1){ VDP_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data); P[1].palID=2; 
-			}else if(P[1].palID==2){ VDP_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data); P[1].palID=3; 
-			}else if(P[1].palID==3){ VDP_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data); P[1].palID=4; 
-			}else if(P[1].palID==4){ VDP_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data); P[1].palID=5; 
-			}else if(P[1].palID==5){ VDP_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data); P[1].palID=6; 
-			}else if(P[1].palID==6){ VDP_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data); P[1].palID=7; 
-			}else if(P[1].palID==7){ VDP_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data); P[1].palID=8; 
-			}else if(P[1].palID==8){ VDP_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data); P[1].palID=1; 
-			}
+			// if(      P[1].palID==1){ PAL_setPalette(PAL2, spr_haohmaru_pal2_1a.palette->data, CPU); P[1].palID=2; 
+			// }else if(P[1].palID==2){ PAL_setPalette(PAL2, spr_haohmaru_pal3_1a.palette->data, CPU); P[1].palID=3; 
+			// }else if(P[1].palID==3){ PAL_setPalette(PAL2, spr_haohmaru_pal4_1a.palette->data, CPU); P[1].palID=4; 
+			// }else if(P[1].palID==4){ PAL_setPalette(PAL2, spr_haohmaru_pal5_1a.palette->data, CPU); P[1].palID=5; 
+			// }else if(P[1].palID==5){ PAL_setPalette(PAL2, spr_haohmaru_pal6_1a.palette->data, CPU); P[1].palID=6; 
+			// }else if(P[1].palID==6){ PAL_setPalette(PAL2, spr_haohmaru_pal7_1a.palette->data, CPU); P[1].palID=7; 
+			// }else if(P[1].palID==7){ PAL_setPalette(PAL2, spr_haohmaru_pal8_1a.palette->data, CPU); P[1].palID=8; 
+			// }else if(P[1].palID==8){ PAL_setPalette(PAL2, spr_haohmaru_pal1_1a.palette->data, CPU); P[1].palID=1; 
+			// }
 		}
 		if(P[1].id==2) //gillius
 		{
 			/*
-			if(      P[1].palID==1){ VDP_setPalette(PAL2, spr_gillius_pal2.palette->data); P[1].palID=2; 
-			}else if(P[1].palID==2){ VDP_setPalette(PAL2, spr_gillius_pal3.palette->data); P[1].palID=3;
-			}else if(P[1].palID==3){ VDP_setPalette(PAL2, spr_gillius_pal4.palette->data); P[1].palID=4;
-			}else if(P[1].palID==4){ VDP_setPalette(PAL2, spr_gillius_pal5.palette->data); P[1].palID=5;
-			}else if(P[1].palID==5){ VDP_setPalette(PAL2, spr_gillius_pal6.palette->data); P[1].palID=6;
-			}else if(P[1].palID==6){ VDP_setPalette(PAL2, spr_gillius_pal7.palette->data); P[1].palID=7;
-			}else if(P[1].palID==7){ VDP_setPalette(PAL2, spr_gillius_pal8.palette->data); P[1].palID=8;
-			}else if(P[1].palID==8){ VDP_setPalette(PAL2, spr_gillius_pal1.palette->data); P[1].palID=1;
+			if(      P[1].palID==1){ PAL_setPalette(PAL2, spr_gillius_pal2.palette->data, CPU); P[1].palID=2; 
+			}else if(P[1].palID==2){ PAL_setPalette(PAL2, spr_gillius_pal3.palette->data, CPU); P[1].palID=3;
+			}else if(P[1].palID==3){ PAL_setPalette(PAL2, spr_gillius_pal4.palette->data, CPU); P[1].palID=4;
+			}else if(P[1].palID==4){ PAL_setPalette(PAL2, spr_gillius_pal5.palette->data, CPU); P[1].palID=5;
+			}else if(P[1].palID==5){ PAL_setPalette(PAL2, spr_gillius_pal6.palette->data, CPU); P[1].palID=6;
+			}else if(P[1].palID==6){ PAL_setPalette(PAL2, spr_gillius_pal7.palette->data, CPU); P[1].palID=7;
+			}else if(P[1].palID==7){ PAL_setPalette(PAL2, spr_gillius_pal8.palette->data, CPU); P[1].palID=8;
+			}else if(P[1].palID==8){ PAL_setPalette(PAL2, spr_gillius_pal1.palette->data, CPU); P[1].palID=1;
 			}
 			*/
 		}
@@ -2441,27 +2437,27 @@ void FUNCAO_INPUT_SYSTEM()
 		
 		if(P[2].id==1) //haohmaru
 		{
-			if(      P[2].palID==1){ VDP_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data); P[2].palID=2; 
-			}else if(P[2].palID==2){ VDP_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data); P[2].palID=3; 
-			}else if(P[2].palID==3){ VDP_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data); P[2].palID=4; 
-			}else if(P[2].palID==4){ VDP_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data); P[2].palID=5; 
-			}else if(P[2].palID==5){ VDP_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data); P[2].palID=6; 
-			}else if(P[2].palID==6){ VDP_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data); P[2].palID=7; 
-			}else if(P[2].palID==7){ VDP_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data); P[2].palID=8; 
-			}else if(P[2].palID==8){ VDP_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data); P[2].palID=1; 
-			}
+			// if(      P[2].palID==1){ PAL_setPalette(PAL3, spr_haohmaru_pal2_1a.palette->data, CPU); P[2].palID=2; 
+			// }else if(P[2].palID==2){ PAL_setPalette(PAL3, spr_haohmaru_pal3_1a.palette->data, CPU); P[2].palID=3; 
+			// }else if(P[2].palID==3){ PAL_setPalette(PAL3, spr_haohmaru_pal4_1a.palette->data, CPU); P[2].palID=4; 
+			// }else if(P[2].palID==4){ PAL_setPalette(PAL3, spr_haohmaru_pal5_1a.palette->data, CPU); P[2].palID=5; 
+			// }else if(P[2].palID==5){ PAL_setPalette(PAL3, spr_haohmaru_pal6_1a.palette->data, CPU); P[2].palID=6; 
+			// }else if(P[2].palID==6){ PAL_setPalette(PAL3, spr_haohmaru_pal7_1a.palette->data, CPU); P[2].palID=7; 
+			// }else if(P[2].palID==7){ PAL_setPalette(PAL3, spr_haohmaru_pal8_1a.palette->data, CPU); P[2].palID=8; 
+			// }else if(P[2].palID==8){ PAL_setPalette(PAL3, spr_haohmaru_pal1_1a.palette->data, CPU); P[2].palID=1; 
+			// }
 		}
 		if(P[2].id==2) //gillius
 		{
 			/*
-			if(      P[2].palID==1){ VDP_setPalette(PAL3, spr_gillius_pal2.palette->data); P[2].palID=2; 
-			}else if(P[2].palID==2){ VDP_setPalette(PAL3, spr_gillius_pal3.palette->data); P[2].palID=3;
-			}else if(P[2].palID==3){ VDP_setPalette(PAL3, spr_gillius_pal4.palette->data); P[2].palID=4;
-			}else if(P[2].palID==4){ VDP_setPalette(PAL3, spr_gillius_pal5.palette->data); P[2].palID=5;
-			}else if(P[2].palID==5){ VDP_setPalette(PAL3, spr_gillius_pal6.palette->data); P[2].palID=6;
-			}else if(P[2].palID==6){ VDP_setPalette(PAL3, spr_gillius_pal7.palette->data); P[2].palID=7;
-			}else if(P[2].palID==7){ VDP_setPalette(PAL3, spr_gillius_pal8.palette->data); P[2].palID=8;
-			}else if(P[2].palID==8){ VDP_setPalette(PAL3, spr_gillius_pal1.palette->data); P[2].palID=1;
+			if(      P[2].palID==1){ PAL_setPalette(PAL3, spr_gillius_pal2.palette->data, CPU); P[2].palID=2; 
+			}else if(P[2].palID==2){ PAL_setPalette(PAL3, spr_gillius_pal3.palette->data, CPU); P[2].palID=3;
+			}else if(P[2].palID==3){ PAL_setPalette(PAL3, spr_gillius_pal4.palette->data, CPU); P[2].palID=4;
+			}else if(P[2].palID==4){ PAL_setPalette(PAL3, spr_gillius_pal5.palette->data, CPU); P[2].palID=5;
+			}else if(P[2].palID==5){ PAL_setPalette(PAL3, spr_gillius_pal6.palette->data, CPU); P[2].palID=6;
+			}else if(P[2].palID==6){ PAL_setPalette(PAL3, spr_gillius_pal7.palette->data, CPU); P[2].palID=7;
+			}else if(P[2].palID==7){ PAL_setPalette(PAL3, spr_gillius_pal8.palette->data, CPU); P[2].palID=8;
+			}else if(P[2].palID==8){ PAL_setPalette(PAL3, spr_gillius_pal1.palette->data, CPU); P[2].palID=1;
 			}
 			*/
 		}
@@ -5105,7 +5101,7 @@ void CLEAR_VDP()
 	 VDP_setVerticalScroll(BG_A, 0);
 	 VDP_setBackgroundColor(0);
 	 VDP_resetScreen();
-	 PAL_setPaletteColors(0, (u16*) palette_black, CPU);
+	 //PAL_setPaletteColors(0, (u16*) palette_black, CPU);
 	SYS_enableInts();
 	gInd_tileset=0;
 }
