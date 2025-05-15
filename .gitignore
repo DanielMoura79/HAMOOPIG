@@ -1,0 +1,13 @@
+out/
+src/boot/
+.idea
+.vscode
+.idea/editor.xml
+.idea/genesis_tutorial_ataque.iml
+.idea/modules.xml
+.DS_Store
+src/main.h
+res/gfx.h
+res/sound.h
+res/sprites.h
+res/stages.h
