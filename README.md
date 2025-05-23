@@ -47,11 +47,7 @@
 
 O código fonte desta engine se encontra no [GitHub do autor](https://github.com/DanielMoura79/HAMOOPI).
 
-HAMOOPIG é a implementação da engine **HAMOOPI** no console **SEGA Genesis/Mega Drive**. A **HAMOOPIG** no momento em que este texto foi escrito tem apenas 6 meses de desenvolvimento.
-
-**HAMOOPIG** é a implementação da engine **HAMOOPI** no console SEGA
-Genesis. A **HAMOOPIG** no momento em que este texto foi escrito tem
-apenas 6 meses de desenvolvimento.
+HAMOOPIG é a implementação da engine **HAMOOPI** no console **SEGA Genesis/Mega Drive**. 
 
 ## 2. Como funciona?
 
